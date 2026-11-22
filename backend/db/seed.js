@@ -53,21 +53,6 @@ async function seed() {
       bio: 'Músico, marceneiro e criador de conteúdo DIY. Tenho instrumentos, pedais de efeito e ferramentas que procuro trocar por equipamentos de áudio.',
       avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200',
       reputation: 89
-    },
-    // Compatibilidade com login antigo caso o usuário digite @ecotroca.com
-    {
-      name: 'Ana Silva (Eco)',
-      email: 'ana@ecotroca.com',
-      bio: 'Conta de acesso complementar.',
-      avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
-      reputation: 98
-    },
-    {
-      name: 'Carlos Oliveira (Eco)',
-      email: 'carlos@ecotroca.com',
-      bio: 'Conta de acesso complementar.',
-      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-      reputation: 92
     }
   ];
 

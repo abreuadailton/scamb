@@ -84,7 +84,7 @@
 
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' } }; }
 
     if (getToken()) window.location.href = 'dashboard.html';
@@ -167,10 +167,6 @@
         if (res.ok) {
           localStorage.setItem('swaply_token', data.token);
           localStorage.setItem('swaply_user', JSON.stringify(data.user));
-          localStorage.setItem('ecotroca_token', data.token);
-          localStorage.setItem('ecotroca_user', JSON.stringify(data.user));
-          localStorage.setItem('ecopermuta_token', data.token);
-          localStorage.setItem('ecopermuta_user', JSON.stringify(data.user));
           window.location.href = 'dashboard.html';
         } else {
           showError(data.error || 'Erro ao criar conta. Tente novamente.');

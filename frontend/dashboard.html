@@ -196,7 +196,6 @@
         if (meRes.ok) {
           const me = await meRes.json();
           localStorage.setItem('swaply_user', JSON.stringify(me));
-          localStorage.setItem('ecopermuta_user', JSON.stringify(me));
           document.getElementById('userName').textContent = me.name ? me.name.split(' ')[0] : 'Usuário';
           document.getElementById('reputationStars').innerHTML = renderStars(me.reputation || 0);
           if (me.avatar_url) {
