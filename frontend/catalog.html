@@ -3,26 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo — EcoPermuta</title>
+  <title>Catálogo de Itens — Swaply</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .cat-pills {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 10px 0 20px;
+      scrollbar-width: thin;
+    }
+    .cat-pill {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      color: #334155;
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cat-pill:hover, .cat-pill.active {
+      background: var(--gradient-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+      box-shadow: var(--shadow-primary);
+    }
+  </style>
 </head>
 <body>
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="container navbar-inner">
+    <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-leaf"></i> EcoPermuta
+        <i class="fas fa-arrows-rotate"></i> Swaply
       </a>
       <button class="navbar-toggle" id="navToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
       </button>
       <ul class="navbar-links" id="navLinks">
-        <li><a href="catalog.html" class="active"><i class="fas fa-th"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
-        <li id="nav-guest"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
-        <li id="nav-user" style="display:none;"><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="catalog.html" class="active"><i class="fas fa-th-large"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li id="nav-guest-login"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
+        <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Cadastre-se</a></li>
+        <li id="nav-dashboard" style="display:none;"><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
+        <li id="nav-my-items" style="display:none;"><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
+        <li id="nav-trades" style="display:none;"><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
+        <li id="nav-profile" style="display:none;"><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li id="nav-logout" style="display:none;"><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
       </ul>
     </div>
@@ -30,23 +64,35 @@
 
   <div class="page-header">
     <div class="container">
-      <h1><i class="fas fa-th"></i> Catálogo de itens</h1>
-      <p>Encontre o que você precisa e proponha uma troca</p>
+      <h1><i class="fas fa-th-large"></i> Catálogo de Trocas</h1>
+      <p>Troque de tudo: games, livros, eletrônicos, instrumentos, ferramentas e muito mais!</p>
     </div>
   </div>
 
-  <main class="container catalog-main">
+  <main class="container catalog-main" style="padding: 40px 24px;">
 
-    <!-- FILTROS -->
-    <div class="catalog-filters card">
-      <div class="filter-group">
-        <label><i class="fas fa-search"></i> Buscar</label>
-        <input type="text" id="searchInput" class="form-control" placeholder="Título, descrição...">
+    <!-- CATEGORY PILLS -->
+    <div class="cat-pills" id="catPills">
+      <button class="cat-pill active" onclick="selectCatPill('')"><i class="fas fa-border-all"></i> Todos</button>
+      <button class="cat-pill" onclick="selectCatPill('Livros')"><i class="fas fa-book"></i> Livros</button>
+      <button class="cat-pill" onclick="selectCatPill('Jogos')"><i class="fas fa-dice"></i> Jogos</button>
+      <button class="cat-pill" onclick="selectCatPill('Plantas')"><i class="fas fa-seedling"></i> Plantas</button>
+      <button class="cat-pill" onclick="selectCatPill('Ferramentas')"><i class="fas fa-tools"></i> Ferramentas</button>
+      <button class="cat-pill" onclick="selectCatPill('Roupas')"><i class="fas fa-tshirt"></i> Roupas</button>
+      <button class="cat-pill" onclick="selectCatPill('Eletrônicos')"><i class="fas fa-laptop"></i> Eletrônicos</button>
+      <button class="cat-pill" onclick="selectCatPill('Outros')"><i class="fas fa-palette"></i> Outros</button>
+    </div>
+
+    <!-- FILTROS CARD -->
+    <div class="catalog-filters card" style="padding: 20px; border-radius: 16px; margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+      <div class="filter-group" style="flex: 2; min-width: 220px;">
+        <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; display: block;"><i class="fas fa-search"></i> Buscar por palavra-chave</label>
+        <input type="text" id="searchInput" class="form-control" placeholder="Ex: Hobbit, Catan, Jaqueta, Ferramentas...">
       </div>
-      <div class="filter-group">
-        <label><i class="fas fa-tag"></i> Categoria</label>
+      <div class="filter-group" style="flex: 1; min-width: 160px;">
+        <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; display: block;"><i class="fas fa-tag"></i> Categoria</label>
         <select id="categoryFilter" class="form-control">
-          <option value="">Todas</option>
+          <option value="">Todas as categorias</option>
           <option>Livros</option>
           <option>Roupas</option>
           <option>Ferramentas</option>
@@ -56,24 +102,24 @@
           <option>Outros</option>
         </select>
       </div>
-      <div class="filter-group">
-        <label><i class="fas fa-star"></i> Condição</label>
+      <div class="filter-group" style="flex: 1; min-width: 160px;">
+        <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; display: block;"><i class="fas fa-star"></i> Condição</label>
         <select id="conditionFilter" class="form-control">
-          <option value="">Todas</option>
+          <option value="">Todas as condições</option>
           <option>Novo</option>
           <option>Ótimo</option>
           <option>Bom</option>
           <option>Regular</option>
         </select>
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="clearFilters()">
+      <button class="btn btn-secondary btn-sm" onclick="clearFilters()" style="padding: 10px 18px;">
         <i class="fas fa-times"></i> Limpar
       </button>
     </div>
 
     <!-- RESULTS INFO -->
-    <div class="catalog-info">
-      <span id="resultsCount">Carregando...</span>
+    <div class="catalog-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <span id="resultsCount" style="font-weight: 700; color: #475569; font-size: 1.05rem;">Carregando itens...</span>
     </div>
 
     <!-- GRID ITENS -->
@@ -82,20 +128,41 @@
     </div>
 
     <!-- PAGINAÇÃO -->
-    <div class="pagination" id="pagination"></div>
+    <div class="pagination" id="pagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 40px;"></div>
 
   </main>
 
+  <!-- FOOTER -->
+  <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0; margin-top: 60px;">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <a href="index.html" style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 900; color: #fff; text-decoration: none;">
+          <i class="fas fa-arrows-rotate" style="color:#818cf8;"></i> Swaply
+        </a>
+        <p style="margin-top: 6px; font-size: 0.85rem; color: #64748b;">Do virtual ao presencial: conecte online, encontre no mundo real.</p>
+      </div>
+      <div>
+        <p style="font-size: 0.85rem;">&copy; 2026 Swaply.</p>
+      </div>
+    </div>
+  </footer>
+
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
 
-    // Navbar state
-    if (getToken()) {
-      document.getElementById('nav-guest').style.display = 'none';
-      document.getElementById('nav-user').style.display = 'list-item';
-      document.getElementById('nav-logout').style.display = 'list-item';
+    function updateNavbar() {
+      const token = getToken();
+      if (token) {
+        document.getElementById('nav-guest-login').style.display = 'none';
+        document.getElementById('nav-guest-register').style.display = 'none';
+        document.getElementById('nav-dashboard').style.display = 'inline-block';
+        document.getElementById('nav-my-items').style.display = 'inline-block';
+        document.getElementById('nav-trades').style.display = 'inline-block';
+        document.getElementById('nav-profile').style.display = 'inline-block';
+        document.getElementById('nav-logout').style.display = 'inline-block';
+      }
     }
 
     document.getElementById('navToggle').addEventListener('click', () => {
@@ -103,6 +170,10 @@
     });
 
     function logout() {
+      localStorage.removeItem('swaply_token');
+      localStorage.removeItem('swaply_user');
+      localStorage.removeItem('ecotroca_token');
+      localStorage.removeItem('ecotroca_user');
       localStorage.removeItem('ecopermuta_token');
       localStorage.removeItem('ecopermuta_user');
       window.location.reload();
@@ -110,14 +181,9 @@
 
     let allItems = [];
     let currentPage = 1;
-    const PAGE_SIZE = 10;
+    const PAGE_SIZE = 9;
 
-    function getConditionClass(cond) {
-      const map = { 'Novo': 'badge-condition--new', 'Ótimo': 'badge-condition--great', 'Bom': 'badge-condition--good', 'Regular': 'badge-condition--regular' };
-      return map[cond] || '';
-    }
-
-    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e8f5e9'/%3E%3Ccircle cx='200' cy='140' r='45' fill='%232D7D32' opacity='0.7'/%3E%3Ctext x='200' y='230' font-family='sans-serif' font-size='16' fill='%232D7D32' font-weight='bold' text-anchor='middle'%3EEcoPermuta%3C/text%3E%3C/svg%3E";
+    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23eef2ff'/%3E%3Ccircle cx='200' cy='140' r='45' fill='%236366f1' opacity='0.7'/%3E%3Ctext x='200' y='230' font-family='sans-serif' font-size='16' fill='%236366f1' font-weight='bold' text-anchor='middle'%3ESwaply%3C/text%3E%3C/svg%3E";
 
     function getItemImages(item) {
       if (Array.isArray(item.images)) return item.images;
@@ -133,24 +199,38 @@
       return [];
     }
 
+    function getConditionClass(cond) {
+      const map = { 'Novo': 'badge-condition--new', 'Ótimo': 'badge-condition--great', 'Bom': 'badge-condition--good', 'Regular': 'badge-condition--regular' };
+      return map[cond] || '';
+    }
+
+    function selectCatPill(cat) {
+      document.getElementById('categoryFilter').value = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(cat) || (!cat && btn.textContent.includes('Todos')));
+      });
+      currentPage = 1;
+      renderPage();
+    }
+
     function renderCard(item) {
       const imgs = getItemImages(item);
       const imgSrc = imgs.length && imgs[0] ? imgs[0] : DEFAULT_IMG;
       return `
-        <div class="card card-item fade-in">
+        <div class="card card-item fade-in" style="box-shadow: 0 4px 16px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;">
           <div class="card-item-img">
             <img src="${imgSrc}" alt="${item.title}" onerror="this.onerror=null; this.src='${DEFAULT_IMG}'">
             <span class="card-item-category badge badge-category">${item.category || 'Geral'}</span>
           </div>
           <div class="card-item-body">
             <h3 class="card-item-title">${item.title}</h3>
-            <p class="card-item-desc">${(item.description || '').substring(0, 80)}${item.description && item.description.length > 80 ? '...' : ''}</p>
-            <div class="card-item-meta">
+            <p class="card-item-desc">${(item.description || '').substring(0, 85)}${item.description && item.description.length > 85 ? '...' : ''}</p>
+            <div class="card-item-meta" style="margin-top: 10px;">
               <span class="badge ${getConditionClass(item.condition)}">${item.condition || ''}</span>
-              <span class="card-item-owner"><i class="fas fa-user"></i> ${item.owner_name || 'Usuário'}</span>
+              <span class="card-item-owner"><i class="fas fa-user-circle"></i> ${item.owner_name || 'Usuário'}</span>
             </div>
-            <a href="item-detail.html?id=${item.id}" class="btn btn-primary btn-sm btn-full mt-1">
-              <i class="fas fa-eye"></i> Ver detalhes
+            <a href="item-detail.html?id=${item.id}" class="btn btn-primary btn-sm btn-full mt-2" style="border-radius: 8px;">
+              <i class="fas fa-handshake"></i> Ver detalhes & Propor
             </a>
           </div>
         </div>
@@ -177,14 +257,14 @@
       const start = (currentPage - 1) * PAGE_SIZE;
       const slice = filtered.slice(start, start + PAGE_SIZE);
 
-      document.getElementById('resultsCount').textContent = `${total} item${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`;
+      document.getElementById('resultsCount').innerHTML = `Mostrando <b>${total}</b> iten${total !== 1 ? 's' : ''} disponível${total !== 1 ? 'is' : ''} para troca`;
 
       if (slice.length === 0) {
         document.getElementById('itemsGrid').innerHTML = `
-          <div class="empty-state" style="grid-column: 1/-1;">
-            <i class="fas fa-search fa-3x"></i>
-            <h3>Nenhum item encontrado</h3>
-            <p>Tente outros filtros ou <a href="my-items.html">adicione um item</a>.</p>
+          <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+            <i class="fas fa-search fa-3x" style="color: #cbd5e1; margin-bottom: 16px;"></i>
+            <h3 style="font-size: 1.4rem;">Nenhum item encontrado</h3>
+            <p style="color: #64748b;">Tente outros filtros ou <a href="my-items.html" style="color:#059669; font-weight:600;">cadastre um item seu</a>.</p>
           </div>`;
       } else {
         document.getElementById('itemsGrid').innerHTML = slice.map(renderCard).join('');
@@ -193,11 +273,11 @@
       // Paginação
       let pagHtml = '';
       if (totalPages > 1) {
-        if (currentPage > 1) pagHtml += `<button class="btn btn-secondary btn-sm" onclick="goPage(${currentPage-1})"><i class="fas fa-chevron-left"></i></button>`;
+        if (currentPage > 1) pagHtml += `<button class="btn btn-secondary btn-sm" onclick="goPage(${currentPage-1})"><i class="fas fa-chevron-left"></i> Anterior</button>`;
         for (let i = 1; i <= totalPages; i++) {
           pagHtml += `<button class="btn ${i === currentPage ? 'btn-primary' : 'btn-secondary'} btn-sm" onclick="goPage(${i})">${i}</button>`;
         }
-        if (currentPage < totalPages) pagHtml += `<button class="btn btn-secondary btn-sm" onclick="goPage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`;
+        if (currentPage < totalPages) pagHtml += `<button class="btn btn-secondary btn-sm" onclick="goPage(${currentPage+1})">Próximo <i class="fas fa-chevron-right"></i></button>`;
       }
       document.getElementById('pagination').innerHTML = pagHtml;
     }
@@ -207,24 +287,28 @@
       document.getElementById('searchInput').value = '';
       document.getElementById('categoryFilter').value = '';
       document.getElementById('conditionFilter').value = '';
+      document.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
+      document.querySelector('.cat-pill').classList.add('active');
       currentPage = 1;
       renderPage();
     }
 
-    // Debounce search
     let searchTimer;
     document.getElementById('searchInput').addEventListener('input', () => {
       clearTimeout(searchTimer);
       searchTimer = setTimeout(() => { currentPage = 1; renderPage(); }, 300);
     });
-    document.getElementById('categoryFilter').addEventListener('change', () => { currentPage = 1; renderPage(); });
+    document.getElementById('categoryFilter').addEventListener('change', (e) => {
+      selectCatPill(e.target.value);
+    });
     document.getElementById('conditionFilter').addEventListener('change', () => { currentPage = 1; renderPage(); });
 
     async function loadItems() {
       try {
         const res = await fetch(`${API_BASE}/items`);
         if (res.ok) {
-          allItems = await res.json();
+          const data = await res.json();
+          allItems = Array.isArray(data) ? data : (data.data || []);
         } else {
           allItems = [];
         }
@@ -235,6 +319,7 @@
       renderPage();
     }
 
+    updateNavbar();
     loadItems();
   </script>
 </body>

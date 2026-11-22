@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro — EcoPermuta</title>
+  <title>Cadastre-se — Swaply</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,29 +11,29 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="container navbar-inner">
+    <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-leaf"></i> EcoPermuta
+        <i class="fas fa-arrows-rotate"></i> Swaply
       </a>
       <button class="navbar-toggle" id="navToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
       </button>
       <ul class="navbar-links" id="navLinks">
-        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
+        <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
         <li><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
       </ul>
     </div>
   </nav>
 
   <main class="auth-container">
-    <div class="auth-card auth-card--wide">
-      <div class="auth-header">
-        <div class="auth-icon">
-          <i class="fas fa-seedling"></i>
+    <div class="auth-card auth-card--wide fade-in-up" style="max-width:560px; margin:40px auto; padding:36px; border-radius:24px; box-shadow:var(--shadow-lg); border:1px solid var(--color-border); background:#ffffff;">
+      <div class="auth-header" style="text-align:center; margin-bottom:24px;">
+        <div class="auth-icon" style="width:60px; height:60px; border-radius:18px; background:var(--gradient-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 16px; box-shadow:var(--shadow-primary);">
+          <i class="fas fa-user-plus"></i>
         </div>
-        <h1>Criar sua conta</h1>
-        <p>Junte-se à comunidade de trocas sustentáveis</p>
+        <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:#0f172a; margin:0 0 6px;">Criar sua conta no Swaply</h1>
+        <p style="color:#64748b; font-size:0.95rem; margin:0;">Conecte no virtual, troque no presencial</p>
       </div>
 
       <div id="error-msg" class="form-error" style="display:none;"></div>
@@ -165,6 +165,10 @@
         const data = await res.json();
 
         if (res.ok) {
+          localStorage.setItem('swaply_token', data.token);
+          localStorage.setItem('swaply_user', JSON.stringify(data.user));
+          localStorage.setItem('ecotroca_token', data.token);
+          localStorage.setItem('ecotroca_user', JSON.stringify(data.user));
           localStorage.setItem('ecopermuta_token', data.token);
           localStorage.setItem('ecopermuta_user', JSON.stringify(data.user));
           window.location.href = 'dashboard.html';

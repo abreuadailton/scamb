@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — EcoPermuta</title>
+  <title>Dashboard — Swaply</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,19 +11,20 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="container navbar-inner">
+    <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-leaf"></i> EcoPermuta
+        <i class="fas fa-arrows-rotate"></i> Swaply
       </a>
       <button class="navbar-toggle" id="navToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
       </button>
       <ul class="navbar-links" id="navLinks">
-        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
-        <li><a href="my-items.html"><i class="fas fa-box"></i> Meus Itens</a></li>
+        <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li><a href="dashboard.html" class="active"><i class="fas fa-columns"></i> Dashboard</a></li>
+        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
         <li><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
-        <li><a href="profile.html"><i class="fas fa-user"></i> Perfil</a></li>
+        <li><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
       </ul>
     </div>
@@ -89,7 +90,7 @@
 
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
 
     // Auth guard
@@ -100,6 +101,10 @@
     });
 
     function logout() {
+      localStorage.removeItem('swaply_token');
+      localStorage.removeItem('swaply_user');
+      localStorage.removeItem('ecotroca_token');
+      localStorage.removeItem('ecotroca_user');
       localStorage.removeItem('ecopermuta_token');
       localStorage.removeItem('ecopermuta_user');
       window.location.href = 'login.html';
@@ -114,7 +119,7 @@
       return html;
     }
 
-    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e8f5e9'/%3E%3Ccircle cx='200' cy='140' r='45' fill='%232D7D32' opacity='0.7'/%3E%3Ctext x='200' y='230' font-family='sans-serif' font-size='16' fill='%232D7D32' font-weight='bold' text-anchor='middle'%3EEcoPermuta%3C/text%3E%3C/svg%3E";
+    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23eef2ff'/%3E%3Ccircle cx='200' cy='140' r='45' fill='%236366f1' opacity='0.7'/%3E%3Ctext x='200' y='230' font-family='sans-serif' font-size='16' fill='%236366f1' font-weight='bold' text-anchor='middle'%3ESwaply%3C/text%3E%3C/svg%3E";
 
     function getItemImages(item) {
       if (Array.isArray(item.images)) return item.images;

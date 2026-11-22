@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — EcoPermuta</title>
+  <title>Entrar — Swaply</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,70 +11,89 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="container navbar-inner">
+    <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-leaf"></i> EcoPermuta
+        <i class="fas fa-arrows-rotate"></i> Swaply
       </a>
       <button class="navbar-toggle" id="navToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
       </button>
       <ul class="navbar-links" id="navLinks">
-        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
-        <li><a href="register.html" class="btn btn-primary btn-sm">Cadastrar</a></li>
+        <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li><a href="register.html" class="btn btn-primary btn-sm">Cadastre-se</a></li>
       </ul>
     </div>
   </nav>
 
   <main class="auth-container">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="auth-icon">
-          <i class="fas fa-leaf"></i>
+    <div class="auth-card fade-in-up" style="max-width:440px; margin:40px auto; padding:36px; border-radius:24px; box-shadow:var(--shadow-lg); border:1px solid var(--color-border); background:#ffffff;">
+      <div class="auth-header" style="text-align:center; margin-bottom:24px;">
+        <div class="auth-icon" style="width:60px; height:60px; border-radius:18px; background:var(--gradient-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin:0 auto 16px; box-shadow:var(--shadow-primary);">
+          <i class="fas fa-arrows-rotate"></i>
         </div>
-        <h1>Bem-vindo de volta!</h1>
-        <p>Entre na sua conta EcoPermuta</p>
+        <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:#0f172a; margin:0 0 6px;">Bem-vindo ao Swaply!</h1>
+        <p style="color:#64748b; font-size:0.95rem; margin:0;">Conecte no virtual, troque no presencial</p>
       </div>
 
-      <div id="error-msg" class="form-error" style="display:none;"></div>
+      <div id="error-msg" class="form-error" style="display:none; padding:12px; background:#fef2f2; color:#991b1b; border-radius:10px; margin-bottom:16px;"></div>
 
       <form id="loginForm" class="auth-form">
         <div class="form-group">
-          <label for="email"><i class="fas fa-envelope"></i> E-mail</label>
-          <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required autofocus>
+          <label for="email" style="font-weight:600; font-size:0.9rem; color:#334155;"><i class="fas fa-envelope"></i> E-mail</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required autofocus style="margin-top:6px;">
         </div>
-        <div class="form-group">
-          <label for="password"><i class="fas fa-lock"></i> Senha</label>
-          <div class="input-password-wrap">
+        <div class="form-group" style="margin-top:14px;">
+          <label for="password" style="font-weight:600; font-size:0.9rem; color:#334155;"><i class="fas fa-lock"></i> Senha</label>
+          <div class="input-password-wrap" style="position:relative; margin-top:6px;">
             <input type="password" id="password" name="password" class="form-control" placeholder="Sua senha" required>
-            <button type="button" class="toggle-password" onclick="togglePass()">
+            <button type="button" class="toggle-password" onclick="togglePass()" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#94a3b8; cursor:pointer;">
               <i class="fas fa-eye" id="eyeIcon"></i>
             </button>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
-          <span id="btnText"><i class="fas fa-sign-in-alt"></i> Entrar</span>
+        <button type="submit" class="btn btn-primary btn-full" id="submitBtn" style="width:100%; margin-top:20px; padding:12px; border-radius:12px;">
+          <span id="btnText"><i class="fas fa-sign-in-alt"></i> Entrar na Conta</span>
           <span id="btnLoading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Entrando...</span>
         </button>
       </form>
 
-      <div class="auth-footer">
-        <p>Não tem conta? <a href="register.html">Cadastre-se grátis</a></p>
+      <!-- BOTÕES DE ACESSO RÁPIDO PARA APRESENTAÇÃO -->
+      <div style="margin-top:24px; padding-top:18px; border-top:1px dashed #e2e8f0; text-align:center;">
+        <span style="font-size:0.75rem; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:10px;">
+          ⚡ Contas de Teste Rápidas (1 Clique)
+        </span>
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickFill('ana@swaply.com')">
+            <i class="fas fa-user"></i> Ana
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickFill('carlos@swaply.com')">
+            <i class="fas fa-user"></i> Carlos
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickFill('mariana@swaply.com')">
+            <i class="fas fa-user"></i> Mariana
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickFill('lucas@swaply.com')">
+            <i class="fas fa-user"></i> Lucas
+          </button>
+        </div>
+      </div>
+
+      <div class="auth-footer" style="text-align:center; margin-top:20px;">
+        <p style="font-size:0.9rem; color:#64748b;">
+          Ainda não tem conta? <a href="register.html" style="font-weight:700; color:var(--color-primary);">Cadastre-se grátis</a>
+        </p>
       </div>
     </div>
   </main>
 
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('ecopermuta_token'); }
-    function authHeaders() { return { headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' } }; }
 
-    // Redireciona se já logado
-    if (getToken()) window.location.href = 'dashboard.html';
-
-    document.getElementById('navToggle').addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('open');
-    });
+    function quickFill(email) {
+      document.getElementById('email').value = email;
+      document.getElementById('password').value = 'senha123';
+    }
 
     function togglePass() {
       const pwd = document.getElementById('password');
@@ -103,10 +122,11 @@
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       document.getElementById('error-msg').style.display = 'none';
-      setLoading(true);
 
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
+
+      setLoading(true);
 
       try {
         const res = await fetch(`${API_BASE}/auth/login`, {
@@ -118,6 +138,10 @@
         const data = await res.json();
 
         if (res.ok) {
+          localStorage.setItem('swaply_token', data.token);
+          localStorage.setItem('swaply_user', JSON.stringify(data.user));
+          localStorage.setItem('ecotroca_token', data.token);
+          localStorage.setItem('ecotroca_user', JSON.stringify(data.user));
           localStorage.setItem('ecopermuta_token', data.token);
           localStorage.setItem('ecopermuta_user', JSON.stringify(data.user));
           window.location.href = 'dashboard.html';

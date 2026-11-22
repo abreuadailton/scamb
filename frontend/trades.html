@@ -3,23 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minhas Trocas — EcoPermuta</title>
+  <title>Minhas Trocas — Swaply</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="container navbar-inner">
-      <a href="index.html" class="navbar-logo"><i class="fas fa-leaf"></i> EcoPermuta</a>
-      <button class="navbar-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <i class="fas fa-arrows-rotate"></i> Swaply
+      </a>
+      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
       <ul class="navbar-links" id="navLinks">
-        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
-        <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="my-items.html"><i class="fas fa-box"></i> Meus Itens</a></li>
+        <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
+        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
         <li><a href="trades.html" class="active"><i class="fas fa-handshake"></i> Trocas</a></li>
+        <li><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
       </ul>
     </div>
@@ -28,75 +33,119 @@
   <div class="page-header">
     <div class="container">
       <h1><i class="fas fa-handshake"></i> Minhas Trocas</h1>
-      <p>Gerencie suas propostas e trocas em andamento</p>
+      <p>Gerencie suas propostas, acerte encontros no chat e valide retiradas por QR Code e GPS!</p>
     </div>
   </div>
 
-  <main class="container trades-main">
+  <main class="container trades-main" style="padding-top: 32px; padding-bottom: 60px;">
 
     <!-- TABS -->
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('received')">
+    <div class="tabs" style="display:flex; gap:10px; margin-bottom:28px; flex-wrap:wrap; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+      <button class="tab-btn active" onclick="switchTab('received')" style="padding:10px 18px; border-radius:12px; font-family:var(--font-heading); font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
         <i class="fas fa-inbox"></i> Propostas recebidas
-        <span class="tab-badge" id="badge-received">0</span>
+        <span class="tab-badge" id="badge-received" style="background:#eef2ff; color:#6366f1; padding:2px 8px; border-radius:99px; font-size:0.75rem;">0</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('sent')">
+      <button class="tab-btn" onclick="switchTab('sent')" style="padding:10px 18px; border-radius:12px; font-family:var(--font-heading); font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
         <i class="fas fa-paper-plane"></i> Enviadas
-        <span class="tab-badge" id="badge-sent">0</span>
+        <span class="tab-badge" id="badge-sent" style="background:#eef2ff; color:#6366f1; padding:2px 8px; border-radius:99px; font-size:0.75rem;">0</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('active')">
-        <i class="fas fa-sync-alt"></i> Ativas
-        <span class="tab-badge" id="badge-active">0</span>
+      <button class="tab-btn" onclick="switchTab('active')" style="padding:10px 18px; border-radius:12px; font-family:var(--font-heading); font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+        <i class="fas fa-bolt" style="color:#f59e0b;"></i> Ativas / Prontas para Encontro
+        <span class="tab-badge" id="badge-active" style="background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:99px; font-size:0.75rem;">0</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('completed')">
-        <i class="fas fa-check-circle"></i> Concluídas
-        <span class="tab-badge" id="badge-completed">0</span>
+      <button class="tab-btn" onclick="switchTab('completed')" style="padding:10px 18px; border-radius:12px; font-family:var(--font-heading); font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+        <i class="fas fa-check-circle" style="color:#10b981;"></i> Concluídas
+        <span class="tab-badge" id="badge-completed" style="background:#ecfdf5; color:#059669; padding:2px 8px; border-radius:99px; font-size:0.75rem;">0</span>
       </button>
     </div>
 
+    <!-- LISTA DE CARDS DE TROCAS -->
     <div id="tradesContainer">
       <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
     </div>
 
   </main>
 
-  <!-- MODAL QR CODE -->
+  <!-- MODAL PASSAPORTE DIGITAL / VOUCHER QR CODE DE AUTENTICAÇÃO -->
   <div class="modal-overlay" id="qrModal" style="display:none;">
-    <div class="modal">
-      <div class="modal-header">
-        <h2><i class="fas fa-qrcode"></i> QR Code da Troca</h2>
-        <button class="modal-close" onclick="closeQRModal()"><i class="fas fa-times"></i></button>
+    <div class="modal qr-ticket-card fade-in-up" style="max-width:440px; padding:0; border-radius:28px;">
+      
+      <div class="qr-ticket-header">
+        <button class="modal-close" onclick="closeQRModal()" style="position:absolute; top:16px; right:18px; background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer;">&times;</button>
+        <span class="badge" style="background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.3); font-size:0.75rem; padding:3px 12px; border-radius:99px; margin-bottom:8px; display:inline-block;">
+          <i class="fas fa-shield-halved"></i> Autenticação Presencial
+        </span>
+        <h3 id="qrModalTitle">Passaporte de Troca Swaply</h3>
+        <p id="qrModalSubtitle">Apresente este voucher no momento da entrega</p>
       </div>
-      <div class="modal-body">
-        <div class="qr-container">
+
+      <div class="qr-ticket-body">
+        <div class="qr-code-wrapper" id="qrCodeContainer">
           <div id="qrCode"></div>
-          <p class="mt-2 text-muted">Apresente este QR Code no ponto de troca para confirmar o encontro.</p>
+        </div>
+
+        <div class="qr-security-code" id="qrAuthCode">SWAP-0001-AUTH</div>
+
+        <div class="qr-instructions">
+          <p style="margin:0 0 6px;"><strong>Validação no Encontro Físico:</strong></p>
+          <span style="font-size:0.85rem; color:#64748b;">
+            Mostre este código à outra parte no ponto de troca seguro ou confirme a retirada pelo botão abaixo para finalizar a troca e creditar +10 pts de reputação.
+          </span>
+        </div>
+
+        <div class="qr-ticket-actions" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+          <button class="btn btn-primary" id="validateQRBtn" onclick="validateQRCurrentTrade()" style="width:100%; border-radius:12px; padding:12px;">
+            <i class="fas fa-qrcode"></i> Validar / Simular Leitura do QR Code
+          </button>
+          <button class="btn btn-secondary" onclick="closeQRModal()" style="width:100%; border-radius:12px; padding:10px;">
+            Fechar
+          </button>
         </div>
       </div>
+
     </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
-    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
+    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('swaply_user') || localStorage.getItem('ecotroca_user') || localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
 
     if (!getToken()) window.location.href = 'login.html';
 
     document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
-    function logout() { localStorage.removeItem('ecopermuta_token'); localStorage.removeItem('ecopermuta_user'); window.location.href = 'login.html'; }
+    function logout() { 
+      localStorage.removeItem('swaply_token'); 
+      localStorage.removeItem('swaply_user');
+      localStorage.removeItem('ecotroca_token'); 
+      localStorage.removeItem('ecotroca_user'); 
+      localStorage.removeItem('ecopermuta_token'); 
+      localStorage.removeItem('ecopermuta_user'); 
+      window.location.href = 'login.html'; 
+    }
 
     let allTrades = [];
     let currentTab = 'received';
     const user = getCurrentUser();
+    let currentActiveQRTradeId = null;
 
     function getStatusLabel(status) {
-      return { 'pending': 'Pendente', 'accepted': 'Aceita', 'rejected': 'Rejeitada', 'completed': 'Concluída', 'cancelled': 'Cancelada' }[status] || status;
+      return { 
+        'pending': 'Pendente', 
+        'accepted': 'Aceita (Ponto Marcado)', 
+        'rejected': 'Rejeitada', 
+        'completed': 'Concluída Presencialmente', 
+        'cancelled': 'Cancelada' 
+      }[status] || status;
     }
-    function getStatusClass(status) {
-      return { 'pending': 'badge-status--pending', 'accepted': 'badge-status--active', 'rejected': 'badge-status--rejected', 'completed': 'badge-status--done', 'cancelled': 'badge-status--rejected' }[status] || '';
+
+    function getStatusBadge(status) {
+      if (status === 'accepted') return '<span class="badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a;"><i class="fas fa-bolt"></i> Aceita · Encontro Marcado</span>';
+      if (status === 'completed') return '<span class="badge" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;"><i class="fas fa-check-double"></i> Concluída com Sucesso</span>';
+      if (status === 'pending') return '<span class="badge" style="background:#eef2ff; color:#6366f1; border:1px solid #c7d2fe;"><i class="fas fa-clock"></i> Aguardando Resposta</span>';
+      return `<span class="badge">${status}</span>`;
     }
 
     function switchTab(tab) {
@@ -112,23 +161,28 @@
         case 'received': return allTrades.filter(t => t.owner_id == uid && t.status === 'pending');
         case 'sent': return allTrades.filter(t => t.requester_id == uid && t.status === 'pending');
         case 'active': return allTrades.filter(t => t.status === 'accepted');
-        case 'completed': return allTrades.filter(t => t.status === 'completed' || t.status === 'rejected' || t.status === 'cancelled');
+        case 'completed': return allTrades.filter(t => t.status === 'completed');
         default: return [];
       }
     }
 
     function renderTrades() {
       const trades = getTabTrades(currentTab);
-      const uid = user ? user.id : null;
       const container = document.getElementById('tradesContainer');
+      const uid = user ? user.id : null;
 
       if (trades.length === 0) {
         container.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-handshake fa-3x"></i>
-            <h3>Nenhuma troca aqui</h3>
-            <p>${currentTab === 'received' ? 'Você não tem propostas recebidas.' : currentTab === 'sent' ? 'Você não enviou propostas.' : currentTab === 'active' ? 'Nenhuma troca ativa.' : 'Nenhuma troca concluída.'}</p>
-            ${currentTab === 'sent' ? '<a href="catalog.html" class="btn btn-primary"><i class="fas fa-search"></i> Ver catálogo</a>' : ''}
+          <div class="card" style="padding:48px 24px; text-align:center; border-radius:20px; border:1px dashed #cbd5e1; background:#f8fafc;">
+            <i class="fas fa-handshake fa-3x" style="color:#94a3b8; margin-bottom:16px;"></i>
+            <h3 style="font-family:var(--font-heading); color:#0f172a; font-size:1.3rem;">Nenhuma troca nesta aba</h3>
+            <p style="color:#64748b; font-size:0.95rem; max-width:400px; margin:8px auto 20px;">
+              ${currentTab === 'received' ? 'Você ainda não recebeu propostas de outros membros.' : 
+                currentTab === 'sent' ? 'Você não enviou nenhuma proposta recentemente.' : 
+                currentTab === 'active' ? 'Nenhuma troca com encontro presencial em andamento no momento.' : 
+                'Você ainda não possui trocas concluídas no histórico.'}
+            </p>
+            <a href="catalog.html" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Explorar Catálogo</a>
           </div>`;
         return;
       }
@@ -136,51 +190,45 @@
       container.innerHTML = trades.map(trade => {
         const isOwner = trade.owner_id == uid;
         const counterpart = isOwner ? trade.requester_name : trade.owner_name;
-        const meetDate = trade.meeting_date ? new Date(trade.meeting_date).toLocaleString('pt-BR') : '—';
+        const meetDate = trade.meeting_date ? new Date(trade.meeting_date).toLocaleString('pt-BR') : 'A combinar no chat';
 
         return `
-          <div class="card card-trade fade-in">
-            <div class="card-trade-header">
-              <div class="trade-items">
-                <div class="trade-item">
-                  <i class="fas fa-box"></i>
-                  <span>${trade.offered_title || 'Item oferecido'}</span>
-                </div>
-                <div class="trade-arrow"><i class="fas fa-exchange-alt"></i></div>
-                <div class="trade-item">
-                  <i class="fas fa-box-open"></i>
-                  <span>${trade.wanted_title || 'Item desejado'}</span>
-                </div>
+          <div class="card fade-in" style="padding:24px; border-radius:20px; border:1px solid #e2e8f0; margin-bottom:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; border-bottom:1px solid #f1f5f9; padding-bottom:14px;">
+              <div style="display:flex; align-items:center; gap:12px; font-family:var(--font-heading); font-size:1.15rem; font-weight:800; color:#0f172a;">
+                <span style="color:var(--color-primary);"><i class="fas fa-box"></i> ${trade.offered_title || trade.item_offered_title || 'Item ofertado'}</span>
+                <i class="fas fa-arrows-rotate" style="color:#6366f1;"></i>
+                <span style="color:#06b6d4;"><i class="fas fa-box-open"></i> ${trade.wanted_title || trade.item_wanted_title || 'Item desejado'}</span>
               </div>
-              <span class="badge ${getStatusClass(trade.status)}">${getStatusLabel(trade.status)}</span>
+              <div>${getStatusBadge(trade.status)}</div>
             </div>
-            <div class="card-trade-body">
-              <div class="trade-meta">
-                <span><i class="fas fa-user"></i> ${counterpart || 'Usuário'}</span>
-                <span><i class="fas fa-calendar"></i> ${meetDate}</span>
-                ${trade.meeting_address ? `<span><i class="fas fa-map-marker-alt"></i> ${trade.meeting_address}</span>` : ''}
-              </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px; font-size:0.9rem; color:#475569;">
+              <div><i class="fas fa-user" style="color:#6366f1;"></i> Negociando com: <strong>${counterpart || 'Usuário'}</strong></div>
+              <div><i class="fas fa-calendar" style="color:#0ea5e9;"></i> Data do encontro: <strong>${meetDate}</strong></div>
+              ${trade.meeting_address ? `<div><i class="fas fa-map-marker-alt" style="color:#f43f5e;"></i> Ponto Seguro: <strong>${trade.meeting_address}</strong></div>` : ''}
             </div>
-            <div class="card-trade-actions">
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <a href="chat.html?tradeId=${trade.id}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-comments"></i> Abrir Chat Interno
+              </a>
+
               ${trade.status === 'pending' && isOwner ? `
                 <button class="btn btn-primary btn-sm" onclick="acceptTrade(${trade.id})">
-                  <i class="fas fa-check"></i> Aceitar
+                  <i class="fas fa-check"></i> Aceitar Proposta
                 </button>
                 <button class="btn btn-danger btn-sm" onclick="rejectTrade(${trade.id})">
-                  <i class="fas fa-times"></i> Rejeitar
+                  <i class="fas fa-times"></i> Recusar
                 </button>
               ` : ''}
-              ${trade.status === 'accepted' || trade.status === 'pending' ? `
-                <a href="chat.html?tradeId=${trade.id}" class="btn btn-secondary btn-sm">
-                  <i class="fas fa-comments"></i> Chat
-                </a>
-              ` : ''}
+
               ${trade.status === 'accepted' ? `
-                <button class="btn btn-secondary btn-sm" onclick="showQR(${trade.id}, '${trade.qr_code||''}')">
-                  <i class="fas fa-qrcode"></i> QR Code
+                <button class="btn btn-primary btn-sm" onclick="showQR(${trade.id})">
+                  <i class="fas fa-qrcode"></i> Passaporte QR Code
                 </button>
-                <button class="btn btn-primary btn-sm" onclick="checkIn(${trade.id})">
-                  <i class="fas fa-check-circle"></i> Check-in
+                <button class="btn btn-secondary btn-sm" onclick="checkIn(${trade.id})" style="border-color:#10b981; color:#059669;">
+                  <i class="fas fa-location-crosshairs"></i> Check-in por GPS
                 </button>
               ` : ''}
             </div>
@@ -210,16 +258,88 @@
     async function acceptTrade(id) {
       try {
         const res = await fetch(`${API_BASE}/trades/${id}/accept`, { method: 'PUT', headers: authHeaders() });
-        if (res.ok) loadTrades(); else alert('Erro ao aceitar troca.');
+        const data = await res.json();
+        if (res.ok) {
+          alert('🎉 Proposta aceita! O QR Code oficial de validação foi gerado para o encontro presencial.');
+          loadTrades();
+        } else {
+          alert(data.error || 'Erro ao aceitar proposta.');
+        }
       } catch(e) { alert('Erro de conexão.'); }
     }
 
     async function rejectTrade(id) {
-      if (!confirm('Rejeitar esta proposta?')) return;
+      if (!confirm('Tem certeza que deseja recusar esta proposta?')) return;
       try {
         const res = await fetch(`${API_BASE}/trades/${id}/reject`, { method: 'PUT', headers: authHeaders() });
-        if (res.ok) loadTrades(); else alert('Erro ao rejeitar troca.');
+        if (res.ok) loadTrades(); else alert('Erro ao recusar proposta.');
       } catch(e) { alert('Erro de conexão.'); }
+    }
+
+    async function showQR(tradeId) {
+      currentActiveQRTradeId = tradeId;
+      document.getElementById('qrCode').innerHTML = '<div class="loading-spinner"></div>';
+      const m = document.getElementById('qrModal');
+      m.style.display = 'flex';
+      m.classList.add('open');
+
+      try {
+        const res = await fetch(`${API_BASE}/trades/${tradeId}/qrcode`, { headers: authHeaders() });
+        const data = await res.json();
+        
+        document.getElementById('qrCode').innerHTML = '';
+        if (res.ok && data.data && data.data.qr_code) {
+          document.getElementById('qrCode').innerHTML = `<img src="${data.data.qr_code}" alt="QR Code" style="width:230px; height:230px; display:block;">`;
+          document.getElementById('qrAuthCode').textContent = data.data.auth_code || `SWAP-000${tradeId}-VERIFIED`;
+        } else {
+          new QRCode(document.getElementById('qrCode'), {
+            text: JSON.stringify({ swaply_trade_id: tradeId, timestamp: new Date().toISOString() }),
+            width: 220, height: 220,
+            colorDark: '#4338ca', colorLight: '#ffffff'
+          });
+          document.getElementById('qrAuthCode').textContent = `SWAP-000${tradeId}-PASSPORT`;
+        }
+      } catch(e) {
+        document.getElementById('qrCode').innerHTML = `<p class="text-muted">Passaporte gerado para a troca #${tradeId}</p>`;
+      }
+    }
+
+    function closeQRModal() {
+      const m = document.getElementById('qrModal');
+      m.style.display = 'none';
+      m.classList.remove('open');
+      currentActiveQRTradeId = null;
+    }
+
+    async function validateQRCurrentTrade() {
+      if (!currentActiveQRTradeId) return;
+      try {
+        const btn = document.getElementById('validateQRBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando código...';
+        btn.disabled = true;
+
+        const res = await fetch(`${API_BASE}/trades/${currentActiveQRTradeId}/validate-qr`, {
+          method: 'POST',
+          headers: authHeaders()
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          alert('🎉 SUCESSO PRESENCIAL!\n\n' + (data.message || 'QR Code autenticado! A entrega física foi validada e a reputação dos participantes aumentou.'));
+          closeQRModal();
+          loadTrades();
+        } else {
+          alert(data.error || 'Erro ao validar QR Code.');
+        }
+      } catch(e) {
+        alert('Erro de conexão ao validar QR Code.');
+      } finally {
+        const btn = document.getElementById('validateQRBtn');
+        if (btn) {
+          btn.innerHTML = '<i class="fas fa-qrcode"></i> Validar / Simular Leitura do QR Code';
+          btn.disabled = false;
+        }
+      }
     }
 
     async function sendCheckInRequest(id, lat, lng) {
@@ -231,15 +351,15 @@
         });
         const data = await res.json();
         if (res.ok) {
-          const isDone = data.completed || (data.trade && data.trade.status === 'completed') || data.status === 'completed';
+          const isDone = data.completed || (data.data && data.data.status === 'completed') || data.status === 'completed';
           if (isDone) {
-            alert('🎉 Parabéns! Ambos fizeram check-in presencial no local. Troca concluída com sucesso e reputação aumentada!');
+            alert('🎉 PARABÉNS! Ambos os participantes fizeram check-in presencial no local (<500m). Troca concluída e reputação creditada!');
           } else {
-            alert('📍 Check-in registrado via geolocalização com sucesso! Aguardando o outro participante fazer o check-in no local para finalizar a troca.');
+            alert('📍 Check-in por geolocalização registrado! Aguardando o check-in do outro usuário no local para finalizar a troca.');
           }
           loadTrades();
         } else {
-          alert(data.error || 'Erro ao realizar check-in presencial.');
+          alert(data.error || 'Erro ao registrar check-in presencial.');
         }
       } catch (e) {
         alert('Erro de conexão ao enviar check-in.');
@@ -253,51 +373,26 @@
         return;
       }
 
-      // Tenta obter posição real do navegador via navigator.geolocation
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           sendCheckInRequest(id, pos.coords.latitude, pos.coords.longitude);
         },
         (err) => {
-          console.warn('Geolocation error:', err);
-          // Em ambientes de teste/desktop sem GPS físico, oferece fallback para o ponto do encontro
           const useDemo = confirm(
-            '⚠️ Não foi possível obter o sinal de GPS preciso do navegador (ou permissão negada).\n\n' +
-            'Deseja simular o check-in no ponto de encontro marcado (' + (trade && trade.meeting_address ? trade.meeting_address : 'Ponto Selecionado') + ') para demonstração?'
+            '⚠️ Sinal de GPS do navegador indisponível ou permissão negada no desktop.\n\n' +
+            'Deseja simular o check-in no ponto de encontro marcado (' + (trade && trade.meeting_address ? trade.meeting_address : 'Ponto Homologado') + ') para demonstração do algoritmo de Haversine?'
           );
           if (useDemo && trade && trade.meeting_lat && trade.meeting_lng) {
             sendCheckInRequest(id, trade.meeting_lat, trade.meeting_lng);
           }
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
       );
     }
 
-    function showQR(tradeId, qrData) {
-      document.getElementById('qrCode').innerHTML = '';
-      const m = document.getElementById('qrModal');
-      m.style.display = 'flex';
-      m.classList.add('open');
-      m.classList.add('active');
-      const qrContent = qrData || JSON.stringify({ tradeId, timestamp: new Date().toISOString() });
-      try {
-        new QRCode(document.getElementById('qrCode'), {
-          text: qrContent,
-          width: 250, height: 250,
-          colorDark: '#2D7D32', colorLight: '#ffffff'
-        });
-      } catch(e) {
-        document.getElementById('qrCode').innerHTML = `<p class="text-muted">QR Code: ${qrContent}</p>`;
-      }
-    }
-
-    function closeQRModal() {
-      const m = document.getElementById('qrModal');
-      m.style.display = 'none';
-      m.classList.remove('open');
-      m.classList.remove('active');
-    }
-    document.getElementById('qrModal').addEventListener('click', (e) => { if(e.target === document.getElementById('qrModal')) closeQRModal(); });
+    document.getElementById('qrModal').addEventListener('click', (e) => { 
+      if(e.target === document.getElementById('qrModal')) closeQRModal(); 
+    });
 
     loadTrades();
   </script>

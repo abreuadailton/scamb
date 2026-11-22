@@ -211,11 +211,8 @@ router.put('/:id/accept', auth, async (req, res) => {
     return res.json({
       success: true,
       data: updated,
-      completed: updated.status === 'completed',
       status: updated.status,
-      message: updated.status === 'completed'
-        ? 'Ambos os participantes fizeram check-in! Troca concluída com sucesso.'
-        : 'Check-in realizado com sucesso! Aguardando o outro participante.'
+      message: 'Troca aceita com sucesso! O QR Code de validação presencial foi gerado.'
     });
   } catch (err) {
     console.error('[trades PUT /:id/accept]', err);
@@ -248,11 +245,8 @@ router.put('/:id/reject', auth, (req, res) => {
     return res.json({
       success: true,
       data: updated,
-      completed: updated.status === 'completed',
       status: updated.status,
-      message: updated.status === 'completed'
-        ? 'Ambos os participantes fizeram check-in! Troca concluída com sucesso.'
-        : 'Check-in realizado com sucesso! Aguardando o outro participante.'
+      message: 'Troca aceita com sucesso! O QR Code de validação presencial foi gerado.'
     });
   } catch (err) {
     console.error('[trades PUT /:id/reject]', err);
@@ -285,11 +279,8 @@ router.put('/:id/cancel', auth, (req, res) => {
     return res.json({
       success: true,
       data: updated,
-      completed: updated.status === 'completed',
       status: updated.status,
-      message: updated.status === 'completed'
-        ? 'Ambos os participantes fizeram check-in! Troca concluída com sucesso.'
-        : 'Check-in realizado com sucesso! Aguardando o outro participante.'
+      message: 'Troca aceita com sucesso! O QR Code de validação presencial foi gerado.'
     });
   } catch (err) {
     console.error('[trades PUT /:id/cancel]', err);
@@ -369,11 +360,8 @@ router.post('/:id/checkin', auth, (req, res) => {
     return res.json({
       success: true,
       data: updated,
-      completed: updated.status === 'completed',
       status: updated.status,
-      message: updated.status === 'completed'
-        ? 'Ambos os participantes fizeram check-in! Troca concluída com sucesso.'
-        : 'Check-in realizado com sucesso! Aguardando o outro participante.'
+      message: 'Troca aceita com sucesso! O QR Code de validação presencial foi gerado.'
     });
   } catch (err) {
     console.error('[trades POST /:id/checkin]', err);
@@ -381,10 +369,10 @@ router.post('/:id/checkin', auth, (req, res) => {
   }
 });
 
-// ─── GET /:id/qrcode — return QR code ────────────────────────────────────────
-router.get('/:id/qrcode', auth, (req, res) => {
+// ─── GET /:id/qrcode — return QR code (generates on demand if missing) ───────
+router.get('/:id/qrcode', auth, async (req, res) => {
   try {
-    const trade = db.prepare('SELECT * FROM trades WHERE id = ?').get(req.params.id);
+    const trade = getTrade(req.params.id);
 
     if (!trade) {
       return res.status(404).json({ success: false, error: 'Troca não encontrada.' });
@@ -394,14 +382,100 @@ router.get('/:id/qrcode', auth, (req, res) => {
       return res.status(403).json({ success: false, error: 'Acesso negado.' });
     }
 
-    if (!trade.qr_code) {
-      return res.status(404).json({ success: false, error: 'QR Code ainda não gerado. Aguarde a aceitação da troca.' });
+    let qrCode = trade.qr_code;
+
+    // If QR code is not generated yet, generate it now
+    if (!qrCode) {
+      const qrPayload = JSON.stringify({
+        swaply_trade_id: trade.id,
+        requester: trade.requester_name,
+        owner: trade.owner_name,
+        offered: trade.item_offered_title,
+        wanted: trade.item_wanted_title,
+        location: trade.meeting_address,
+        created: trade.created_at,
+        auth_hash: Buffer.from(`swaply-${trade.id}-${trade.requester_id}-${trade.owner_id}`).toString('base64')
+      });
+
+      qrCode = await QRCode.toDataURL(qrPayload, {
+        errorCorrectionLevel: 'H',
+        margin: 2,
+        color: { dark: '#4f46e5', light: '#ffffff' },
+        width: 320
+      });
+
+      db.prepare('UPDATE trades SET qr_code = ? WHERE id = ?').run(qrCode, trade.id);
     }
 
-    return res.json({ success: true, data: { qr_code: trade.qr_code } });
+    return res.json({ 
+      success: true, 
+      data: { 
+        qr_code: qrCode,
+        trade_id: trade.id,
+        auth_code: `SWAP-${String(trade.id).padStart(4, '0')}-${trade.requester_id}${trade.owner_id}`
+      } 
+    });
   } catch (err) {
     console.error('[trades GET /:id/qrcode]', err);
     return res.status(500).json({ success: false, error: 'Erro interno do servidor.' });
+  }
+});
+
+// ─── POST /:id/validate-qr — validate QR code at physical meeting ────────────
+router.post('/:id/validate-qr', auth, (req, res) => {
+  try {
+    const trade = getTrade(req.params.id);
+
+    if (!trade) {
+      return res.status(404).json({ success: false, error: 'Troca não encontrada.' });
+    }
+
+    if (trade.requester_id !== req.user.id && trade.owner_id !== req.user.id) {
+      return res.status(403).json({ success: false, error: 'Acesso negado.' });
+    }
+
+    if (trade.status === 'completed') {
+      return res.json({ 
+        success: true, 
+        completed: true,
+        message: 'Esta troca já foi confirmada e concluída com sucesso!' 
+      });
+    }
+
+    if (trade.status !== 'accepted') {
+      return res.status(400).json({ 
+        success: false, 
+        error: `A troca precisa estar aceita para ser autenticada (status atual: ${trade.status}).` 
+      });
+    }
+
+    // Mark trade as completed via QR validation
+    db.prepare(`
+      UPDATE trades 
+      SET status = 'completed', checkin_requester = 1, checkin_owner = 1, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `).run(trade.id);
+
+    // Increase reputation for both participants
+    db.prepare('UPDATE users SET reputation = reputation + 10 WHERE id = ?').run(trade.requester_id);
+    db.prepare('UPDATE users SET reputation = reputation + 10 WHERE id = ?').run(trade.owner_id);
+
+    // Mark items as traded
+    db.prepare("UPDATE items SET status = 'traded' WHERE id = ?").run(trade.item_offered_id);
+    db.prepare("UPDATE items SET status = 'traded' WHERE id = ?").run(trade.item_wanted_id);
+
+    const updated = getTrade(trade.id);
+
+    return res.json({
+      success: true,
+      completed: true,
+      status: 'completed',
+      message: '🎉 QR Code autenticado com sucesso! A entrega presencial foi validada e ambos os usuários ganharam +10 pontos de reputação!',
+      data: updated
+    });
+  } catch (err) {
+    console.error('[trades POST /:id/validate-qr]', err);
+    return res.status(500).json({ success: false, error: 'Erro interno ao validar QR Code.' });
   }
 });
 

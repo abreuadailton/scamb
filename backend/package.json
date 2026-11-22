@@ -1,10 +1,11 @@
 {
-  "name": "ecopermuta-backend",
+  "name": "swaply-backend",
   "version": "1.0.0",
-  "description": "Backend da rede de permutas sustentáveis EcoPermuta",
+  "description": "Backend da rede inteligente de trocas presenciais Swaply",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "seed": "node db/seed.js",
     "dev": "nodemon server.js"
   },
   "dependencies": {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Perfil — EcoPermuta</title>
+  <title>Meu Perfil & Avaliações — Swaply</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,80 +11,154 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="container navbar-inner">
-      <a href="index.html" class="navbar-logo"><i class="fas fa-leaf"></i> EcoPermuta</a>
-      <button class="navbar-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <i class="fas fa-arrows-rotate"></i> Swaply
+      </a>
+      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
       <ul class="navbar-links" id="navLinks">
-        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
-        <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="my-items.html"><i class="fas fa-box"></i> Meus Itens</a></li>
+        <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
+        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
         <li><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
-        <li><a href="profile.html" class="active"><i class="fas fa-user"></i> Perfil</a></li>
+        <li><a href="profile.html" class="active"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
       </ul>
     </div>
   </nav>
 
-  <main class="container profile-main">
+  <main class="container profile-main" style="padding-top: calc(var(--navbar-h) + 24px); padding-bottom: 60px;">
     <div id="loadingState" class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
-    <div id="profileContent" style="display:none;">
+    
+    <div id="profileContent" style="display:none;" class="fade-in">
 
-      <!-- PERFIL HEADER -->
-      <div class="profile-hero card">
-        <div class="profile-avatar" id="profileAvatar">
-          <i class="fas fa-user fa-3x"></i>
+      <!-- PERFIL HERO -->
+      <div class="profile-hero card" style="display:flex; align-items:center; gap:28px; padding:32px; border-radius:24px; border:1px solid var(--color-border); background:#ffffff; box-shadow:var(--shadow-md); margin-bottom:28px; flex-wrap:wrap;">
+        <div class="profile-avatar" id="profileAvatar" style="width:100px; height:100px; border-radius:50%; overflow:hidden; border:3px solid var(--color-primary); background:#eef2ff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <i class="fas fa-user fa-3x" style="color:var(--color-primary);"></i>
         </div>
-        <div class="profile-hero-info">
-          <h1 id="profileName">...</h1>
-          <div class="reputation-stars" id="profileStars"></div>
-          <p class="text-muted" id="profileBio"></p>
-          <p class="text-muted"><i class="fas fa-calendar"></i> Membro desde <span id="profileSince"></span></p>
+        <div class="profile-hero-info" style="flex:1; min-width:260px;">
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <h1 id="profileName" style="font-family:var(--font-heading); font-size:1.85rem; font-weight:800; color:#0f172a; margin:0;">...</h1>
+            <span class="badge" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; font-weight:700;">
+              <i class="fas fa-shield-check"></i> Membro Verificado
+            </span>
+          </div>
+          <div class="reputation-stars" id="profileStars" style="margin:8px 0; font-size:1.15rem; color:#f59e0b;"></div>
+          <p class="text-muted" id="profileBio" style="font-size:0.95rem; color:#475569; margin-bottom:8px; line-height:1.5;"></p>
+          <p class="text-muted" style="font-size:0.85rem; color:#64748b; margin:0;">
+            <i class="fas fa-calendar-alt"></i> Membro na comunidade Swaply desde <span id="profileSince"></span>
+          </p>
         </div>
       </div>
 
       <!-- EDITAR PERFIL -->
-      <div class="profile-edit card">
-        <h2><i class="fas fa-edit"></i> Editar Perfil</h2>
-        <div id="profileSuccess" class="form-success" style="display:none;"></div>
-        <div id="profileError" class="form-error" style="display:none;"></div>
+      <div class="profile-edit card" style="padding:28px; border-radius:20px; border:1px solid var(--color-border); margin-bottom:28px;">
+        <h2 style="font-family:var(--font-heading); font-size:1.3rem; font-weight:800; color:#0f172a; margin-bottom:20px;">
+          <i class="fas fa-user-pen" style="color:var(--color-primary);"></i> Dados Pessoais & Foto
+        </h2>
+        <div id="profileSuccess" class="form-success" style="display:none; padding:12px 16px; background:#ecfdf5; color:#065f46; border-radius:10px; margin-bottom:16px;"></div>
+        <div id="profileError" class="form-error" style="display:none; padding:12px 16px; background:#fef2f2; color:#991b1b; border-radius:10px; margin-bottom:16px;"></div>
+        
         <form id="profileForm">
           <div class="grid-2">
             <div class="form-group">
-              <label><i class="fas fa-user"></i> Nome completo *</label>
-              <input type="text" id="editName" class="form-control" required>
+              <label style="font-weight:600; font-size:0.9rem; color:#334155;"><i class="fas fa-user"></i> Nome completo *</label>
+              <input type="text" id="editName" class="form-control" required style="margin-top:6px;">
             </div>
             <div class="form-group">
-              <label><i class="fas fa-camera"></i> Foto de perfil</label>
-              <div style="display:flex; align-items:center; gap:12px; margin-top:4px;">
-                <div style="width:50px; height:50px; border-radius:50%; overflow:hidden; border:2px solid #2D7D32; background:#f0f0f0; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <label style="font-weight:600; font-size:0.9rem; color:#334155;"><i class="fas fa-camera"></i> Foto de perfil</label>
+              <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
+                <div style="width:48px; height:48px; border-radius:50%; overflow:hidden; border:2px solid var(--color-primary); background:#f1f5f9; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                   <img id="avatarPreviewImg" src="" alt="Avatar" style="width:100%; height:100%; object-fit:cover; display:none;">
-                  <i id="avatarPreviewIcon" class="fas fa-user" style="color:#888; font-size:20px;"></i>
+                  <i id="avatarPreviewIcon" class="fas fa-user" style="color:#94a3b8; font-size:18px;"></i>
                 </div>
                 <div>
                   <label class="btn btn-secondary btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; margin:0;">
-                    <i class="fas fa-folder-open"></i> Selecionar foto do computador
+                    <i class="fas fa-upload"></i> Selecionar foto do computador
                     <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarFile(event)">
                   </label>
-                  <p id="avatarFileName" class="text-muted" style="margin:4px 0 0 0; font-size:0.8rem;"></p>
+                  <p id="avatarFileName" class="text-muted" style="margin:4px 0 0 0; font-size:0.8rem; color:#64748b;"></p>
                 </div>
               </div>
               <input type="hidden" id="editAvatar">
             </div>
           </div>
-          <div class="form-group">
-            <label><i class="fas fa-comment"></i> Bio</label>
-            <textarea id="editBio" class="form-control" rows="3" placeholder="Fale sobre você e o que gosta de trocar..."></textarea>
+          <div class="form-group" style="margin-top:16px;">
+            <label style="font-weight:600; font-size:0.9rem; color:#334155;"><i class="fas fa-comment"></i> Bio / O que você gosta de trocar</label>
+            <textarea id="editBio" class="form-control" rows="3" placeholder="Fale sobre seus gostos, hobbies e os itens que você procura trocar..." style="margin-top:6px;"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary" id="saveProfileBtn">
-            <span id="saveText"><i class="fas fa-save"></i> Salvar alterações</span>
+          <button type="submit" class="btn btn-primary" id="saveProfileBtn" style="margin-top:16px;">
+            <span id="saveText"><i class="fas fa-check"></i> Salvar alterações</span>
             <span id="saveLoading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Salvando...</span>
           </button>
         </form>
       </div>
 
-      <!-- HISTÓRICO DE TROCAS -->
-      <div class="profile-history">
-        <h2><i class="fas fa-history"></i> Histórico de Trocas Concluídas</h2>
+      <!-- SEÇÃO DE AVALIAÇÕES E NOTAS (REVIEWS & RATINGS) -->
+      <div class="reviews-section card" style="padding:32px; border-radius:24px; border:1px solid var(--color-border); margin-bottom:28px;">
+        <div class="reviews-header" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:24px;">
+          <div>
+            <h2 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:800; color:#0f172a; margin:0 0 4px;">
+              <i class="fas fa-star" style="color:#f59e0b;"></i> Reputação, Notas & Avaliações
+            </h2>
+            <p style="font-size:0.9rem; color:#64748b; margin:0;">Comentários e notas registradas por outros usuários após trocas concluídas</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openReviewModal()">
+            <i class="fas fa-plus-circle"></i> Deixar Avaliação / Nota
+          </button>
+        </div>
+
+        <!-- Rating overview card -->
+        <div class="rating-overview" style="display:flex; align-items:center; gap:32px; padding:24px; background:#f8fafc; border-radius:18px; border:1px solid #e2e8f0; margin-bottom:28px; flex-wrap:wrap;">
+          <div class="rating-big-score" style="text-align:center; min-width:140px;">
+            <div class="score-num" id="overviewAverage" style="font-family:var(--font-heading); font-size:3.5rem; font-weight:900; color:#0f172a; line-height:1;">5.0</div>
+            <div class="stars" id="overviewStars" style="color:#f59e0b; font-size:1.2rem; margin:6px 0;">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <div class="count-label" id="overviewCount" style="font-size:0.85rem; color:#64748b; font-weight:600;">3 avaliações</div>
+          </div>
+
+          <!-- Rating breakdown bars -->
+          <div class="rating-bars-wrap" style="flex:1; min-width:240px; display:flex; flex-direction:column; gap:8px;">
+            <div class="rating-bar-row" style="display:flex; align-items:center; gap:10px; font-size:0.85rem; color:#475569;">
+              <span style="width:40px; font-weight:600;">5 ★</span>
+              <div class="rating-bar-track" style="flex:1; height:8px; background:#e2e8f0; border-radius:99px; overflow:hidden;">
+                <div class="rating-bar-fill" id="bar5" style="width:100%; height:100%; background:#f59e0b; border-radius:99px;"></div>
+              </div>
+              <span class="rating-bar-count" id="count5" style="width:24px; font-weight:700;">3</span>
+            </div>
+            <div class="rating-bar-row" style="display:flex; align-items:center; gap:10px; font-size:0.85rem; color:#475569;">
+              <span style="width:40px; font-weight:600;">4 ★</span>
+              <div class="rating-bar-track" style="flex:1; height:8px; background:#e2e8f0; border-radius:99px; overflow:hidden;">
+                <div class="rating-bar-fill" id="bar4" style="width:0%; height:100%; background:#f59e0b; border-radius:99px;"></div>
+              </div>
+              <span class="rating-bar-count" id="count4" style="width:24px; font-weight:700;">0</span>
+            </div>
+            <div class="rating-bar-row" style="display:flex; align-items:center; gap:10px; font-size:0.85rem; color:#475569;">
+              <span style="width:40px; font-weight:600;">3 ★</span>
+              <div class="rating-bar-track" style="flex:1; height:8px; background:#e2e8f0; border-radius:99px; overflow:hidden;">
+                <div class="rating-bar-fill" id="bar3" style="width:0%; height:100%; background:#f59e0b; border-radius:99px;"></div>
+              </div>
+              <span class="rating-bar-count" id="count3" style="width:24px; font-weight:700;">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Comentários / Reviews -->
+        <div id="reviewsList" class="reviews-list">
+          <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- HISTÓRICO DE TROCAS CONCLUÍDAS -->
+      <div class="profile-history card" style="padding:28px; border-radius:20px; border:1px solid var(--color-border);">
+        <h2 style="font-family:var(--font-heading); font-size:1.3rem; font-weight:800; color:#0f172a; margin-bottom:18px;">
+          <i class="fas fa-clock-rotate-left" style="color:var(--color-primary);"></i> Histórico de Trocas Realizadas
+        </h2>
         <div id="tradeHistory">
           <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
         </div>
@@ -93,26 +167,85 @@
     </div>
   </main>
 
+  <!-- MODAL DE DEIXAR AVALIAÇÃO / NOTA -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal fade-in-up" style="max-width:520px; border-radius:24px;">
+      <div class="modal__header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <h3 style="font-family:var(--font-heading); font-size:1.35rem; font-weight:800; color:#0f172a; margin:0;">
+          <i class="fas fa-star" style="color:#f59e0b;"></i> Deixar Avaliação
+        </h3>
+        <button class="modal-close" onclick="closeReviewModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+
+      <div id="reviewSuccess" class="form-success" style="display:none; padding:12px; background:#ecfdf5; color:#065f46; border-radius:10px; margin-bottom:16px;"></div>
+      <div id="reviewError" class="form-error" style="display:none; padding:12px; background:#fef2f2; color:#991b1b; border-radius:10px; margin-bottom:16px;"></div>
+
+      <form id="reviewForm">
+        <div class="form-group" style="margin-bottom:18px;">
+          <label style="font-weight:700; color:#334155; display:block; margin-bottom:8px;">Quem você deseja avaliar?</label>
+          <select id="reviewTargetUser" class="form-control" required style="padding:10px 14px; border-radius:10px;">
+            <!-- Opções populadas via JS -->
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:18px;">
+          <label style="font-weight:700; color:#334155; display:block; margin-bottom:8px;">Sua nota (1 a 5 estrelas)</label>
+          <div id="starPicker" style="display:flex; gap:8px; font-size:1.8rem; color:#cbd5e1; cursor:pointer;">
+            <i class="fas fa-star" data-val="1"></i>
+            <i class="fas fa-star" data-val="2"></i>
+            <i class="fas fa-star" data-val="3"></i>
+            <i class="fas fa-star" data-val="4"></i>
+            <i class="fas fa-star" data-val="5"></i>
+          </div>
+          <input type="hidden" id="reviewScore" value="5">
+        </div>
+
+        <div class="form-group" style="margin-bottom:20px;">
+          <label style="font-weight:700; color:#334155; display:block; margin-bottom:8px;">Seu comentário / depoimento</label>
+          <textarea id="reviewComment" class="form-control" rows="4" placeholder="Descreva como foi a experiência de troca presencial, pontualidade, simpatia e qualidade do item..." required style="padding:12px; border-radius:10px;"></textarea>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="submitReviewBtn">
+            <i class="fas fa-paper-plane"></i> Publicar Avaliação
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
+    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('swaply_user') || localStorage.getItem('ecotroca_user') || localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
 
     if (!getToken()) window.location.href = 'login.html';
 
     document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
-    function logout() { localStorage.removeItem('ecopermuta_token'); localStorage.removeItem('ecopermuta_user'); window.location.href = 'login.html'; }
+    function logout() { 
+      localStorage.removeItem('swaply_token'); 
+      localStorage.removeItem('swaply_user');
+      localStorage.removeItem('ecotroca_token'); 
+      localStorage.removeItem('ecotroca_user');
+      localStorage.removeItem('ecopermuta_token'); 
+      localStorage.removeItem('ecopermuta_user'); 
+      window.location.href = 'login.html'; 
+    }
 
     function renderStars(rep) {
-      const full = Math.min(Math.floor((rep||0) / 20), 5);
-      return Array.from({length:5}, (_,i) => `<i class="fa${i<full?'s':'r'} fa-star"></i>`).join('') + ` <span style="color:#616161;font-size:0.85rem;">(${rep||0} pts)</span>`;
+      const full = Math.min(Math.max(Math.floor((rep || 0) / 20), 1), 5);
+      return Array.from({length:5}, (_,i) => `<i class="fa${i<full?'s':'r'} fa-star"></i>`).join('') + ` <span style="color:#64748b; font-size:0.9rem; font-weight:600;">(${rep||0} pts de reputação)</span>`;
     }
 
     function formatDate(ts) {
+      if (!ts) return '—';
       return new Date(ts).toLocaleDateString('pt-BR', { year:'numeric', month:'long', day:'numeric' });
     }
 
     let selectedAvatarFile = null;
+    let currentUserData = null;
 
     function handleAvatarFile(e) {
       const file = e.target.files[0];
@@ -135,33 +268,93 @@
       try {
         const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() });
         if (!res.ok) throw new Error();
-        const me = await res.json();
-        localStorage.setItem('ecopermuta_user', JSON.stringify(me));
+        currentUserData = await res.json();
+        localStorage.setItem('swaply_user', JSON.stringify(currentUserData));
 
-        document.getElementById('profileName').textContent = me.name;
-        document.getElementById('profileStars').innerHTML = renderStars(me.reputation);
-        document.getElementById('profileBio').textContent = me.bio || 'Sem bio ainda.';
-        document.getElementById('profileSince').textContent = formatDate(me.created_at);
+        document.getElementById('profileName').textContent = currentUserData.name;
+        document.getElementById('profileStars').innerHTML = renderStars(currentUserData.reputation);
+        document.getElementById('profileBio').textContent = currentUserData.bio || 'Membro ativo na comunidade de trocas sustentáveis.';
+        document.getElementById('profileSince').textContent = formatDate(currentUserData.created_at);
 
-        if (me.avatar_url) {
-          document.getElementById('profileAvatar').innerHTML = `<img src="${me.avatar_url}" alt="Avatar" onerror="this.parentNode.innerHTML='<i class=\\'fas fa-user fa-3x\\'></i>'">`;
+        if (currentUserData.avatar_url) {
+          document.getElementById('profileAvatar').innerHTML = `<img src="${currentUserData.avatar_url}" alt="Avatar" style="width:100%; height:100%; object-fit:cover;">`;
           const preview = document.getElementById('avatarPreviewImg');
           const icon = document.getElementById('avatarPreviewIcon');
           if (preview) {
-            preview.src = me.avatar_url;
+            preview.src = currentUserData.avatar_url;
             preview.style.display = 'block';
           }
           if (icon) icon.style.display = 'none';
         }
 
-        document.getElementById('editName').value = me.name || '';
-        document.getElementById('editBio').value = me.bio || '';
-        document.getElementById('editAvatar').value = me.avatar_url || '';
+        document.getElementById('editName').value = currentUserData.name || '';
+        document.getElementById('editBio').value = currentUserData.bio || '';
+        document.getElementById('editAvatar').value = currentUserData.avatar_url || '';
 
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('profileContent').style.display = 'block';
+
+        // Carrega avaliações para o usuário
+        loadReviews(currentUserData.id);
+
       } catch(e) {
-        document.getElementById('loadingState').innerHTML = '<p class="text-muted">Erro ao carregar perfil. <a href="login.html">Fazer login</a></p>';
+        document.getElementById('loadingState').innerHTML = '<p class="text-muted">Sessão expirada. <a href="login.html" class="btn btn-primary btn-sm">Fazer login</a></p>';
+      }
+    }
+
+    async function loadReviews(userId) {
+      try {
+        const res = await fetch(`${API_BASE}/reviews/user/${userId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('overviewAverage').textContent = (data.average || 5.0).toFixed(1);
+        document.getElementById('overviewCount').textContent = `${data.count || 0} avaliações verificadas`;
+
+        const starsCount = Math.round(data.average || 5);
+        document.getElementById('overviewStars').innerHTML = Array.from({length:5}, (_,i) => `<i class="fa${i<starsCount?'s':'r'} fa-star"></i>`).join('');
+
+        // Atualiza barras
+        const total = Math.max(data.count, 1);
+        const dist = data.distribution || { 5:0, 4:0, 3:0 };
+        document.getElementById('bar5').style.width = `${((dist[5] || 0) / total) * 100}%`;
+        document.getElementById('count5').textContent = dist[5] || 0;
+        document.getElementById('bar4').style.width = `${((dist[4] || 0) / total) * 100}%`;
+        document.getElementById('count4').textContent = dist[4] || 0;
+        document.getElementById('bar3').style.width = `${((dist[3] || 0) / total) * 100}%`;
+        document.getElementById('count3').textContent = dist[3] || 0;
+
+        const listEl = document.getElementById('reviewsList');
+        if (!data.reviews || data.reviews.length === 0) {
+          listEl.innerHTML = '<p class="text-muted" style="text-align:center; padding:20px 0;">Nenhuma avaliação registrada ainda. Realize trocas presenciais para receber avaliações!</p>';
+          return;
+        }
+
+        listEl.innerHTML = data.reviews.map(r => `
+          <div class="review-card fade-in" style="padding:20px; border-radius:16px; border:1px solid #e2e8f0; background:#ffffff; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <img src="${r.rater_avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}" class="review-author-img" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #e2e8f0;">
+                <div>
+                  <div style="font-family:var(--font-heading); font-weight:700; color:#0f172a; font-size:1rem;">${r.rater_name || 'Usuário Swaply'}</div>
+                  <div style="font-size:0.8rem; color:#64748b;">${formatDate(r.created_at)}</div>
+                </div>
+              </div>
+              <span class="review-badge-verified" style="display:inline-flex; align-items:center; gap:4px; background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:99px;">
+                <i class="fas fa-check-circle"></i> Troca Presencial Verificada
+              </span>
+            </div>
+            <div style="color:#f59e0b; font-size:1rem; margin-bottom:8px;">
+              ${Array.from({length:5}, (_,i) => `<i class="fa${i<r.score?'s':'r'} fa-star"></i>`).join('')}
+            </div>
+            <p style="font-size:0.95rem; color:#334155; line-height:1.55; margin:0;">
+              "${r.comment}"
+            </p>
+          </div>
+        `).join('');
+
+      } catch(e) {
+        console.error('Erro ao carregar avaliações:', e);
       }
     }
 
@@ -174,20 +367,20 @@
         const completed = arr.filter(t => t.status === 'completed');
 
         if (completed.length === 0) {
-          document.getElementById('tradeHistory').innerHTML = '<p class="text-muted">Nenhuma troca concluída ainda. <a href="catalog.html">Explore o catálogo!</a></p>';
+          document.getElementById('tradeHistory').innerHTML = '<p class="text-muted">Nenhuma troca concluída ainda. <a href="catalog.html">Explore o catálogo e faça propostas!</a></p>';
           return;
         }
 
         document.getElementById('tradeHistory').innerHTML = completed.map(t => `
-          <div class="card card-trade-history fade-in">
-            <div class="trade-history-items">
-              <span><i class="fas fa-box"></i> ${t.offered_title || t.item_offered_title || 'Item'}</span>
-              <i class="fas fa-exchange-alt" style="color:#2D7D32"></i>
-              <span><i class="fas fa-box-open"></i> ${t.wanted_title || t.item_wanted_title || 'Item'}</span>
+          <div class="card card-trade-history fade-in" style="padding:16px 20px; border-radius:14px; border:1px solid #e2e8f0; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px; font-weight:600; font-size:0.95rem; color:#0f172a;">
+              <span><i class="fas fa-box" style="color:var(--color-primary);"></i> ${t.offered_title || t.item_offered_title || 'Item ofertado'}</span>
+              <i class="fas fa-arrows-rotate" style="color:#6366f1;"></i>
+              <span><i class="fas fa-box-open" style="color:#06b6d4;"></i> ${t.wanted_title || t.item_wanted_title || 'Item recebido'}</span>
             </div>
-            <div class="trade-history-meta">
-              <span class="badge badge-status--done">Concluída</span>
-              <span class="text-muted"><i class="fas fa-calendar"></i> ${t.meeting_date ? formatDate(t.meeting_date) : '—'}</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="badge" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; font-weight:700;"><i class="fas fa-check"></i> Concluída Presencialmente</span>
+              <span class="text-muted" style="font-size:0.85rem;"><i class="fas fa-calendar"></i> ${formatDate(t.meeting_date || t.updated_at)}</span>
             </div>
           </div>
         `).join('');
@@ -195,6 +388,100 @@
         document.getElementById('tradeHistory').innerHTML = '<p class="text-muted">Erro ao carregar histórico.</p>';
       }
     }
+
+    // Modal de Avaliação & Star Picker
+    const starPicker = document.getElementById('starPicker');
+    let selectedScore = 5;
+
+    function renderStarPicker(score) {
+      selectedScore = score;
+      document.getElementById('reviewScore').value = score;
+      starPicker.querySelectorAll('i').forEach(star => {
+        const val = Number(star.getAttribute('data-val'));
+        star.style.color = val <= score ? '#f59e0b' : '#cbd5e1';
+      });
+    }
+
+    starPicker.querySelectorAll('i').forEach(star => {
+      star.addEventListener('click', () => {
+        renderStarPicker(Number(star.getAttribute('data-val')));
+      });
+    });
+
+    renderStarPicker(5);
+
+    async function openReviewModal() {
+      // Popula lista de usuários disponíveis para avaliar
+      const select = document.getElementById('reviewTargetUser');
+      select.innerHTML = '<option value="">Carregando usuários...</option>';
+
+      try {
+        const res = await fetch(`${API_BASE}/items`);
+        const items = await res.json();
+        const usersMap = new Map();
+        items.forEach(it => {
+          if (it.user_id && it.owner_name && it.user_id !== currentUserData.id) {
+            usersMap.set(it.user_id, it.owner_name);
+          }
+        });
+
+        select.innerHTML = '';
+        usersMap.forEach((name, id) => {
+          select.innerHTML += `<option value="${id}">${name}</option>`;
+        });
+
+        if (usersMap.size === 0) {
+          select.innerHTML = `<option value="${currentUserData.id === 13 ? 14 : 13}">Carlos Oliveira (Demonstração)</option>`;
+        }
+      } catch(e) {
+        select.innerHTML = `<option value="14">Carlos Oliveira</option>`;
+      }
+
+      document.getElementById('reviewModal').classList.add('open');
+      document.getElementById('reviewModal').style.display = 'flex';
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.remove('open');
+      document.getElementById('reviewModal').style.display = 'none';
+    }
+
+    document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const rated_id = document.getElementById('reviewTargetUser').value;
+      const score = Number(document.getElementById('reviewScore').value);
+      const comment = document.getElementById('reviewComment').value.trim();
+
+      const successEl = document.getElementById('reviewSuccess');
+      const errorEl = document.getElementById('reviewError');
+      successEl.style.display = 'none';
+      errorEl.style.display = 'none';
+
+      try {
+        const res = await fetch(`${API_BASE}/reviews`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ rated_id, score, comment })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          successEl.textContent = '🎉 Avaliação registrada com sucesso! A reputação do usuário foi atualizada.';
+          successEl.style.display = 'block';
+          setTimeout(() => {
+            closeReviewModal();
+            loadReviews(currentUserData.id);
+            loadProfile();
+          }, 1200);
+        } else {
+          errorEl.textContent = data.error || 'Erro ao registrar avaliação.';
+          errorEl.style.display = 'block';
+        }
+      } catch(err) {
+        errorEl.textContent = 'Erro de conexão com o servidor.';
+        errorEl.style.display = 'block';
+      }
+    });
 
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -212,7 +499,6 @@
       document.getElementById('saveProfileBtn').disabled = true;
 
       try {
-        // Se o usuário selecionou um arquivo de imagem, envia para upload
         if (selectedAvatarFile) {
           const formData = new FormData();
           formData.append('avatar', selectedAvatarFile);
@@ -237,7 +523,7 @@
         if (res.ok) {
           successEl.textContent = 'Perfil atualizado com sucesso!';
           successEl.style.display = 'block';
-          localStorage.setItem('ecopermuta_user', JSON.stringify(data.data || data));
+          localStorage.setItem('swaply_user', JSON.stringify(data.data || data));
           loadProfile();
         } else {
           errorEl.textContent = data.error || 'Erro ao atualizar perfil.';
@@ -245,31 +531,6 @@
         }
       } catch(err) {
         errorEl.textContent = 'Erro de conexão com o servidor.';
-        errorEl.style.display = 'block';
-      }
-
-      document.getElementById('saveText').style.display = 'inline';
-      document.getElementById('saveLoading').style.display = 'none';
-      document.getElementById('saveProfileBtn').disabled = false;
-    });
-
-        if (res.ok) {
-          successEl.textContent = 'Perfil atualizado com sucesso!';
-          successEl.style.display = 'block';
-          if (data.user) {
-            localStorage.setItem('ecopermuta_user', JSON.stringify(data.user));
-            document.getElementById('profileName').textContent = data.user.name;
-            document.getElementById('profileBio').textContent = data.user.bio || 'Sem bio ainda.';
-            if (data.user.avatar_url) {
-              document.getElementById('profileAvatar').innerHTML = `<img src="${data.user.avatar_url}" alt="Avatar">`;
-            }
-          }
-        } else {
-          errorEl.textContent = data.error || 'Erro ao salvar perfil.';
-          errorEl.style.display = 'block';
-        }
-      } catch(err) {
-        errorEl.textContent = 'Erro de conexão.';
         errorEl.style.display = 'block';
       }
 

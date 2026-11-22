@@ -1,185 +1,141 @@
-# 🌿 EcoPermuta — Rede Sustentável de Permutas
+# ⚡ Swaply — Rede Inteligente de Trocas: Do Virtual ao Presencial
 
-> **Do virtual ao presencial, trocas que fazem sentido.**
+> **"Troque de tudo: conecte no virtual, encontre no presencial."**
 
-EcoPermuta é uma plataforma web que conecta pessoas que desejam trocar objetos sem envolvimento de dinheiro, unindo o poder do ambiente virtual com encontros presenciais em pontos seguros.
-
----
-
-## 📋 Sobre o Projeto
-
-**Tema:** Do Virtual ao Presencial  
-**Conceito:** Usuários catalogam itens parados em casa (livros, jogos, ferramentas, mudas de plantas, roupas) para troca sem envolvimento de dinheiro, marcando a entrega em pontos físicos seguros (parques, estações de metrô, cafeterias parceiras ou eventos mensais).
-
-**Como o virtual potencializa o presencial:** Elimina a frustração de ir a uma feira de trocas sem saber o que vai encontrar. O usuário já chega no encontro presencial com o "match" feito e o item reservado.
+O **Swaply** é uma plataforma web completa desenvolvida com **Node.js, Express, SQLite nativo, HTML5, CSS3 moderno e Vanilla JavaScript**. Ela conecta pessoas para a troca direta de quaisquer objetos (games, livros, eletrônicos, instrumentos musicais, ferramentas, roupas, plantas e artigos para casa) sem envolver dinheiro, combinando a agilidade e conveniência do ambiente virtual com encontros seguros no mundo físico.
 
 ---
 
-## ✨ Diferenciais Técnicos
+## 🎯 Tema e Proposta: "Do Virtual ao Presencial"
 
-### 🗺️ Integração com Mapas (Leaflet.js)
-- Mapa interativo mostrando todos os pontos de troca seguros na cidade
-- Itens disponíveis georreferenciados no mapa
-- Leaflet.js gratuito e leve, sem custos de API
+- **Tema:** *Do Virtual ao Presencial*
+- **Fundamento conceitual:** O virtual não é o oposto do real — ele é um **potencializador**. Em feiras de troca tradicionais, as pessoas saem de casa sem saber se haverá alguém interessado no que levaram. No Swaply:
+  1. O **match é realizado virtualmente**: o usuário encontra o item desejado, analisa fotos em alta resolução e o estado de conservação.
+  2. O item é **reservado com garantia**, evitando deslocamentos inúteis.
+  3. O chat interno permite alinhar o horário e escolher um ponto físico seguro pré-cadastrado.
+  4. O encontro físico é **validado por tecnologia** (QR Code + GPS), criando um ciclo de reputação real.
 
-### 📍 Check-in por Geolocalização
-- Sistema de check-in usando `navigator.geolocation` nativo do navegador
-- Validação de proximidade (raio de 500 metros do ponto de encontro)
-- Apenas quando ambos os usuários fazem check-in a troca é confirmada
+---
 
-### 📱 Geração de QR Code
-- QR Code único gerado para cada troca aceita
-- Contém dados criptografados: IDs, itens, participantes, timestamp
-- Usado para validar a troca no encontro físico
-- Gerado no backend com a biblioteca `qrcode`
+## ✨ Os 3 Diferenciais Tecnológicos Obrigatórios
+
+### 1. 🗺️ Integração com Mapas Interativos (Leaflet.js + OpenStreetMap)
+- Mapeamento geográfico gratuito e leve dos pontos seguros homologados em São Paulo (MASP, Estação Sé, Conjunto Nacional / Livraria Cultura, Parque Ibirapuera, Parque Villa-Lobos).
+- Marcador estilizado de **Casinha / Ponto Seguro** (`<div class="spot-marker-pin">`) com popups contendo foto, endereço, horários de funcionamento e itens próximos.
+- Marcador animado de **Bonequinho "Você está aqui!"** (`<div class="user-marker-pin">`) com pulso de radar.
+- **Interatividade instantânea:** ao clicar em qualquer local do mapa, o bonequinho se desloca e a distância real até o ponto de troca mais próximo é calculada e informada em tempo real.
+
+### 2. 📱 Passaporte Digital com QR Code de Autenticação
+- Toda troca aceita gera automaticamente um **Voucher / Passaporte Digital com QR Code** criptografado com hash de segurança (`SWAP-0001-...`).
+- No encontro presencial, a parte que entrega o item apresenta o QR Code e o destinatário pode validar a retirada.
+- Botão **"Validar / Simular Leitura do QR Code"** que consome a API `POST /api/trades/:id/validate-qr`, autentica a transação presencial, conclui a troca e credita **+10 pontos de reputação** para ambos os participantes.
+
+### 3. 📍 Check-in por Geolocalização Real (`navigator.geolocation`)
+- Utiliza a API nativa do navegador para capturar as coordenadas de latitude/longitude do usuário.
+- O backend calcula a distância física exata até o ponto de encontro seguro utilizando a **Fórmula de Haversine**.
+- Valida tolerância de proximidade de até **500 metros** do local acordado.
+- Somente quando ambos atestam presença física, a troca é formalizada.
+
+---
+
+## ⭐ Sistema de Reputação, Avaliações e Notas (Reviews)
+
+- Pontuação cumulativa de reputação exibida no perfil e nos anúncios.
+- Média geral de notas (ex: `5.0 ★★★★★`) e gráfico de distribuição por estrelas (5★, 4★, 3★...).
+- **Depoimentos e comentários detalhados** de outros membros com selo *"Troca Presencial Verificada"*.
+- Modal interativo para registrar novas avaliações com seleção de estrelas (1 a 5) e comentário em texto (`POST /api/reviews`).
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-### Frontend
-- HTML5 semântico
-- CSS3 com variáveis e design responsivo
-- JavaScript ES6+ (Vanilla)
-- **Leaflet.js** — mapas interativos
-- **QRCode.js** — renderização de QR Codes
-- Font Awesome 6 — ícones
-
-### Backend
-- **Node.js** com **Express.js**
-- **SQLite** (via better-sqlite3) — banco de dados leve e portátil
-- **JWT** — autenticação stateless
-- **bcryptjs** — hash seguro de senhas
-- **qrcode** — geração de QR Codes
-- **multer** — upload de imagens
+| Camada | Tecnologias Utilizadas |
+|---|---|
+| **Front-end** | HTML5 Semântico, CSS3 Moderno (Design Tokens, Glassmorphism, paleta Electric Indigo, Violet & Coral), Tipografia Google Fonts (Outfit & Plus Jakarta Sans), Vanilla JavaScript (ES6+), Leaflet.js, QRCode.js, Font Awesome 6 |
+| **Back-end** | Node.js, Express.js REST API JSON, Multer (upload local de fotos de itens e avatares), QRCode generator |
+| **Banco de Dados** | SQLite nativo via `node:sqlite` (`DatabaseSync`), sem necessidade de compiladores externos de C++ |
+| **Autenticação & Segurança** | JWT (JSON Web Tokens) stateless, Bcrypt.js (hash de senhas), middleware `authMiddleware` em todas as rotas privadas |
 
 ---
 
-## 📁 Estrutura do Projeto
+## 👥 Contas de Demonstração (Prontas com 1 Clique)
 
-```
-ecopermuta/
-├── backend/
-│   ├── server.js              # Servidor principal Express
-│   ├── package.json
-│   ├── .env                   # Variáveis de ambiente
-│   ├── db/
-│   │   └── database.js        # Configuração SQLite + schema
-│   ├── middleware/
-│   │   └── auth.js            # Middleware de autenticação JWT
-│   └── routes/
-│       ├── auth.js            # Rotas de autenticação
-│       ├── items.js           # CRUD de itens
-│       ├── trades.js          # Sistema de trocas + QR Code + Check-in
-│       ├── messages.js        # Chat entre usuários
-│       └── exchangepoints.js  # Pontos de troca
-└── frontend/
-    ├── index.html             # Landing page
-    ├── login.html             # Login
-    ├── register.html          # Cadastro
-    ├── dashboard.html         # Dashboard do usuário
-    ├── catalog.html           # Catálogo de itens
-    ├── item-detail.html       # Detalhe do item
-    ├── my-items.html          # Gerenciar meus itens
-    ├── trades.html            # Minhas trocas
-    ├── chat.html              # Chat por troca
-    ├── map.html               # Mapa de pontos de troca
-    ├── profile.html           # Perfil do usuário
-    └── css/
-        └── style.css          # Estilos globais
-```
+Na tela de login (`login.html`), botões de atalho preenchem as credenciais de teste automaticamente:
+
+| Nome | E-mail | Senha | Reputação | Especialidade de Troca |
+|---|---|---|---|---|
+| **Ana Silva** | `ana@swaply.com` | `senha123` | ⭐ 98 pts | Livros, Boxes de Colecionador, Decoração |
+| **Carlos Oliveira** | `carlos@swaply.com` | `senha123` | ⭐ 92 pts | Board Games, Consoles, Games, Mochilas |
+| **Mariana Costa** | `mariana@swaply.com` | `senha123` | ⭐ 95 pts | Botânica Urbana, Plantas Raras, Luminárias |
+| **Lucas Ferreira** | `lucas@swaply.com` | `senha123` | ⭐ 89 pts | Ferramentas Bosch, Áudio, Violão Giannini |
 
 ---
 
-## 🚀 Como Executar
+## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
-- Node.js 18+ instalado
-- npm
+- Node.js (versão 18, 20 ou 24)
+- NPM
 
-### Instalação
+### Passo a Passo
 
 ```bash
-# Entre na pasta do backend
-cd backend
+# 1. Acesse a pasta do backend
+cd "Troca troca/backend"
 
-# Instale as dependências
+# 2. Instale as dependências (caso seja a primeira execução)
 npm install
 
-# Inicie o servidor
+# 3. Popule o banco com dados ricos e completos
+npm run seed
+
+# 4. Inicie o servidor
 npm start
 ```
 
-Acesse em: **http://localhost:3001**
-
-### Desenvolvimento
-
-```bash
-npm run dev  # Com auto-reload (nodemon)
-```
+Acesse no navegador: **`http://localhost:3001`**.
 
 ---
 
-## 🔐 Sistema de Autenticação
-
-- **Registro:** Email + senha (hash bcrypt) + perfil
-- **Login:** JWT com expiração de 7 dias
-- **Token:** Armazenado no `localStorage`, enviado no header `Authorization: Bearer <token>`
-- **Rotas protegidas:** Itens (criar/editar/deletar), Trocas, Mensagens, Perfil
-
----
-
-## 🔄 Fluxo de Uma Troca
+## 📁 Estrutura de Arquivos
 
 ```
-1. Usuário A cataloga item X
-2. Usuário B encontra item X no catálogo/mapa
-3. B propõe troca: oferece item Y em troca de X
-4. A recebe notificação e aceita/rejeita
-5. Se aceito: QR Code é gerado para o trade
-6. A e B combinam local/horário pelo chat interno
-7. No dia: ambos fazem check-in por geolocalização
-8. Sistema confirma que estão no local (<500m)
-9. Troca concluída → reputação +1 para ambos
+Troca troca/
+├── backend/
+│   ├── server.js               # Servidor Express & middleware de compatibilidade
+│   ├── package.json
+│   ├── db/
+│   │   ├── database.js         # Configuração SQLite com node:sqlite nativo
+│   │   └── seed.js             # Povoamento rico (16 itens, 4 usuários, reviews, trocas)
+│   ├── middleware/
+│   │   └── auth.js             # Verificação de tokens JWT
+│   └── routes/
+│       ├── auth.js             # Registro, login, me, upload de avatar
+│       ├── items.js            # CRUD de itens e upload de fotos
+│       ├── trades.js           # Propostas, aceitação, QR Code e check-in GPS
+│       ├── reviews.js          # Listagem e cadastro de avaliações/notas
+│       ├── messages.js         # Chat interno de negociação
+│       └── exchangepoints.js   # Pontos seguros de São Paulo
+└── frontend/
+    ├── css/
+    │   └── style.css           # Design tokens, Outfit/Plus Jakarta Sans, responsividade
+    ├── img/
+    │   ├── avatars/            # Uploads de fotos de perfil
+    │   └── items/              # Uploads de fotos de itens
+    ├── index.html              # Landing Page moderna com explicação completa do conceito
+    ├── catalog.html            # Catálogo com filtros por categoria, busca e paginação
+    ├── item-detail.html        # Detalhe do item, carrossel de fotos, mapa e modal de proposta
+    ├── map.html                # Mapa Leaflet com bonequinho e casinhas/caixas seguras
+    ├── trades.html             # Painel de trocas, Passaporte QR Code e Check-in GPS
+    ├── chat.html               # Chat por troca para acertar detalhes de dia e hora
+    ├── profile.html            # Perfil com avaliações, notas comunitárias e upload de avatar
+    ├── dashboard.html          # Métricas e atalhos rápidos
+    ├── login.html              # Login com botões de preenchimento rápido
+    └── register.html           # Cadastro de novos usuários
 ```
-
----
-
-## 🌍 Pontos de Troca Cadastrados (SP)
-
-| Ponto | Endereço |
-|-------|----------|
-| Parque Ibirapuera | Av. Pedro Álvares Cabral, Vila Mariana |
-| Estação Sé | Praça da Sé, Centro |
-| Livraria Cultura | Av. Paulista, 2073 |
-| Parque Villa-Lobos | Av. Prof. Fonseca Rodrigues, 2001 |
-| MASP | Av. Paulista, 1578 |
-
----
-
-## 📊 Funcionalidades
-
-| Funcionalidade | Status |
-|----------------|--------|
-| Cadastro/Login JWT | ✅ |
-| CRUD de Itens | ✅ |
-| Sistema de Trocas | ✅ |
-| Chat Interno | ✅ |
-| Mapa Leaflet.js | ✅ |
-| Geolocalização Check-in | ✅ |
-| Geração de QR Code | ✅ |
-| Sistema de Reputação | ✅ |
-| Design Responsivo | ✅ |
-
----
-
-## 👥 Autores
-
-Projeto desenvolvido para a disciplina de Desenvolvimento Web  
-Tema: **Do Virtual ao Presencial**
 
 ---
 
 ## 📄 Licença
-
-MIT License — livre para uso educacional.
+Projeto acadêmico livre desenvolvido para a disciplina de Desenvolvimento Web.  
+Licença MIT.

@@ -15,6 +15,7 @@ const itemsRouter          = require('./routes/items');
 const tradesRouter         = require('./routes/trades');
 const messagesRouter       = require('./routes/messages');
 const exchangePointsRouter = require('./routes/exchangepoints');
+const reviewsRouter        = require('./routes/reviews');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -56,6 +57,7 @@ app.use('/api/items',          itemsRouter);
 app.use('/api/trades',         tradesRouter);
 app.use('/api/messages',       messagesRouter);
 app.use('/api/exchange-points', exchangePointsRouter);
+app.use('/api/reviews',        reviewsRouter);
 
 // ─── Static frontend ──────────────────────────────────────────────────────────
 const frontendPath = path.join(__dirname, '..', 'frontend');

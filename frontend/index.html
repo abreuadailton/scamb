@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EcoPermuta — Do virtual ao presencial, trocas que fazem sentido.</title>
+  <title>Swaply — Troque de tudo. Do virtual ao presencial.</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,229 +11,349 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="container navbar-inner">
+    <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-leaf"></i> EcoPermuta
+        <i class="fas fa-arrows-rotate"></i> Swaply
       </a>
-      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
+      <button class="navbar-toggle" id="navToggle" aria-label="Abrir Menu">
         <i class="fas fa-bars"></i>
       </button>
       <ul class="navbar-links" id="navLinks">
-        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
-        <li id="nav-guest-links">
-          <a href="login.html" class="btn btn-secondary btn-sm">Entrar</a>
-        </li>
-        <li id="nav-guest-register" style="display:none;">
-          <a href="register.html" class="btn btn-primary btn-sm">Cadastrar</a>
-        </li>
-        <li id="nav-user-links" style="display:none;">
-          <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
-        </li>
-        <li id="nav-logout" style="display:none;">
-          <a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a>
-        </li>
+        <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li id="nav-guest-login"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
+        <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Cadastre-se</a></li>
+        <li id="nav-dashboard" style="display:none;"><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
+        <li id="nav-my-items" style="display:none;"><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
+        <li id="nav-trades" style="display:none;"><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
+        <li id="nav-profile" style="display:none;"><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
+        <li id="nav-logout" style="display:none;"><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
       </ul>
     </div>
   </nav>
 
-  <!-- HERO -->
+  <!-- HERO SECTION -->
   <section class="hero">
-    <div class="container hero-content">
-      <span class="hero-badge"><i class="fas fa-recycle"></i> Economia Circular</span>
-      <h1 class="hero-title">Troque o que você não usa<br>pelo que você precisa</h1>
-      <p class="hero-subtitle">Do virtual ao presencial, trocas que fazem sentido.<br>Sem dinheiro. Com propósito. Com pessoas.</p>
+    <div class="container hero-content fade-in-up">
+      <span class="hero-eyebrow">
+        <i class="fas fa-bolt" style="color: #f59e0b;"></i> Plataforma de Trocas Inteligente & Segura
+      </span>
+      <h1 class="hero-title">
+        Troque de tudo.<br>
+        Conecte no <span class="accent">virtual</span>, encontre no <span class="accent">presencial</span>.
+      </h1>
+      <p class="hero-subtitle">
+        Games, livros, eletrônicos, instrumentos, ferramentas, roupas e plantas. 
+        Dê adeus ao dinheiro: encontre itens incríveis online e combine a entrega em pontos públicos seguros com validação por QR Code e GPS!
+      </p>
       <div class="hero-actions">
-        <a href="register.html" class="btn btn-primary btn-lg">
-          <i class="fas fa-seedling"></i> Começar agora
+        <a href="catalog.html" class="btn btn-primary btn-lg">
+          <i class="fas fa-search"></i> Explorar Catálogo Completo
         </a>
-        <a href="catalog.html" class="btn btn-secondary btn-lg">
-          <i class="fas fa-search"></i> Ver catálogo
+        <a href="map.html" class="btn btn-secondary btn-lg">
+          <i class="fas fa-map-marked-alt"></i> Ver Mapa de Pontos
         </a>
       </div>
-    </div>
-    <div class="hero-wave">
-      <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#F9FBF9" d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z"/>
-      </svg>
-    </div>
-  </section>
 
-  <!-- COMO FUNCIONA -->
-  <section class="section" id="como-funciona">
-    <div class="container">
-      <div class="section-header">
-        <h2>Como funciona</h2>
-        <p>Três passos simples para realizar sua primeira troca</p>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <div class="step-icon"><i class="fas fa-box-open"></i></div>
-          <h3>Cadastre seu item</h3>
-          <p>Adicione fotos e descrição dos itens que você deseja trocar. É rápido e gratuito.</p>
+      <!-- Live metrics pill -->
+      <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.15);">
+        <div style="text-align: center; color: #fff;">
+          <div style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 900; line-height: 1;">16+</div>
+          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 4px;">Itens no Catálogo</div>
         </div>
-        <div class="step-connector"></div>
-        <div class="step">
-          <div class="step-number">2</div>
-          <div class="step-icon"><i class="fas fa-handshake"></i></div>
-          <h3>Encontre um match</h3>
-          <p>Navegue pelo catálogo, encontre algo que queira e proponha uma troca diretamente.</p>
+        <div style="text-align: center; color: #fff;">
+          <div style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 900; line-height: 1;">5</div>
+          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 4px;">Pontos Seguros em SP</div>
         </div>
-        <div class="step-connector"></div>
-        <div class="step">
-          <div class="step-number">3</div>
-          <div class="step-icon"><i class="fas fa-map-marker-alt"></i></div>
-          <h3>Troque presencialmente</h3>
-          <p>Combine um ponto de troca seguro, se encontre e realize a permuta com QR Code.</p>
+        <div style="text-align: center; color: #fff;">
+          <div style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 900; line-height: 1; color: #34d399;">100%</div>
+          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 4px;">Sem Envolvimento de Dinheiro</div>
+        </div>
+        <div style="text-align: center; color: #fff;">
+          <div style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 900; line-height: 1; color: #fbbf24;">4.9 ★</div>
+          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 4px;">Reputação da Comunidade</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- POR QUE ECOPERMUTA -->
-  <section class="section section-alt" id="por-que">
+  <!-- O CONTEXTO: POR QUE O VIRTUAL POTENCIALIZA O PRESENCIAL? -->
+  <section class="section" style="background: #ffffff; padding: 80px 0;">
     <div class="container">
-      <div class="section-header">
-        <h2>Por que EcoPermuta?</h2>
-        <p>Uma forma mais inteligente e sustentável de consumir</p>
+      <div style="text-align: center; max-width: 760px; margin: 0 auto 56px;">
+        <span class="badge" style="background: #eef2ff; color: #6366f1; border: 1px solid #c7d2fe; padding: 6px 16px; border-radius: 999px; font-weight: 700; margin-bottom: 12px; display: inline-block;">
+          Tema Central: Do Virtual ao Presencial
+        </span>
+        <h2 style="font-size: clamp(2rem, 3.5vw, 2.7rem); font-weight: 900; color: #0f172a; letter-spacing: -0.5px; margin-top: 8px;">
+          Como a internet transforma o encontro real
+        </h2>
+        <p style="color: #64748b; font-size: 1.1rem; line-height: 1.6; margin-top: 14px;">
+          O ciberespaço não é o oposto do mundo real — ele é um <strong>potencializador</strong>. Veja como o Swaply resolve o problema histórico das feiras físicas:
+        </p>
       </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; align-items: stretch;">
+        <!-- Card 1: O modo antigo -->
+        <div class="card" style="padding: 36px 30px; border-radius: 20px; border: 1.5px solid #fee2e2; background: #fff5f5;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: #fecaca; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+              <i class="fas fa-times-circle"></i>
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: #991b1b; margin: 0;">Feiras de Troca Comuns</h3>
+          </div>
+          <ul style="display: flex; flex-direction: column; gap: 14px; color: #7f1d1d; font-size: 0.98rem; line-height: 1.5;">
+            <li><i class="fas fa-exclamation-triangle" style="margin-right: 8px; color: #ef4444;"></i> <strong>Frustração garantida:</strong> Você sai de casa sem saber se haverá alguém interessado no que você levou.</li>
+            <li><i class="fas fa-exclamation-triangle" style="margin-right: 8px; color: #ef4444;"></i> <strong>Insegurança:</strong> Negociações improvisadas na rua com pessoas desconhecidas sem histórico.</li>
+            <li><i class="fas fa-exclamation-triangle" style="margin-right: 8px; color: #ef4444;"></i> <strong>Falta de comprovação:</strong> Nenhuma garantia ou registro de entrega efetiva.</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: A Ponte Virtual -> Real com Swaply -->
+        <div class="card" style="padding: 36px 30px; border-radius: 20px; border: 1.5px solid #c7d2fe; background: linear-gradient(180deg, #f5f3ff 0%, #ffffff 100%); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--gradient-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; box-shadow: var(--shadow-primary);">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--color-primary-dark); margin: 0;">No Swaply (Virtual + Real)</h3>
+          </div>
+          <ul style="display: flex; flex-direction: column; gap: 14px; color: #1e1b4b; font-size: 0.98rem; line-height: 1.5;">
+            <li><i class="fas fa-check" style="margin-right: 8px; color: #6366f1;"></i> <strong>Match Pré-estabelecido:</strong> O item já está reservado e acordado antes de você sair de casa!</li>
+            <li><i class="fas fa-check" style="margin-right: 8px; color: #6366f1;"></i> <strong>Pontos Seguros & Conhecidos:</strong> Locais monitorados em São Paulo (MASP, Conjunto Nacional, Estação Sé, Parques).</li>
+            <li><i class="fas fa-check" style="margin-right: 8px; color: #6366f1;"></i> <strong>QR Code + Check-in GPS:</strong> Validação tecnológica da presença física que constrói reputação real para a comunidade.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- O QUE VOCÊ PODE TROCAR (TROQUE DE TUDO) -->
+  <section class="section" style="background: #f8fafc; padding: 75px 0;">
+    <div class="container">
+      <div style="text-align: center; max-width: 650px; margin: 0 auto 48px;">
+        <span class="badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 6px 16px; border-radius: 999px; font-weight: 700; margin-bottom: 12px; display: inline-block;">
+          Variedade Ilimitada
+        </span>
+        <h2 style="font-size: 2.3rem; font-weight: 900; color: #0f172a;">O que você pode trocar no Swaply?</h2>
+        <p style="color: #64748b; font-size: 1.05rem;">Qualquer objeto de valor em bom estado que você não usa mais pode ser o tesouro de outra pessoa.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+        <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #eef2ff; color: #6366f1; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fas fa-gamepad"></i>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Games & Consoles</h4>
+          <p style="font-size: 0.88rem; color: #64748b;">Jogos de tabuleiro, controles, mídias físicas de PS5, Xbox e Nintendo Switch.</p>
+        </div>
+
+        <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #fdf2f8; color: #ec4899; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Livros & HQs</h4>
+          <p style="font-size: 0.88rem; color: #64748b;">Clássicos, boxes de colecionador, quadrinhos, mangás e graphic novels lidas.</p>
+        </div>
+
+        <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #ecfeff; color: #06b6d4; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fas fa-headphones-simple"></i>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Eletrônicos & Áudio</h4>
+          <p style="font-size: 0.88rem; color: #64748b;">Kindles, headphones bluetooth, caixas de som, teclados e gadgets parados.</p>
+        </div>
+
+        <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #fef3c7; color: #d97706; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fas fa-guitar"></i>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Música & Instrumentos</h4>
+          <p style="font-size: 0.88rem; color: #64748b;">Violões, pedais de efeito, amplificadores, cabos e equipamentos de estúdio.</p>
+        </div>
+
+        <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #f1f5f9; color: #475569; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fas fa-tools"></i>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Ferramentas & DIY</h4>
+          <p style="font-size: 0.88rem; color: #64748b;">Parafusadeiras, kits manuais, trenas laser e equipamentos de marcenaria.</p>
+        </div>
+
+        <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #ecfdf5; color: #10b981; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fas fa-seedling"></i>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Plantas & Jardim</h4>
+          <p style="font-size: 0.88rem; color: #64748b;">Mudas enraizadas, suculentas raras, vasos cerâmicos e artigos de botânica.</p>
+        </div>
+
+        <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #fff1f2; color: #f43f5e; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fas fa-shirt"></i>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Roupas & Estilo</h4>
+          <p style="font-size: 0.88rem; color: #64748b;">Jaquetas vintage, mochilas impermeáveis, casacos de frio e peças atemporais.</p>
+        </div>
+
+        <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #faf5ff; color: #a855f7; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fas fa-couch"></i>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Casa & Decoração</h4>
+          <p style="font-size: 0.88rem; color: #64748b;">Luminárias, prensas francesas, quadros, espelhos e objetos decorativos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OS 3 DIFERENCIAIS TECNOLÓGICOS (MAPA, QR CODE, GPS) -->
+  <section class="section" style="background: #ffffff; padding: 80px 0;">
+    <div class="container">
+      <div style="text-align: center; max-width: 700px; margin: 0 auto 56px;">
+        <span class="badge" style="background: #fdf2f8; color: #f43f5e; border: 1px solid #fbcfe8; padding: 6px 16px; border-radius: 999px; font-weight: 700; margin-bottom: 12px; display: inline-block;">
+          Diferenciais Exclusivos
+        </span>
+        <h2 style="font-size: 2.3rem; font-weight: 900; color: #0f172a;">Tecnologia conectando pessoas</h2>
+        <p style="color: #64748b; font-size: 1.05rem;">Três soluções técnicas integradas para transformar trocas digitais em encontros físicos protegidos.</p>
+      </div>
+
       <div class="grid-3">
-        <div class="card feature-card">
-          <div class="feature-icon feature-icon--gold">
-            <i class="fas fa-coins"></i>
+        <!-- Feature 1: Leaflet Maps com Casinha e Bonequinho -->
+        <div class="card" style="padding: 32px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+          <div style="width: 56px; height: 56px; border-radius: 14px; background: #eef2ff; color: #6366f1; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+            <i class="fas fa-map-location-dot"></i>
           </div>
-          <h3>Sem dinheiro envolvido</h3>
-          <p>Trocas puras, sem transações financeiras. Valor real pelo que as coisas significam, não pelo preço de mercado.</p>
+          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">Mapa Interativo com Marcadores</h3>
+          <p style="color: #64748b; font-size: 0.95rem; line-height: 1.55; margin-bottom: 20px;">
+            Visualização fluida com <strong>Leaflet.js</strong>. Encontre os pontos seguros com ícones de <strong>casinhas e caixas de troca</strong> e veja sua posição em tempo real com o <strong>bonequinho animado</strong> ("Você está aqui").
+          </p>
+          <a href="map.html" class="btn btn-secondary btn-sm" style="margin-top: auto; align-self: flex-start;">
+            <i class="fas fa-compass"></i> Abrir Mapa Seguro
+          </a>
         </div>
-        <div class="card feature-card">
-          <div class="feature-icon feature-icon--green">
-            <i class="fas fa-shield-alt"></i>
+
+        <!-- Feature 2: QR Code de Autenticação -->
+        <div class="card" style="padding: 32px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+          <div style="width: 56px; height: 56px; border-radius: 14px; background: #ecfeff; color: #0891b2; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+            <i class="fas fa-qrcode"></i>
           </div>
-          <h3>Troca presencial segura</h3>
-          <p>Pontos de troca verificados, QR Code de confirmação e sistema de reputação para você trocar com segurança.</p>
+          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">QR Code de Autenticação</h3>
+          <p style="color: #64748b; font-size: 0.95rem; line-height: 1.55; margin-bottom: 20px;">
+            Cada proposta aceita gera dinamicamente um <strong>Passaporte Digital com QR Code</strong> criptografado. No encontro físico, mostre seu código para retirada do item e validação presencial imediata!
+          </p>
+          <a href="trades.html" class="btn btn-secondary btn-sm" style="margin-top: auto; align-self: flex-start;">
+            <i class="fas fa-shield-halved"></i> Ver Sistema de QR Code
+          </a>
         </div>
-        <div class="card feature-card">
-          <div class="feature-icon feature-icon--blue">
-            <i class="fas fa-leaf"></i>
+
+        <!-- Feature 3: Check-in por Geolocalização -->
+        <div class="card" style="padding: 32px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+          <div style="width: 56px; height: 56px; border-radius: 14px; background: #fff1f2; color: #f43f5e; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+            <i class="fas fa-location-crosshairs"></i>
           </div>
-          <h3>Impacto sustentável</h3>
-          <p>Cada troca evita descarte desnecessário e prolonga a vida útil dos objetos. Juntos construímos uma cidade mais verde.</p>
+          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">Check-in por Geolocalização</h3>
+          <p style="color: #64748b; font-size: 0.95rem; line-height: 1.55; margin-bottom: 20px;">
+            Utiliza a API nativa do navegador <code>navigator.geolocation</code> calculando a distância pelo algoritmo de <strong>Haversine</strong>. A troca é concluída apenas quando ambos estão no ponto de encontro (<500m).
+          </p>
+          <a href="trades.html" class="btn btn-secondary btn-sm" style="margin-top: auto; align-self: flex-start;">
+            <i class="fas fa-satellite"></i> Testar Check-in GPS
+          </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- STATS -->
-  <section class="section stats-section">
-    <div class="container">
-      <div class="grid-3">
-        <div class="stat-item">
-          <span class="stat-number" id="stat-items">1.247</span>
-          <span class="stat-label"><i class="fas fa-box"></i> Itens disponíveis</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number" id="stat-trades">842</span>
-          <span class="stat-label"><i class="fas fa-handshake"></i> Trocas realizadas</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number" id="stat-points">5</span>
-          <span class="stat-label"><i class="fas fa-map-marker-alt"></i> Pontos de troca</span>
-        </div>
+  <!-- CALL TO ACTION FINAL -->
+  <section style="background: var(--gradient-hero); color: #ffffff; padding: 75px 0; text-align: center; position: relative; overflow: hidden;">
+    <div class="container" style="position: relative; z-index: 2; max-width: 700px;">
+      <h2 style="font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; color: #fff; margin-bottom: 16px;">
+        Pronto para fazer circular o que você tem parado?
+      </h2>
+      <p style="font-size: 1.15rem; color: rgba(255,255,255,0.9); margin-bottom: 32px; line-height: 1.6;">
+        Cadastre-se gratuitamente em menos de 1 minuto, anuncie seus itens e descubra pessoas incríveis para trocar na sua cidade.
+      </p>
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <a href="register.html" class="btn btn-primary btn-lg" style="background: var(--gradient-accent); border: none; box-shadow: var(--shadow-accent); font-weight: 800; padding: 14px 36px; border-radius: var(--radius-pill);">
+          <i class="fas fa-user-plus"></i> Criar Conta Grátis
+        </a>
+        <a href="catalog.html" class="btn btn-secondary btn-lg" style="border: 1.5px solid rgba(255,255,255,0.4); color: #fff; background: rgba(255,255,255,0.12); padding: 14px 32px; border-radius: var(--radius-pill);">
+          <i class="fas fa-box-open"></i> Ver Catálogo
+        </a>
       </div>
-    </div>
-  </section>
-
-  <!-- CTA FINAL -->
-  <section class="section cta-section">
-    <div class="container text-center">
-      <h2>Pronto para começar?</h2>
-      <p>Junte-se à comunidade EcoPermuta e faça sua primeira troca hoje.</p>
-      <a href="register.html" class="btn btn-primary btn-lg mt-2">
-        <i class="fas fa-user-plus"></i> Criar conta grátis
-      </a>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer class="footer">
+  <footer style="background: #0f172a; color: #94a3b8; padding: 60px 0 35px; border-top: 1px solid #1e293b;">
     <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <a href="index.html" class="navbar-logo">
-            <i class="fas fa-leaf"></i> EcoPermuta
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 32px; margin-bottom: 40px;">
+        <div style="max-width: 400px;">
+          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-arrows-rotate" style="color: #818cf8;"></i> Swaply
           </a>
-          <p>Do virtual ao presencial, trocas que fazem sentido.</p>
-          <div class="footer-social">
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-facebook"></i></a>
+          <p style="margin-top: 12px; font-size: 0.95rem; color: #94a3b8; line-height: 1.6;">
+            A ponte entre o virtual e o presencial: facilitando trocas diretas de tudo sem dinheiro, com segurança e reputação comunitária.
+          </p>
+        </div>
+        <div style="display: flex; gap: 48px; flex-wrap: wrap;">
+          <div>
+            <h4 style="font-family: var(--font-heading); color: #fff; font-size: 1rem; margin-bottom: 12px;">Navegação</h4>
+            <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+              <li><a href="catalog.html" style="color: #94a3b8;">Catálogo de Itens</a></li>
+              <li><a href="map.html" style="color: #94a3b8;">Mapa de Pontos</a></li>
+              <li><a href="trades.html" style="color: #94a3b8;">Minhas Trocas</a></li>
+              <li><a href="dashboard.html" style="color: #94a3b8;">Dashboard</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="font-family: var(--font-heading); color: #fff; font-size: 1rem; margin-bottom: 12px;">Diferenciais</h4>
+            <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+              <li><span style="color: #cbd5e1;"><i class="fas fa-qrcode"></i> QR Code de Autenticação</span></li>
+              <li><span style="color: #cbd5e1;"><i class="fas fa-map-pin"></i> Leaflet.js Interativo</span></li>
+              <li><span style="color: #cbd5e1;"><i class="fas fa-crosshairs"></i> Check-in por GPS</span></li>
+              <li><span style="color: #cbd5e1;"><i class="fas fa-star"></i> Reputação e Avaliações</span></li>
+            </ul>
           </div>
         </div>
-        <div class="footer-links">
-          <h4>Plataforma</h4>
-          <ul>
-            <li><a href="catalog.html">Catálogo</a></li>
-            <li><a href="map.html">Mapa de trocas</a></li>
-            <li><a href="register.html">Cadastrar</a></li>
-          </ul>
-        </div>
-        <div class="footer-links">
-          <h4>Suporte</h4>
-          <ul>
-            <li><a href="#">Como funciona</a></li>
-            <li><a href="#">Perguntas frequentes</a></li>
-            <li><a href="#">Contato</a></li>
-          </ul>
-        </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2024 EcoPermuta. Feito com <i class="fas fa-heart" style="color:#e53935"></i> pela comunidade.</p>
+      <div style="border-top: 1px solid #1e293b; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.88rem;">
+        <p>&copy; 2026 Swaply. Projeto Web: Do Virtual ao Presencial.</p>
+        <p style="color: #64748b;">JavaScript (Node.js/Express) + HTML5 + CSS3 + SQLite</p>
       </div>
     </div>
   </footer>
 
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('ecopermuta_token'); }
-    function authHeaders() { return { headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' } }; }
+    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
 
-    // Navbar state
     function updateNavbar() {
       const token = getToken();
       if (token) {
-        document.getElementById('nav-guest-links').style.display = 'none';
-        document.getElementById('nav-user-links').style.display = 'list-item';
-        document.getElementById('nav-logout').style.display = 'list-item';
-      } else {
-        document.getElementById('nav-guest-register').style.display = 'list-item';
+        document.getElementById('nav-guest-login').style.display = 'none';
+        document.getElementById('nav-guest-register').style.display = 'none';
+        document.getElementById('nav-dashboard').style.display = 'inline-block';
+        document.getElementById('nav-my-items').style.display = 'inline-block';
+        document.getElementById('nav-trades').style.display = 'inline-block';
+        document.getElementById('nav-profile').style.display = 'inline-block';
+        document.getElementById('nav-logout').style.display = 'inline-block';
       }
     }
 
     function logout() {
+      localStorage.removeItem('swaply_token');
+      localStorage.removeItem('swaply_user');
+      localStorage.removeItem('ecotroca_token');
+      localStorage.removeItem('ecotroca_user');
       localStorage.removeItem('ecopermuta_token');
       localStorage.removeItem('ecopermuta_user');
       window.location.href = 'index.html';
     }
 
-    // Hamburger toggle
     document.getElementById('navToggle').addEventListener('click', () => {
       document.getElementById('navLinks').classList.toggle('open');
     });
 
-    // Load stats
-    async function loadStats() {
-      try {
-        const res = await fetch(`${API_BASE}/items`);
-        if (res.ok) {
-          const data = await res.json();
-          document.getElementById('stat-items').textContent = data.length || 1247;
-        }
-      } catch(e) {}
-    }
-
     updateNavbar();
-    loadStats();
   </script>
 </body>
 </html>
