@@ -55,15 +55,15 @@
 
       <div class="map-legend">
         <div class="legend-item">
-          <span style="font-size: 1.1rem; color: #6366f1;"><i class="fas fa-store"></i></span>
-          <span>Casinha / Ponto Seguro</span>
+          <span style="font-size: 1.1rem; color: #5352ed;"><i class="fas fa-shield-alt"></i></span>
+          <span>Pontos Seguros</span>
         </div>
         <div class="legend-item">
-          <span style="font-size: 1.1rem; color: #f43f5e;"><i class="fas fa-street-view"></i></span>
-          <span>Bonequinho (Você)</span>
+          <span style="font-size: 1.1rem; color: #ff4757;"><i class="fas fa-street-view"></i></span>
+          <span>Você está aqui</span>
         </div>
         <div class="legend-item" id="legend-items" style="display:none;">
-          <span style="font-size: 1.1rem; color: #06b6d4;"><i class="fas fa-box"></i></span>
+          <span style="font-size: 1.1rem; color: #00d2d3;"><i class="fas fa-box"></i></span>
           <span>Itens Disponíveis</span>
         </div>
       </div>
@@ -82,7 +82,7 @@
         </div>
         <div>
           <h4 id="distanceTitle" style="font-size: 1.1rem; font-weight: 800; color: #1e1b4b; margin: 0 0 4px;">
-            Clique no mapa para posicionar seu bonequinho!
+            Clique no mapa para marcar sua localização "Você está aqui"!
           </h4>
           <p id="distanceSubtitle" style="font-size: 0.9rem; color: #475569; margin: 0;">
             O sistema calculará automaticamente a distância real até o ponto de encontro seguro mais próximo.
@@ -150,7 +150,7 @@
       maxZoom: 19
     }).addTo(map);
 
-    // Ícone da Casinha / Ponto Seguro
+    // Ícone do Ponto Seguro Homologado
     const houseIcon = L.divIcon({
       className: '',
       html: `
@@ -307,7 +307,7 @@
         exchangePointsList.forEach(pt => {
           if (!pt.latitude || !pt.longitude) return;
 
-          // Marcador no Mapa (Casinha)
+          // Marcador no Mapa (Ponto Seguro)
           const marker = L.marker([pt.latitude, pt.longitude], { icon: houseIcon }).addTo(map);
           marker.bindPopup(`
             <div class="map-popup-card">
@@ -384,5 +384,33 @@
     loadExchangePoints();
     loadItemMarkers();
   </script>
+
+  <!-- FOOTER -->
+  <footer style="background: #090d16; color: #94a3b8; padding: 48px 0 28px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 60px;">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-arrows-rotate" style="color: #ff4757;"></i> Swaply
+          </a>
+          <span style="color: #64748b; font-size: 0.88rem;">| Do virtual ao presencial</span>
+        </div>
+        <div style="display: flex; gap: 20px; font-size: 0.9rem;">
+          <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
+          <a href="map.html" style="color: #94a3b8;">Pontos Seguros</a>
+          <a href="trades.html" style="color: #94a3b8;">Trocas</a>
+          <a href="profile.html" style="color: #94a3b8;">Perfil</a>
+        </div>
+      </div>
+      <div style="padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
+        <p style="color: #f1f5f9; font-weight: 600;">
+          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
+        </p>
+        <p style="color: #64748b; font-size: 0.85rem;">
+          Swaply &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
+        </p>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

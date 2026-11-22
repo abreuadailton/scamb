@@ -24,16 +24,22 @@ function getTrade(id) {
   return db.prepare(`
     SELECT
       t.*,
-      u_req.name  AS requester_name,
-      u_req.email AS requester_email,
-      u_own.name  AS owner_name,
-      u_own.email AS owner_email,
-      io.title    AS item_offered_title,
-      io.title    AS offered_title,
-      iw.title    AS item_wanted_title,
-      iw.title    AS wanted_title,
-      ep.name     AS meeting_point_name,
-      ep.address  AS meeting_point_address
+      u_req.name       AS requester_name,
+      u_req.email      AS requester_email,
+      u_req.avatar_url AS requester_avatar,
+      u_req.reputation AS requester_reputation,
+      u_own.name       AS owner_name,
+      u_own.email      AS owner_email,
+      u_own.avatar_url AS owner_avatar,
+      u_own.reputation AS owner_reputation,
+      io.title         AS item_offered_title,
+      io.title         AS offered_title,
+      io.images        AS offered_images,
+      iw.title         AS item_wanted_title,
+      iw.title         AS wanted_title,
+      iw.images        AS wanted_images,
+      ep.name          AS meeting_point_name,
+      ep.address       AS meeting_point_address
     FROM trades t
     LEFT JOIN users u_req ON u_req.id = t.requester_id
     LEFT JOIN users u_own ON u_own.id = t.owner_id

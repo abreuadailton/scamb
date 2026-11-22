@@ -75,4 +75,71 @@ router.post('/trade/:tradeId', auth, (req, res) => {
   }
 });
 
+// ─── POST /inquiry — start or retrieve a conversation for an item ────────────
+router.post('/inquiry', auth, (req, res) => {
+  try {
+    const { item_id, message } = req.body;
+    if (!item_id) {
+      return res.status(400).json({ success: false, error: 'item_id é obrigatório.' });
+    }
+
+    const item = db.prepare('SELECT * FROM items WHERE id = ?').get(item_id);
+    if (!item) {
+      return res.status(404).json({ success: false, error: 'Item não encontrado.' });
+    }
+
+    if (item.user_id === req.user.id) {
+      return res.status(400).json({ success: false, error: 'Você não pode iniciar conversa sobre seu próprio item.' });
+    }
+
+    // Check if an existing open trade exists between these two users for this item
+    let trade = db.prepare(`
+      SELECT * FROM trades 
+      WHERE item_wanted_id = ? AND requester_id = ? AND status IN ('pending', 'accepted')
+      ORDER BY id DESC LIMIT 1
+    `).get(item.id, req.user.id);
+
+    if (!trade) {
+      // Find one item of requester to link as offered item (or first available)
+      let myItem = db.prepare('SELECT id FROM items WHERE user_id = ? AND status = ? LIMIT 1').get(req.user.id, 'available');
+      if (!myItem) {
+        myItem = db.prepare('SELECT id FROM items WHERE user_id = ? LIMIT 1').get(req.user.id);
+      }
+      const offeredId = myItem ? myItem.id : null;
+
+      // Default meeting point
+      const ep = db.prepare('SELECT * FROM exchange_points LIMIT 1').get();
+
+      const result = db.prepare(`
+        INSERT INTO trades (
+          requester_id, owner_id, item_offered_id, item_wanted_id,
+          status, meeting_point_id, meeting_lat, meeting_lng, meeting_address, meeting_date
+        ) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, datetime('now', '+3 days'))
+      `).run(
+        req.user.id,
+        item.user_id,
+        offeredId,
+        item.id,
+        ep ? ep.id : null,
+        ep ? ep.latitude : null,
+        ep ? ep.longitude : null,
+        ep ? ep.address : 'A combinar no chat'
+      );
+
+      trade = db.prepare('SELECT * FROM trades WHERE id = ?').get(result.lastInsertRowid);
+    }
+
+    if (message && message.trim()) {
+      db.prepare(`
+        INSERT INTO messages (trade_id, sender_id, content) VALUES (?, ?, ?)
+      `).run(trade.id, req.user.id, message.trim());
+    }
+
+    return res.json({ success: true, trade_id: trade.id });
+  } catch (err) {
+    console.error('[messages POST /inquiry]', err);
+    return res.status(500).json({ success: false, error: 'Erro ao iniciar conversa.' });
+  }
+});
+
 module.exports = router;

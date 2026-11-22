@@ -21,9 +21,9 @@ O **Swaply** é uma plataforma web completa desenvolvida com **Node.js, Express,
 
 ### 1. 🗺️ Integração com Mapas Interativos (Leaflet.js + OpenStreetMap)
 - Mapeamento geográfico gratuito e leve dos pontos seguros homologados em São Paulo (MASP, Estação Sé, Conjunto Nacional / Livraria Cultura, Parque Ibirapuera, Parque Villa-Lobos).
-- Marcador estilizado de **Casinha / Ponto Seguro** (`<div class="spot-marker-pin">`) com popups contendo foto, endereço, horários de funcionamento e itens próximos.
-- Marcador animado de **Bonequinho "Você está aqui!"** (`<div class="user-marker-pin">`) com pulso de radar.
-- **Interatividade instantânea:** ao clicar em qualquer local do mapa, o bonequinho se desloca e a distância real até o ponto de troca mais próximo é calculada e informada em tempo real.
+- Marcador estilizado de **Pontos Seguros** (`<div class="spot-marker-pin">`) com popups contendo foto, endereço, horários de funcionamento e itens próximos.
+- Marcador animado de **"Você está aqui!"** (`<div class="user-marker-pin">`) com pulso de radar.
+- **Interatividade instantânea:** ao clicar em qualquer local do mapa, o indicador "Você está aqui" se desloca e a distância real até o ponto de troca mais próximo é calculada e informada em tempo real.
 
 ### 2. 📱 Passaporte Digital com QR Code de Autenticação
 - Toda troca aceita gera automaticamente um **Voucher / Passaporte Digital com QR Code** criptografado com hash de segurança (`SWAP-0001-...`).
@@ -125,9 +125,9 @@ Troca troca/
     ├── index.html              # Landing Page moderna com explicação completa do conceito
     ├── catalog.html            # Catálogo com filtros por categoria, busca e paginação
     ├── item-detail.html        # Detalhe do item, carrossel de fotos, mapa e modal de proposta
-    ├── map.html                # Mapa Leaflet com bonequinho e casinhas/caixas seguras
+    ├── map.html                # Mapa Leaflet com Pontos Seguros e indicador "Você está aqui"
     ├── trades.html             # Painel de trocas, Passaporte QR Code e Check-in GPS
-    ├── chat.html               # Chat por troca para acertar detalhes de dia e hora
+    ├── chat.html               # Chat com chips de ação rápida, proposta de ponto seguro e WhatsApp
     ├── profile.html            # Perfil com avaliações, notas comunitárias e upload de avatar
     ├── dashboard.html          # Métricas e atalhos rápidos
     ├── login.html              # Login com botões de preenchimento rápido
@@ -136,6 +136,11 @@ Troca troca/
 
 ---
 
+## 👨‍💻 Autores
+Feito com ❤️ por **Felipe e Adailton**.
+
+---
+
 ## 📄 Licença
-Projeto acadêmico livre desenvolvido para a disciplina de Desenvolvimento Web.  
+Projeto acadêmico desenvolvido para a disciplina de Desenvolvimento Web: *Do Virtual ao Presencial*.  
 Licença MIT.

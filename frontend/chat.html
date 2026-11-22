@@ -6,6 +6,150 @@
   <title>Chat de Troca — Swaply</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .chat-page {
+      background: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-layout-wrapper {
+      max-width: 1080px;
+      margin: 24px auto 40px;
+      width: 95%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      border-radius: 20px;
+      overflow: hidden;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    .chat-top-header {
+      background: #ffffff;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .chat-user-profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .chat-user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #5352ed;
+    }
+    .chat-user-name {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chat-safety-banner {
+      background: #eef2ff;
+      border-bottom: 1px solid #c7d2fe;
+      padding: 10px 24px;
+      font-size: 0.85rem;
+      color: #4338ca;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-messages-container {
+      height: 480px;
+      overflow-y: auto;
+      padding: 24px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .message-item {
+      display: flex;
+      flex-direction: column;
+      max-width: 75%;
+    }
+    .message-item.own {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+    .message-item.other {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+    .message-bubble-content {
+      padding: 12px 18px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      word-break: break-word;
+      position: relative;
+    }
+    .message-item.own .message-bubble-content {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(255, 71, 87, 0.25);
+    }
+    .message-item.other .message-bubble-content {
+      background: #ffffff;
+      color: #1e293b;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .message-time-meta {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #94a3b8;
+    }
+    .message-item.own .message-time-meta {
+      text-align: right;
+    }
+    .message-date-separator {
+      text-align: center;
+      margin: 12px 0;
+      position: relative;
+    }
+    .message-date-separator span {
+      background: #e2e8f0;
+      color: #64748b;
+      padding: 4px 14px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .quick-spot-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .quick-spot-modal {
+      background: #fff;
+      border-radius: 20px;
+      max-width: 480px;
+      width: 90%;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+  </style>
 </head>
 <body class="chat-page">
 
@@ -20,7 +164,7 @@
       </button>
       <ul class="navbar-links" id="navLinks">
         <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Pontos Seguros</a></li>
         <li><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
         <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
         <li><a href="trades.html" class="active"><i class="fas fa-handshake"></i> Trocas</a></li>
@@ -30,31 +174,123 @@
     </div>
   </nav>
 
-  <div class="chat-wrapper">
-    <!-- TRADE INFO -->
-    <div class="chat-trade-info" id="tradeInfo">
-      <a href="trades.html" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
-      <div class="chat-trade-items" id="tradeItems">
-        <div class="loading-spinner"></div>
+  <div class="chat-layout-wrapper">
+    <!-- CHAT HEADER -->
+    <div class="chat-top-header" id="chatHeader">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <a href="trades.html" class="btn btn-secondary btn-sm" title="Voltar para Minhas Trocas">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="chat-user-profile" id="userProfileSnippet">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200" class="chat-user-avatar" id="partnerAvatar" alt="Avatar">
+          <div>
+            <div class="chat-user-name">
+              <span id="partnerName">Carregando conversa...</span>
+              <span class="badge" id="tradeStatusBadge" style="font-size: 0.72rem;"></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: #64748b; margin-top: 2px;">
+              <span id="partnerRep"><i class="fas fa-star" style="color: #f59e0b;"></i> 5.0</span>
+              <span>&bull;</span>
+              <span id="tradeItemsMatch"></span>
+            </div>
+          </div>
+        </div>
       </div>
-      <span class="badge" id="tradeStatus"></span>
-    </div>
 
-    <!-- MENSAGENS -->
-    <div class="chat-container">
-      <div class="messages-list" id="messagesList">
-        <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
-      </div>
-
-      <!-- INPUT -->
-      <div class="chat-input-row" id="chatInputRow" style="display:none;">
-        <input type="text" id="msgInput" class="form-control" placeholder="Digite uma mensagem..." autocomplete="off">
-        <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">
-          <i class="fas fa-paper-plane"></i>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="map.html" target="_blank" class="btn btn-secondary btn-sm" title="Abrir mapa de pontos seguros">
+          <i class="fas fa-map-location-dot"></i> Pontos Seguros
+        </a>
+        <button class="btn btn-primary btn-sm" id="btnPassport" onclick="goToPassport()" style="display:none;">
+          <i class="fas fa-qrcode"></i> Ver QR Code Pass
         </button>
       </div>
     </div>
+
+    <!-- SAFETY BANNER -->
+    <div class="chat-safety-banner">
+      <i class="fas fa-shield-halved" style="font-size: 1.1rem; color: #5352ed;"></i>
+      <span><strong>Negocie e troque contatos com segurança:</strong> Combine o local no chat e encontre-se em um dos nossos <strong>Pontos Seguros</strong> com validação por QR Code!</span>
+    </div>
+
+    <!-- MESSAGE FEED -->
+    <div class="chat-messages-container" id="messagesList">
+      <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
+    </div>
+
+    <!-- QUICK ACTIONS / PRE-TRADE CONTACT CHIPS -->
+    <div class="chat-quick-actions" id="quickActionsBar">
+      <button type="button" class="chat-action-chip whatsapp" onclick="shareWhatsApp()">
+        <i class="fab fa-whatsapp"></i> Compartilhar WhatsApp
+      </button>
+      <button type="button" class="chat-action-chip" onclick="openSpotPicker()">
+        <i class="fas fa-map-pin"></i> Sugerir Ponto Seguro
+      </button>
+      <button type="button" class="chat-action-chip" onclick="suggestMeetingTime()">
+        <i class="fas fa-clock"></i> Sugerir Horário
+      </button>
+      <button type="button" class="chat-action-chip" onclick="askMorePhotos()">
+        <i class="fas fa-camera"></i> Pedir Mais Fotos
+      </button>
+      <button type="button" class="chat-action-chip" onclick="confirmMeetingPresence()">
+        <i class="fas fa-check-double"></i> Confirmar Presença
+      </button>
+    </div>
+
+    <!-- INPUT ROW -->
+    <div class="chat-input-row" id="chatInputRow" style="padding: 16px 20px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; align-items: center;">
+      <input type="text" id="msgInput" class="form-control" placeholder="Escreva uma mensagem ou combine os detalhes..." autocomplete="off" style="border-radius: 99px; padding: 12px 20px;">
+      <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()" style="border-radius: 50%; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
   </div>
+
+  <!-- MODAL: PICK PONTO SEGURO -->
+  <div class="quick-spot-modal-backdrop" id="spotModalBackdrop" onclick="closeSpotPicker(event)">
+    <div class="quick-spot-modal" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; margin: 0; color: #0f172a;">
+          <i class="fas fa-shield-alt" style="color: #5352ed;"></i> Sugerir Ponto Seguro
+        </h3>
+        <button class="modal-close" onclick="closeSpotPicker()"><i class="fas fa-times"></i></button>
+      </div>
+      <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 14px;">
+        Selecione um ponto homologado em São Paulo para enviar na conversa como proposta de encontro presencial:
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 10px;" id="spotListOptions">
+        <!-- Injetado dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="background: #090d16; color: #94a3b8; padding: 48px 0 28px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: auto;">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-arrows-rotate" style="color: #ff4757;"></i> Swaply
+          </a>
+          <span style="color: #64748b; font-size: 0.88rem;">| Do virtual ao presencial</span>
+        </div>
+        <div style="display: flex; gap: 20px; font-size: 0.9rem;">
+          <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
+          <a href="map.html" style="color: #94a3b8;">Pontos Seguros</a>
+          <a href="trades.html" style="color: #94a3b8;">Trocas</a>
+          <a href="profile.html" style="color: #94a3b8;">Perfil</a>
+        </div>
+      </div>
+      <div style="padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
+        <p style="color: #f1f5f9; font-weight: 600;">
+          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
+        </p>
+        <p style="color: #64748b; font-size: 0.85rem;">
+          Swaply &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
+        </p>
+      </div>
+    </div>
+  </footer>
 
   <script>
     const API_BASE = 'http://localhost:3001/api';
@@ -79,13 +315,14 @@
     const tradeId = params.get('tradeId');
     if (!tradeId) window.location.href = 'trades.html';
 
-    const user = getCurrentUser();
+    const currentUser = getCurrentUser();
     let lastMsgCount = 0;
     let pollInterval = null;
     let tradeData = null;
+    let exchangePointsList = [];
 
     function getStatusLabel(s) {
-      return { 'pending':'Pendente','accepted':'Aceita','rejected':'Rejeitada','completed':'Concluída','cancelled':'Cancelada' }[s] || s;
+      return { 'pending':'Pendente','accepted':'Aceita / Agendada','rejected':'Rejeitada','completed':'Concluída','cancelled':'Cancelada' }[s] || s;
     }
     function getStatusClass(s) {
       return { 'pending':'badge-status--pending','accepted':'badge-status--active','rejected':'badge-status--rejected','completed':'badge-status--done','cancelled':'badge-status--rejected' }[s] || '';
@@ -100,26 +337,98 @@
       return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    // Identifica e renderiza link para WhatsApp quando houver número de telefone
+    function parseMessageContent(text) {
+      const safeText = escapeHtml(text);
+      // Regex para identificar padrões de telefone com DDD (10 ou 11 dígitos)
+      const phoneRegex = /(?:\+?55\s*)?(?:\(?([1-9]{2})\)?\s*)?(9?\d{4})[-\s]?(\d{4})/g;
+
+      // Se contém número de telefone ou link de wa.me
+      let hasPhone = false;
+      let cleanNumber = '';
+
+      const enriched = safeText.replace(phoneRegex, (match, ddd, part1, part2) => {
+        hasPhone = true;
+        const digits = match.replace(/\D/g, '');
+        if (digits.length >= 10) {
+          cleanNumber = digits.length === 10 || digits.length === 11 ? '55' + digits : digits;
+          return `<strong style="text-decoration: underline;">${match}</strong>`;
+        }
+        return match;
+      });
+
+      let extraHtml = '';
+      if (hasPhone && cleanNumber) {
+        extraHtml = `
+          <div>
+            <a href="https://wa.me/${cleanNumber}" target="_blank" rel="noopener" class="whatsapp-link-btn">
+              <i class="fab fa-whatsapp"></i> Conversar no WhatsApp
+            </a>
+          </div>
+        `;
+      }
+
+      // Se mencionar ponto seguro, adiciona link do mapa
+      if (text.toLowerCase().includes('ponto seguro') || text.toLowerCase().includes('masp') || text.toLowerCase().includes('estação sé')) {
+        extraHtml += `
+          <div style="margin-top: 6px;">
+            <a href="map.html" target="_blank" class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:3px 10px; display:inline-flex; align-items:center; gap:6px;">
+              <i class="fas fa-map-marked-alt"></i> Ver Pontos Seguros no Mapa
+            </a>
+          </div>
+        `;
+      }
+
+      return enriched + extraHtml;
+    }
+
     async function loadTrade() {
       try {
         const res = await fetch(`${API_BASE}/trades/${tradeId}`, { headers: authHeaders() });
         if (!res.ok) throw new Error();
         tradeData = await res.json();
-        document.title = `Chat #${tradeId} — Swaply`;
+        document.title = `Chat: ${tradeData.item_wanted_title || 'Troca'} — Swaply`;
 
-        document.getElementById('tradeItems').innerHTML = `
-          <div class="chat-trade-item"><i class="fas fa-box"></i> <span>${tradeData.offered_title || 'Item'}</span></div>
-          <i class="fas fa-exchange-alt"></i>
-          <div class="chat-trade-item"><i class="fas fa-box-open"></i> <span>${tradeData.wanted_title || 'Item'}</span></div>
+        const isRequester = currentUser && currentUser.id == tradeData.requester_id;
+        const partnerName = isRequester ? tradeData.owner_name : tradeData.requester_name;
+        const partnerAvatar = isRequester 
+          ? (tradeData.owner_avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200')
+          : (tradeData.requester_avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200');
+        const partnerRep = isRequester ? tradeData.owner_reputation : tradeData.requester_reputation;
+
+        document.getElementById('partnerName').textContent = partnerName || 'Usuário Swaply';
+        document.getElementById('partnerAvatar').src = partnerAvatar;
+        document.getElementById('partnerRep').innerHTML = `<i class="fas fa-star" style="color:#f59e0b;"></i> Reputação: ${partnerRep || 100} pts`;
+
+        const statusEl = document.getElementById('tradeStatusBadge');
+        statusEl.textContent = getStatusLabel(tradeData.status);
+        statusEl.className = `badge ${getStatusClass(tradeData.status)}`;
+
+        document.getElementById('tradeItemsMatch').innerHTML = `
+          <strong>${escapeHtml(tradeData.offered_title || 'Item Oferecido')}</strong> ⇄ <strong>${escapeHtml(tradeData.wanted_title || 'Item Desejado')}</strong>
         `;
-        document.getElementById('tradeStatus').textContent = getStatusLabel(tradeData.status);
-        document.getElementById('tradeStatus').className = `badge ${getStatusClass(tradeData.status)}`;
 
-        if (tradeData.status === 'accepted' || tradeData.status === 'pending') {
-          document.getElementById('chatInputRow').style.display = 'flex';
+        if (tradeData.status === 'accepted') {
+          document.getElementById('btnPassport').style.display = 'inline-flex';
+        }
+
+        // Se finalizado, desabilita input
+        if (['completed', 'cancelled', 'rejected'].includes(tradeData.status)) {
+          document.getElementById('chatInputRow').innerHTML = `
+            <div style="width:100%; text-align:center; padding:10px; color:#64748b; font-size:0.9rem;">
+              <i class="fas fa-lock"></i> Esta troca está finalizada (${getStatusLabel(tradeData.status)}). O chat foi arquivado.
+            </div>
+          `;
+          document.getElementById('quickActionsBar').style.display = 'none';
         }
       } catch(e) {
-        document.getElementById('tradeInfo').innerHTML = '<p class="text-muted">Troca não encontrada.</p>';
+        console.error('Erro ao carregar detalhes da troca:', e);
+        document.getElementById('partnerName').textContent = 'Troca não encontrada';
       }
     }
 
@@ -132,11 +441,19 @@
         if (messages.length === lastMsgCount) return;
         lastMsgCount = messages.length;
 
-        const uid = user ? user.id : null;
+        const uid = currentUser ? currentUser.id : null;
         const list = document.getElementById('messagesList');
 
         if (messages.length === 0) {
-          list.innerHTML = '<div class="chat-empty"><i class="fas fa-comments fa-2x"></i><p>Nenhuma mensagem ainda. Diga olá!</p></div>';
+          list.innerHTML = `
+            <div style="text-align: center; margin: auto; padding: 40px 20px; color: #94a3b8;">
+              <div style="width: 60px; height: 60px; border-radius: 50%; background: #eef2ff; color: #5352ed; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 16px;">
+                <i class="fas fa-comments"></i>
+              </div>
+              <h4 style="color: #1e293b; font-weight: 800; margin-bottom: 6px;">Inicie a conversa!</h4>
+              <p style="font-size: 0.9rem; max-width: 360px; margin: 0 auto;">Tire dúvidas sobre o estado do item, compartilhe contatos ou combine o melhor Ponto Seguro para a troca presencial.</p>
+            </div>
+          `;
           return;
         }
 
@@ -145,36 +462,36 @@
         messages.forEach(msg => {
           const msgDate = formatDate(msg.created_at);
           if (msgDate !== lastDate) {
-            html += `<div class="message-date-sep"><span>${msgDate}</span></div>`;
+            html += `<div class="message-date-separator"><span>${msgDate}</span></div>`;
             lastDate = msgDate;
           }
+
           const isOwn = msg.sender_id == uid;
           html += `
-            <div class="message ${isOwn ? 'own' : 'other'}">
-              ${!isOwn ? `<div class="message-sender">${msg.sender_name || 'Usuário'}</div>` : ''}
-              <div class="message-bubble">
-                <span class="message-text">${escapeHtml(msg.content)}</span>
-                <span class="message-time">${formatTime(msg.created_at)}</span>
+            <div class="message-item ${isOwn ? 'own' : 'other'}">
+              ${!isOwn ? `<span style="font-size:0.75rem; font-weight:700; color:#64748b; margin-bottom:3px; margin-left:4px;">${escapeHtml(msg.sender_name || 'Usuário')}</span>` : ''}
+              <div class="message-bubble-content">
+                ${parseMessageContent(msg.content)}
               </div>
-            </div>`;
+              <span class="message-time-meta">${formatTime(msg.created_at)}</span>
+            </div>
+          `;
         });
 
         list.innerHTML = html;
         list.scrollTop = list.scrollHeight;
-      } catch(e) {}
+      } catch(e) {
+        console.error('Erro ao ler mensagens:', e);
+      }
     }
 
-    function escapeHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-    }
-
-    async function sendMessage() {
+    async function sendMessage(customContent = null) {
       const input = document.getElementById('msgInput');
-      const content = input.value.trim();
+      const content = customContent !== null ? customContent : input.value.trim();
       if (!content) return;
 
       const btn = document.getElementById('sendBtn');
-      btn.disabled = true;
+      if (btn) btn.disabled = true;
 
       try {
         const res = await fetch(`${API_BASE}/messages/trade/${tradeId}`, {
@@ -184,16 +501,73 @@
         });
 
         if (res.ok) {
-          input.value = '';
-          lastMsgCount = 0; // force reload
+          if (customContent === null) input.value = '';
+          lastMsgCount = 0;
           await loadMessages();
         } else {
           alert('Erro ao enviar mensagem.');
         }
-      } catch(e) { alert('Erro de conexão.'); }
+      } catch(e) {
+        alert('Erro de conexão ao enviar mensagem.');
+      }
 
-      btn.disabled = false;
-      input.focus();
+      if (btn) btn.disabled = false;
+      if (customContent === null) input.focus();
+    }
+
+    // ─── CHAT QUICK ACTIONS & CONTACT SHARING ───
+    function shareWhatsApp() {
+      const num = prompt('Informe seu número de WhatsApp com DDD para combinarem os detalhes (ex: 11987654321):', '11987654321');
+      if (num && num.trim()) {
+        const clean = num.replace(/\D/g, '');
+        sendMessage(`📱 Meu WhatsApp para combinarmos mais rápido: ${clean}`);
+      }
+    }
+
+    function suggestMeetingTime() {
+      sendMessage('⏰ Olá! Qual dia e horário fica mais conveniente para você durante esta semana ou final de semana?');
+    }
+
+    function askMorePhotos() {
+      sendMessage('📸 Olá! Você conseguiria me enviar mais fotos ou detalhes sobre o estado de conservação do item?');
+    }
+
+    function confirmMeetingPresence() {
+      sendMessage('🤝 Confirmado! Estarei no Ponto Seguro combinado com o QR Code pronto no celular para validação da troca.');
+    }
+
+    async function loadExchangePointsForPicker() {
+      try {
+        const res = await fetch(`${API_BASE}/exchange-points`);
+        if (!res.ok) return;
+        exchangePointsList = await res.json();
+        const container = document.getElementById('spotListOptions');
+        container.innerHTML = exchangePointsList.map(pt => `
+          <button type="button" class="btn btn-secondary btn-sm" onclick="selectSpotSuggestion('${escapeHtml(pt.name)}', '${escapeHtml(pt.address || '')}')" style="justify-content: flex-start; text-align: left; padding: 10px 14px; border-radius: 12px;">
+            <div>
+              <strong style="color: #1e1b4b; display: block;"><i class="fas fa-store" style="color:#5352ed;"></i> ${escapeHtml(pt.name)}</strong>
+              <small style="color: #64748b;">${escapeHtml(pt.address || '')}</small>
+            </div>
+          </button>
+        `).join('');
+      } catch(e) {}
+    }
+
+    function openSpotPicker() {
+      document.getElementById('spotModalBackdrop').style.display = 'flex';
+    }
+
+    function closeSpotPicker(e) {
+      document.getElementById('spotModalBackdrop').style.display = 'none';
+    }
+
+    function selectSpotSuggestion(name, addr) {
+      closeSpotPicker();
+      sendMessage(`📍 Sugiro nos encontrarmos no Ponto Seguro: ${name} (${addr}). O que acha?`);
+    }
+
+    function goToPassport() {
+      window.location.href = `trades.html?openQR=${tradeId}`;
     }
 
     // Enter para enviar
@@ -204,10 +578,10 @@
       }
     });
 
-    // Init
     async function init() {
       await loadTrade();
       await loadMessages();
+      await loadExchangePointsForPicker();
       pollInterval = setInterval(loadMessages, 3000);
     }
 

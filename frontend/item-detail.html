@@ -256,15 +256,23 @@
           `;
         } else if (getToken()) {
           actionsEl.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="openTradeModal()">
-              <i class="fas fa-handshake"></i> Propor Troca
-            </button>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+              <button class="btn btn-primary btn-lg" onclick="openTradeModal()">
+                <i class="fas fa-handshake"></i> Propor Troca
+              </button>
+              <button class="btn btn-secondary btn-lg" style="background:#5352ed; color:#fff; border-color:#5352ed;" onclick="startInquiryChat()">
+                <i class="fas fa-comments"></i> Conversar / Negociar no Chat
+              </button>
+            </div>
           `;
           loadMyItems();
           loadExchangePoints();
         } else {
           actionsEl.innerHTML = `
-            <a href="login.html" class="btn btn-primary btn-lg"><i class="fas fa-sign-in-alt"></i> Entre na sua conta para propor troca</a>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+              <a href="login.html" class="btn btn-primary btn-lg"><i class="fas fa-sign-in-alt"></i> Entre para Propor Troca</a>
+              <a href="login.html" class="btn btn-secondary btn-lg"><i class="fas fa-comments"></i> Entrar para Conversar</a>
+            </div>
           `;
         }
 
@@ -404,7 +412,61 @@
       } catch(e) { alert('Erro de conexão.'); }
     }
 
+    async function startInquiryChat() {
+      if (!getToken()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/messages/inquiry`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            item_id: currentItem.id,
+            message: `Olá! Tenho interesse no seu anúncio "${currentItem.title}". Gostaria de conversar para combinarmos a troca!`
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.trade_id) {
+          window.location.href = `chat.html?tradeId=${data.trade_id}`;
+        } else {
+          alert(data.error || 'Não foi possível iniciar a conversa no chat.');
+        }
+      } catch (e) {
+        console.error('Erro ao conectar ao chat:', e);
+        alert('Erro de conexão ao abrir chat.');
+      }
+    }
+
     loadItem();
   </script>
+
+  <!-- FOOTER -->
+  <footer style="background: #090d16; color: #94a3b8; padding: 48px 0 28px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 60px;">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-arrows-rotate" style="color: #ff4757;"></i> Swaply
+          </a>
+          <span style="color: #64748b; font-size: 0.88rem;">| Do virtual ao presencial</span>
+        </div>
+        <div style="display: flex; gap: 20px; font-size: 0.9rem;">
+          <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
+          <a href="map.html" style="color: #94a3b8;">Pontos Seguros</a>
+          <a href="trades.html" style="color: #94a3b8;">Trocas</a>
+          <a href="profile.html" style="color: #94a3b8;">Perfil</a>
+        </div>
+      </div>
+      <div style="padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
+        <p style="color: #f1f5f9; font-weight: 600;">
+          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
+        </p>
+        <p style="color: #64748b; font-size: 0.85rem;">
+          Swaply &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
+        </p>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

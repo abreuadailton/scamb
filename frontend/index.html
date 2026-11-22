@@ -20,7 +20,7 @@
       </button>
       <ul class="navbar-links" id="navLinks">
         <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Pontos Seguros</a></li>
         <li id="nav-guest-login"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
         <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Cadastre-se</a></li>
         <li id="nav-dashboard" style="display:none;"><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
@@ -32,11 +32,14 @@
     </div>
   </nav>
 
-  <!-- HERO SECTION -->
+  <!-- HERO SECTION WITH FLOATING AURORA ORBS -->
   <section class="hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+
     <div class="container hero-content fade-in-up">
       <span class="hero-eyebrow">
-        <i class="fas fa-bolt" style="color: #f59e0b;"></i> Plataforma de Trocas Inteligente & Segura
+        <i class="fas fa-bolt" style="color: #ff6b81;"></i> Plataforma de Trocas Inteligente & Segura
       </span>
       <h1 class="hero-title">
         Troque de tudo.<br>
@@ -51,7 +54,7 @@
           <i class="fas fa-search"></i> Explorar Catálogo Completo
         </a>
         <a href="map.html" class="btn btn-secondary btn-lg">
-          <i class="fas fa-map-marked-alt"></i> Ver Mapa de Pontos
+          <i class="fas fa-map-marked-alt"></i> Ver Pontos Seguros
         </a>
       </div>
 
@@ -77,11 +80,26 @@
     </div>
   </section>
 
+  <!-- MARQUEE TICKER (LETREIRO COM OS ÚLTIMOS ITENS ANUNCIADOS) -->
+  <section class="marquee-section">
+    <div class="marquee-label">
+      <i class="fas fa-bolt"></i> Últimos itens anunciados para troca &bull; Passe o mouse para pausar &bull; Clique para abrir
+    </div>
+    <div class="marquee-container" id="marqueeContainer">
+      <div class="marquee-track" id="marqueeTrack">
+        <!-- Injetado dinamicamente com os itens do catálogo -->
+        <div class="marquee-card">
+          <div class="marquee-info"><span style="color:#94a3b8; font-size:0.85rem;">Carregando anúncios recentes...</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- O CONTEXTO: POR QUE O VIRTUAL POTENCIALIZA O PRESENCIAL? -->
   <section class="section" style="background: #ffffff; padding: 80px 0;">
     <div class="container">
       <div style="text-align: center; max-width: 760px; margin: 0 auto 56px;">
-        <span class="badge" style="background: #eef2ff; color: #6366f1; border: 1px solid #c7d2fe; padding: 6px 16px; border-radius: 999px; font-weight: 700; margin-bottom: 12px; display: inline-block;">
+        <span class="badge" style="background: #eef2ff; color: #5352ed; border: 1px solid #c7d2fe; padding: 6px 16px; border-radius: 999px; font-weight: 700; margin-bottom: 12px; display: inline-block;">
           Tema Central: Do Virtual ao Presencial
         </span>
         <h2 style="font-size: clamp(2rem, 3.5vw, 2.7rem); font-weight: 900; color: #0f172a; letter-spacing: -0.5px; margin-top: 8px;">
@@ -109,7 +127,7 @@
         </div>
 
         <!-- Card 2: A Ponte Virtual -> Real com Swaply -->
-        <div class="card" style="padding: 36px 30px; border-radius: 20px; border: 1.5px solid #c7d2fe; background: linear-gradient(180deg, #f5f3ff 0%, #ffffff 100%); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);">
+        <div class="card" style="padding: 36px 30px; border-radius: 20px; border: 1.5px solid #c7d2fe; background: linear-gradient(180deg, #f5f3ff 0%, #ffffff 100%); box-shadow: 0 10px 30px rgba(83, 82, 237, 0.12);">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
             <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--gradient-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; box-shadow: var(--shadow-primary);">
               <i class="fas fa-check-circle"></i>
@@ -117,9 +135,9 @@
             <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--color-primary-dark); margin: 0;">No Swaply (Virtual + Real)</h3>
           </div>
           <ul style="display: flex; flex-direction: column; gap: 14px; color: #1e1b4b; font-size: 0.98rem; line-height: 1.5;">
-            <li><i class="fas fa-check" style="margin-right: 8px; color: #6366f1;"></i> <strong>Match Pré-estabelecido:</strong> O item já está reservado e acordado antes de você sair de casa!</li>
-            <li><i class="fas fa-check" style="margin-right: 8px; color: #6366f1;"></i> <strong>Pontos Seguros & Conhecidos:</strong> Locais monitorados em São Paulo (MASP, Conjunto Nacional, Estação Sé, Parques).</li>
-            <li><i class="fas fa-check" style="margin-right: 8px; color: #6366f1;"></i> <strong>QR Code + Check-in GPS:</strong> Validação tecnológica da presença física que constrói reputação real para a comunidade.</li>
+            <li><i class="fas fa-check" style="margin-right: 8px; color: #5352ed;"></i> <strong>Match Pré-estabelecido:</strong> O item já está reservado e acordado antes de você sair de casa!</li>
+            <li><i class="fas fa-check" style="margin-right: 8px; color: #5352ed;"></i> <strong>Pontos Seguros & Conhecidos:</strong> Locais monitorados em São Paulo (MASP, Conjunto Nacional, Estação Sé, Parques).</li>
+            <li><i class="fas fa-check" style="margin-right: 8px; color: #5352ed;"></i> <strong>QR Code + Check-in GPS:</strong> Validação tecnológica da presença física que constrói reputação real para a comunidade.</li>
           </ul>
         </div>
       </div>
@@ -139,7 +157,7 @@
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
         <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
-          <div style="width: 56px; height: 56px; border-radius: 16px; background: #eef2ff; color: #6366f1; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #eef2ff; color: #5352ed; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
             <i class="fas fa-gamepad"></i>
           </div>
           <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Games & Consoles</h4>
@@ -147,7 +165,7 @@
         </div>
 
         <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
-          <div style="width: 56px; height: 56px; border-radius: 16px; background: #fdf2f8; color: #ec4899; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #fdf2f8; color: #ff4757; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
             <i class="fas fa-book-open"></i>
           </div>
           <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Livros & HQs</h4>
@@ -155,7 +173,7 @@
         </div>
 
         <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
-          <div style="width: 56px; height: 56px; border-radius: 16px; background: #ecfeff; color: #06b6d4; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #ecfeff; color: #00d2d3; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
             <i class="fas fa-headphones-simple"></i>
           </div>
           <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Eletrônicos & Áudio</h4>
@@ -187,7 +205,7 @@
         </div>
 
         <div class="card" style="padding: 24px; text-align: center; border-radius: 16px; transition: transform 0.2s;">
-          <div style="width: 56px; height: 56px; border-radius: 16px; background: #fff1f2; color: #f43f5e; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: #fff1f2; color: #ff4757; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
             <i class="fas fa-shirt"></i>
           </div>
           <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">Roupas & Estilo</h4>
@@ -209,7 +227,7 @@
   <section class="section" style="background: #ffffff; padding: 80px 0;">
     <div class="container">
       <div style="text-align: center; max-width: 700px; margin: 0 auto 56px;">
-        <span class="badge" style="background: #fdf2f8; color: #f43f5e; border: 1px solid #fbcfe8; padding: 6px 16px; border-radius: 999px; font-weight: 700; margin-bottom: 12px; display: inline-block;">
+        <span class="badge" style="background: #fdf2f8; color: #ff4757; border: 1px solid #fbcfe8; padding: 6px 16px; border-radius: 999px; font-weight: 700; margin-bottom: 12px; display: inline-block;">
           Diferenciais Exclusivos
         </span>
         <h2 style="font-size: 2.3rem; font-weight: 900; color: #0f172a;">Tecnologia conectando pessoas</h2>
@@ -217,23 +235,23 @@
       </div>
 
       <div class="grid-3">
-        <!-- Feature 1: Leaflet Maps com Casinha e Bonequinho -->
+        <!-- Feature 1: Leaflet Maps com Pontos Seguros e Você Está Aqui -->
         <div class="card" style="padding: 32px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-          <div style="width: 56px; height: 56px; border-radius: 14px; background: #eef2ff; color: #6366f1; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <div style="width: 56px; height: 56px; border-radius: 14px; background: #eef2ff; color: #5352ed; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <i class="fas fa-map-location-dot"></i>
           </div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">Mapa Interativo com Marcadores</h3>
+          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">Pontos Seguros & Mapa Interativo</h3>
           <p style="color: #64748b; font-size: 0.95rem; line-height: 1.55; margin-bottom: 20px;">
-            Visualização fluida com <strong>Leaflet.js</strong>. Encontre os pontos seguros com ícones de <strong>casinhas e caixas de troca</strong> e veja sua posição em tempo real com o <strong>bonequinho animado</strong> ("Você está aqui").
+            Visualização fluida com <strong>Leaflet.js</strong>. Encontre os <strong>Pontos Seguros</strong> oficiais monitorados e visualize sua posição em tempo real com o indicador <strong>"Você está aqui"</strong> por GPS.
           </p>
           <a href="map.html" class="btn btn-secondary btn-sm" style="margin-top: auto; align-self: flex-start;">
-            <i class="fas fa-compass"></i> Abrir Mapa Seguro
+            <i class="fas fa-compass"></i> Abrir Pontos Seguros
           </a>
         </div>
 
         <!-- Feature 2: QR Code de Autenticação -->
         <div class="card" style="padding: 32px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-          <div style="width: 56px; height: 56px; border-radius: 14px; background: #ecfeff; color: #0891b2; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <div style="width: 56px; height: 56px; border-radius: 14px; background: #ecfeff; color: #00d2d3; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <i class="fas fa-qrcode"></i>
           </div>
           <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">QR Code de Autenticação</h3>
@@ -247,12 +265,12 @@
 
         <!-- Feature 3: Check-in por Geolocalização -->
         <div class="card" style="padding: 32px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-          <div style="width: 56px; height: 56px; border-radius: 14px; background: #fff1f2; color: #f43f5e; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <div style="width: 56px; height: 56px; border-radius: 14px; background: #fff1f2; color: #ff4757; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <i class="fas fa-location-crosshairs"></i>
           </div>
           <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">Check-in por Geolocalização</h3>
           <p style="color: #64748b; font-size: 0.95rem; line-height: 1.55; margin-bottom: 20px;">
-            Utiliza a API nativa do navegador <code>navigator.geolocation</code> calculando a distância pelo algoritmo de <strong>Haversine</strong>. A troca é concluída apenas quando ambos estão no ponto de encontro (<500m).
+            Utiliza a API nativa do navegador <code>navigator.geolocation</code> calculando a distância pelo algoritmo de <strong>Haversine</strong>. A troca é concluída com precisão física quando ambos estão no local.
           </p>
           <a href="trades.html" class="btn btn-secondary btn-sm" style="margin-top: auto; align-self: flex-start;">
             <i class="fas fa-satellite"></i> Testar Check-in GPS
@@ -263,7 +281,8 @@
   </section>
 
   <!-- CALL TO ACTION FINAL -->
-  <section style="background: var(--gradient-hero); color: #ffffff; padding: 75px 0; text-align: center; position: relative; overflow: hidden;">
+  <section style="background: var(--gradient-hero); color: #ffffff; padding: 80px 0; text-align: center; position: relative; overflow: hidden;">
+    <div class="hero-orb hero-orb-1" style="top:-50px; left:20%;"></div>
     <div class="container" style="position: relative; z-index: 2; max-width: 700px;">
       <h2 style="font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; color: #fff; margin-bottom: 16px;">
         Pronto para fazer circular o que você tem parado?
@@ -283,12 +302,12 @@
   </section>
 
   <!-- FOOTER -->
-  <footer style="background: #0f172a; color: #94a3b8; padding: 60px 0 35px; border-top: 1px solid #1e293b;">
+  <footer style="background: #090d16; color: #94a3b8; padding: 60px 0 35px; border-top: 1px solid rgba(255,255,255,0.08);">
     <div class="container">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 32px; margin-bottom: 40px;">
         <div style="max-width: 400px;">
           <a href="index.html" style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-arrows-rotate" style="color: #818cf8;"></i> Swaply
+            <i class="fas fa-arrows-rotate" style="color: #ff4757;"></i> Swaply
           </a>
           <p style="margin-top: 12px; font-size: 0.95rem; color: #94a3b8; line-height: 1.6;">
             A ponte entre o virtual e o presencial: facilitando trocas diretas de tudo sem dinheiro, com segurança e reputação comunitária.
@@ -299,7 +318,7 @@
             <h4 style="font-family: var(--font-heading); color: #fff; font-size: 1rem; margin-bottom: 12px;">Navegação</h4>
             <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
               <li><a href="catalog.html" style="color: #94a3b8;">Catálogo de Itens</a></li>
-              <li><a href="map.html" style="color: #94a3b8;">Mapa de Pontos</a></li>
+              <li><a href="map.html" style="color: #94a3b8;">Pontos Seguros</a></li>
               <li><a href="trades.html" style="color: #94a3b8;">Minhas Trocas</a></li>
               <li><a href="dashboard.html" style="color: #94a3b8;">Dashboard</a></li>
             </ul>
@@ -315,9 +334,11 @@
           </div>
         </div>
       </div>
-      <div style="border-top: 1px solid #1e293b; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.88rem;">
-        <p>&copy; 2026 Swaply. Projeto Web: Do Virtual ao Presencial.</p>
-        <p style="color: #64748b;">JavaScript (Node.js/Express) + HTML5 + CSS3 + SQLite</p>
+      <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.9rem;">
+        <p style="color: #f1f5f9; font-weight: 600;">
+          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
+        </p>
+        <p style="color: #64748b;">Swaply &copy; 2026 &bull; JavaScript (Node.js/Express) + HTML5 + CSS3 + SQLite</p>
       </div>
     </div>
   </footer>
@@ -353,7 +374,61 @@
       document.getElementById('navLinks').classList.toggle('open');
     });
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    // Carregar Marquee Ticker com os últimos itens anunciados
+    async function loadMarqueeItems() {
+      const track = document.getElementById('marqueeTrack');
+      try {
+        const res = await fetch(`${API_BASE}/items`);
+        if (!res.ok) throw new Error();
+        const items = await res.json();
+        if (!items || items.length === 0) {
+          track.innerHTML = '<div class="marquee-card"><span style="color:#94a3b8;">Cadastre os primeiros itens no catálogo!</span></div>';
+          return;
+        }
+
+        // Prepara os cards (pega até 12 itens e duplica para loop infinito sem cortes)
+        const displayItems = items.slice(0, 12);
+        const doubleItems = displayItems.concat(displayItems);
+
+        track.innerHTML = doubleItems.map(item => {
+          let imgUrl = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80';
+          if (Array.isArray(item.images) && item.images.length > 0) {
+            imgUrl = item.images[0];
+          } else if (typeof item.images === 'string') {
+            try {
+              const p = JSON.parse(item.images);
+              if (Array.isArray(p) && p.length > 0) imgUrl = p[0];
+              else if (p) imgUrl = p;
+            } catch(e) {
+              if (item.images.startsWith('http') || item.images.startsWith('/')) imgUrl = item.images;
+            }
+          }
+
+          return `
+            <a href="item-detail.html?id=${item.id}" class="marquee-card" title="Ver detalhes de ${escapeHtml(item.title)}">
+              <img src="${imgUrl}" class="marquee-img" alt="${escapeHtml(item.title)}" onerror="this.src='https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80';">
+              <div class="marquee-info">
+                <div class="marquee-title">${escapeHtml(item.title)}</div>
+                <div class="marquee-meta">
+                  <span class="marquee-badge">${escapeHtml(item.category || 'Geral')}</span>
+                  <span><i class="fas fa-map-marker-alt" style="color:#ff4757; font-size:0.75rem;"></i> ${escapeHtml(item.location_name || 'São Paulo')}</span>
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
+      } catch (e) {
+        console.error('Erro ao carregar marquee:', e);
+      }
+    }
+
     updateNavbar();
+    loadMarqueeItems();
   </script>
 </body>
 </html>
