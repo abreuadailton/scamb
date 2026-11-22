@@ -275,7 +275,10 @@
 
     function showQR(tradeId, qrData) {
       document.getElementById('qrCode').innerHTML = '';
-      document.getElementById('qrModal').style.display = 'flex';
+      const m = document.getElementById('qrModal');
+      m.style.display = 'flex';
+      m.classList.add('open');
+      m.classList.add('active');
       const qrContent = qrData || JSON.stringify({ tradeId, timestamp: new Date().toISOString() });
       try {
         new QRCode(document.getElementById('qrCode'), {
@@ -288,7 +291,12 @@
       }
     }
 
-    function closeQRModal() { document.getElementById('qrModal').style.display = 'none'; }
+    function closeQRModal() {
+      const m = document.getElementById('qrModal');
+      m.style.display = 'none';
+      m.classList.remove('open');
+      m.classList.remove('active');
+    }
     document.getElementById('qrModal').addEventListener('click', (e) => { if(e.target === document.getElementById('qrModal')) closeQRModal(); });
 
     loadTrades();

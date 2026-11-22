@@ -84,24 +84,28 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label>Qual item você quer oferecer?</label>
+          <label><i class="fas fa-box"></i> Qual item seu você deseja oferecer em troca? *</label>
           <select id="myItemSelect" class="form-control">
-            <option value="">Carregando seus itens...</option>
+            <option value="">Carregando seus itens disponíveis...</option>
           </select>
+          <div id="noItemsNotice" style="display:none; margin-top:8px; padding:10px; background:#fff3e0; border-radius:8px; border:1px solid #ffe082; font-size:0.9rem; color:#b78103;">
+            <i class="fas fa-info-circle"></i> Você ainda não tem nenhum item cadastrado para oferecer.
+            <br><a href="my-items.html" class="btn btn-secondary btn-sm mt-1" style="display:inline-block;"><i class="fas fa-plus"></i> Cadastrar um item meu agora</a>
+          </div>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-map-marker-alt"></i> Ponto de encontro</label>
+          <label><i class="fas fa-map-marker-alt"></i> Ponto de encontro seguro *</label>
           <select id="meetingPointSelect" class="form-control">
-            <option value="">Carregando pontos...</option>
+            <option value="">Carregando pontos de troca...</option>
           </select>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-calendar"></i> Data do encontro</label>
+          <label><i class="fas fa-calendar-alt"></i> Data e horário sugeridos para o encontro *</label>
           <input type="datetime-local" id="meetingDate" class="form-control">
         </div>
-        <div id="tradeError" class="form-error" style="display:none;"></div>
-        <button class="btn btn-primary btn-full" id="submitTrade" onclick="submitTrade()">
-          <i class="fas fa-paper-plane"></i> Enviar proposta
+        <div id="tradeError" class="form-error" style="display:none; margin-bottom:12px;"></div>
+        <button class="btn btn-primary btn-full btn-lg" id="submitTrade" onclick="submitTrade()">
+          <i class="fas fa-paper-plane"></i> Enviar proposta de troca
         </button>
       </div>
     </div>
@@ -148,6 +152,8 @@
       document.querySelectorAll('.thumb').forEach((t,i) => t.classList.toggle('active', i === idx));
     }
 
+    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23e8f5e9'/%3E%3Ccircle cx='300' cy='180' r='60' fill='%232D7D32' opacity='0.7'/%3E%3Ctext x='300' y='300' font-family='sans-serif' font-size='20' fill='%232D7D32' font-weight='bold' text-anchor='middle'%3EEcoPermuta%3C/text%3E%3C/svg%3E";
+
     async function loadItem() {
       try {
         const res = await fetch(`${API_BASE}/items/${itemId}`);
@@ -157,17 +163,31 @@
         document.title = `${currentItem.title} — EcoPermuta`;
 
         // Imagens
-        try { const imgs = JSON.parse(currentItem.images || '[]'); images.push(...imgs); } catch(e) {}
-        if (images.length === 0) images.push('https://via.placeholder.com/600x400?text=Sem+imagem');
+        images.length = 0;
+        if (Array.isArray(currentItem.images)) {
+          images.push(...currentItem.images);
+        } else if (typeof currentItem.images === 'string') {
+          try {
+            const parsed = JSON.parse(currentItem.images);
+            if (Array.isArray(parsed)) images.push(...parsed);
+            else if (parsed) images.push(parsed);
+          } catch(e) {
+            if (currentItem.images) images.push(currentItem.images);
+          }
+        }
+        if (images.length === 0) images.push(DEFAULT_IMG);
 
         document.getElementById('mainImg').src = images[0];
+        document.getElementById('mainImg').onerror = function() { this.src = DEFAULT_IMG; };
+
         const thumbsEl = document.getElementById('thumbs');
+        thumbsEl.innerHTML = '';
         images.forEach((src, i) => {
           const img = document.createElement('img');
           img.src = src;
           img.className = 'thumb' + (i===0?' active':'');
           img.onclick = () => switchImage(i);
-          img.onerror = () => { img.src = 'https://via.placeholder.com/80x60?text=x'; };
+          img.onerror = () => { img.src = DEFAULT_IMG; };
           thumbsEl.appendChild(img);
         });
 
@@ -189,12 +209,14 @@
         if (currentItem.latitude && currentItem.longitude) {
           document.getElementById('mapSection').style.display = 'block';
           setTimeout(() => {
-            leafletMap = L.map('itemMap').setView([currentItem.latitude, currentItem.longitude], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(leafletMap);
-            L.marker([currentItem.latitude, currentItem.longitude])
-              .addTo(leafletMap)
-              .bindPopup(`<b>${currentItem.title}</b><br>${currentItem.location_name||''}`)
-              .openPopup();
+            if (!leafletMap) {
+              leafletMap = L.map('itemMap').setView([currentItem.latitude, currentItem.longitude], 15);
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(leafletMap);
+              L.marker([currentItem.latitude, currentItem.longitude])
+                .addTo(leafletMap)
+                .bindPopup(`<b>${currentItem.title}</b><br>${currentItem.location_name||''}`)
+                .openPopup();
+            }
           }, 100);
         }
 
@@ -205,7 +227,7 @@
 
         if (isOwner) {
           actionsEl.innerHTML = `
-            <a href="my-items.html" class="btn btn-secondary"><i class="fas fa-edit"></i> Editar item</a>
+            <a href="my-items.html" class="btn btn-secondary"><i class="fas fa-edit"></i> Editar este item</a>
             <button class="btn btn-danger" onclick="deleteItem()"><i class="fas fa-trash"></i> Deletar item</button>
           `;
         } else if (getToken()) {
@@ -218,7 +240,7 @@
           loadExchangePoints();
         } else {
           actionsEl.innerHTML = `
-            <a href="login.html" class="btn btn-primary btn-lg"><i class="fas fa-sign-in-alt"></i> Entre para propor troca</a>
+            <a href="login.html" class="btn btn-primary btn-lg"><i class="fas fa-sign-in-alt"></i> Entre na sua conta para propor troca</a>
           `;
         }
 
@@ -235,14 +257,24 @@
         const res = await fetch(`${API_BASE}/items/user/my`, { headers: authHeaders() });
         if (res.ok) {
           const items = await res.json();
+          const arr = Array.isArray(items) ? items : (items.data || []);
           const sel = document.getElementById('myItemSelect');
-          sel.innerHTML = '<option value="">Selecione um item para oferecer</option>';
-          items.filter(i => i.status === 'available').forEach(item => {
+          sel.innerHTML = '<option value="">Selecione um item seu para oferecer</option>';
+          const avail = arr.filter(i => i.status === 'available');
+          avail.forEach(item => {
             sel.innerHTML += `<option value="${item.id}">${item.title}</option>`;
           });
-          if (sel.options.length === 1) sel.innerHTML = '<option value="">Você não tem itens disponíveis</option>';
+          const notice = document.getElementById('noItemsNotice');
+          if (avail.length === 0) {
+            sel.innerHTML = '<option value="">(Nenhum item disponível)</option>';
+            if (notice) notice.style.display = 'block';
+          } else {
+            if (notice) notice.style.display = 'none';
+          }
         }
-      } catch(e) {}
+      } catch(e) {
+        console.error('Erro ao carregar meus itens:', e);
+      }
     }
 
     async function loadExchangePoints() {
@@ -250,16 +282,35 @@
         const res = await fetch(`${API_BASE}/exchange-points`);
         if (res.ok) {
           const pts = await res.json();
+          const arr = Array.isArray(pts) ? pts : (pts.data || []);
           const sel = document.getElementById('meetingPointSelect');
-          sel.innerHTML = '<option value="">Selecione um ponto de troca</option>';
-          pts.forEach(pt => { sel.innerHTML += `<option value="${pt.id}">${pt.name} — ${pt.address||''}</option>`; });
+          sel.innerHTML = '<option value="">Selecione um ponto de encontro seguro</option>';
+          arr.forEach(pt => {
+            sel.innerHTML += `<option value="${pt.id}">${pt.name} — ${pt.address||''}</option>`;
+          });
         }
-      } catch(e) {}
+      } catch(e) {
+        console.error('Erro ao carregar pontos de troca:', e);
+      }
     }
 
-    function openTradeModal() { document.getElementById('tradeModal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('tradeModal').style.display = 'none'; }
-    document.getElementById('tradeModal').addEventListener('click', (e) => { if(e.target === document.getElementById('tradeModal')) closeModal(); });
+    function openTradeModal() {
+      const modal = document.getElementById('tradeModal');
+      modal.style.display = 'flex';
+      modal.classList.add('open');
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('tradeModal');
+      modal.style.display = 'none';
+      modal.classList.remove('open');
+      modal.classList.remove('active');
+    }
+
+    document.getElementById('tradeModal').addEventListener('click', (e) => {
+      if(e.target === document.getElementById('tradeModal')) closeModal();
+    });
 
     async function submitTrade() {
       const itemOffered = document.getElementById('myItemSelect').value;
@@ -268,19 +319,33 @@
       const errEl = document.getElementById('tradeError');
       errEl.style.display = 'none';
 
-      if (!itemOffered) { errEl.textContent = 'Selecione um item para oferecer.'; errEl.style.display='block'; return; }
-      if (!meetingDate) { errEl.textContent = 'Selecione uma data para o encontro.'; errEl.style.display='block'; return; }
+      if (!itemOffered) {
+        errEl.textContent = 'Selecione qual item seu você deseja oferecer em troca.';
+        errEl.style.display = 'block';
+        return;
+      }
+      if (!meetingPointId) {
+        errEl.textContent = 'Selecione um ponto de encontro seguro.';
+        errEl.style.display = 'block';
+        return;
+      }
+      if (!meetingDate) {
+        errEl.textContent = 'Selecione uma data e horário sugeridos para o encontro presencial.';
+        errEl.style.display = 'block';
+        return;
+      }
 
       const btn = document.getElementById('submitTrade');
-      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando proposta...';
 
       try {
         const body = {
           item_offered_id: parseInt(itemOffered),
           item_wanted_id: parseInt(itemId),
+          meeting_point_id: parseInt(meetingPointId),
           meeting_date: meetingDate
         };
-        if (meetingPointId) body.meeting_point_id = parseInt(meetingPointId);
 
         const res = await fetch(`${API_BASE}/trades`, {
           method: 'POST',
@@ -290,17 +355,19 @@
         const data = await res.json();
         if (res.ok) {
           closeModal();
-          alert('Proposta de troca enviada com sucesso!');
+          alert('🎉 Proposta de troca enviada com sucesso! Você pode acompanhar o status e conversar pelo chat.');
           window.location.href = 'trades.html';
         } else {
-          errEl.textContent = data.error || 'Erro ao enviar proposta.';
+          errEl.textContent = data.error || 'Erro ao enviar proposta de troca.';
           errEl.style.display = 'block';
-          btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar proposta';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar proposta de troca';
         }
       } catch(e) {
-        errEl.textContent = 'Erro de conexão.';
+        errEl.textContent = 'Erro de conexão com o servidor.';
         errEl.style.display = 'block';
-        btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar proposta';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar proposta de troca';
       }
     }
 

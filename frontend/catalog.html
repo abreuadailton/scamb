@@ -117,14 +117,29 @@
       return map[cond] || '';
     }
 
+    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e8f5e9'/%3E%3Ccircle cx='200' cy='140' r='45' fill='%232D7D32' opacity='0.7'/%3E%3Ctext x='200' y='230' font-family='sans-serif' font-size='16' fill='%232D7D32' font-weight='bold' text-anchor='middle'%3EEcoPermuta%3C/text%3E%3C/svg%3E";
+
+    function getItemImages(item) {
+      if (Array.isArray(item.images)) return item.images;
+      if (typeof item.images === 'string') {
+        try {
+          const parsed = JSON.parse(item.images);
+          if (Array.isArray(parsed)) return parsed;
+          return [item.images];
+        } catch(e) {
+          return [item.images];
+        }
+      }
+      return [];
+    }
+
     function renderCard(item) {
-      let imgs = [];
-      try { imgs = JSON.parse(item.images || '[]'); } catch(e) {}
-      const imgSrc = imgs.length ? imgs[0] : 'https://via.placeholder.com/300x200?text=Sem+imagem';
+      const imgs = getItemImages(item);
+      const imgSrc = imgs.length && imgs[0] ? imgs[0] : DEFAULT_IMG;
       return `
         <div class="card card-item fade-in">
           <div class="card-item-img">
-            <img src="${imgSrc}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+imagem'">
+            <img src="${imgSrc}" alt="${item.title}" onerror="this.onerror=null; this.src='${DEFAULT_IMG}'">
             <span class="card-item-category badge badge-category">${item.category || 'Geral'}</span>
           </div>
           <div class="card-item-body">

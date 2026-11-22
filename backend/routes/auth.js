@@ -103,13 +103,50 @@ router.get('/me', auth, (req, res) => {
   }
 });
 
+const multer = require('multer');
+const path   = require('path');
+const fs     = require('fs');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join(__dirname, '..', '..', 'frontend', 'img', 'avatars');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `avatar-${req.user ? req.user.id : 'anon'}-${Date.now()}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
+
+// ─── POST /avatar — upload avatar file ────────────────────────────────────────
+router.post('/avatar', auth, upload.single('avatar'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'Nenhum arquivo enviado.' });
+    }
+    const avatarUrl = `img/avatars/${req.file.filename}`;
+    db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(avatarUrl, req.user.id);
+    const updated = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+    return res.json({ success: true, avatar_url: avatarUrl, data: safeUser(updated) });
+  } catch (err) {
+    console.error('[avatar upload]', err);
+    return res.status(500).json({ success: false, error: 'Erro ao fazer upload da imagem.' });
+  }
+});
+
 // ─── PUT /profile ─────────────────────────────────────────────────────────────
 router.put('/profile', auth, (req, res) => {
   try {
-    const { name, bio } = req.body;
+    const { name, bio, avatar_url } = req.body;
 
-    if (!name && bio === undefined) {
-      return res.status(400).json({ success: false, error: 'Informe pelo menos name ou bio para atualizar.' });
+    if (!name && bio === undefined && avatar_url === undefined) {
+      return res.status(400).json({ success: false, error: 'Informe pelo menos name, bio ou avatar_url para atualizar.' });
     }
 
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
@@ -117,11 +154,12 @@ router.put('/profile', auth, (req, res) => {
       return res.status(404).json({ success: false, error: 'Usuário não encontrado.' });
     }
 
-    const updatedName = name ? name.trim() : user.name;
-    const updatedBio  = bio !== undefined ? bio : user.bio;
+    const updatedName   = name ? name.trim() : user.name;
+    const updatedBio    = bio !== undefined ? bio : user.bio;
+    const updatedAvatar = avatar_url !== undefined ? avatar_url : user.avatar_url;
 
-    db.prepare('UPDATE users SET name = ?, bio = ? WHERE id = ?')
-      .run(updatedName, updatedBio, req.user.id);
+    db.prepare('UPDATE users SET name = ?, bio = ?, avatar_url = ? WHERE id = ?')
+      .run(updatedName, updatedBio, updatedAvatar, req.user.id);
 
     const updated = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
     return res.json({ success: true, data: safeUser(updated) });

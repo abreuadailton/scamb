@@ -1,10 +1,40 @@
 'use strict';
 
 const express = require('express');
+const multer  = require('multer');
+const path    = require('path');
+const fs      = require('fs');
 const db      = require('../db/database');
 const auth    = require('../middleware/auth');
 
 const router = express.Router();
+
+const itemStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join(__dirname, '..', '..', 'frontend', 'img', 'items');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `item-${Date.now()}-${Math.round(Math.random()*1E5)}${ext}`);
+  }
+});
+const uploadItem = multer({ storage: itemStorage, limits: { fileSize: 10 * 1024 * 1024 } });
+
+// ─── POST /upload — upload item photos ────────────────────────────────────────
+router.post('/upload', auth, uploadItem.array('images', 5), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, error: 'Nenhum arquivo enviado.' });
+    }
+    const urls = req.files.map(f => `img/items/${f.filename}`);
+    return res.json({ success: true, urls });
+  } catch(err) {
+    console.error('[items upload]', err);
+    return res.status(500).json({ success: false, error: 'Erro no upload das imagens.' });
+  }
+});
 
 // ─── GET / — list available items ────────────────────────────────────────────
 router.get('/', (req, res) => {
