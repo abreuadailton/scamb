@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat — EcoPermuta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="chat-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo"><i class="fas fa-leaf"></i> EcoPermuta</a>
+      <button class="navbar-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
+        <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="chat-wrapper">
+    <!-- TRADE INFO -->
+    <div class="chat-trade-info" id="tradeInfo">
+      <a href="trades.html" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></a>
+      <div class="chat-trade-items" id="tradeItems">
+        <div class="loading-spinner"></div>
+      </div>
+      <span class="badge" id="tradeStatus"></span>
+    </div>
+
+    <!-- MENSAGENS -->
+    <div class="chat-container">
+      <div class="messages-list" id="messagesList">
+        <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="chat-input-row" id="chatInputRow" style="display:none;">
+        <input type="text" id="msgInput" class="form-control" placeholder="Digite uma mensagem..." autocomplete="off">
+        <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
+    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
+
+    if (!getToken()) window.location.href = 'login.html';
+
+    document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
+    function logout() { localStorage.removeItem('ecopermuta_token'); localStorage.removeItem('ecopermuta_user'); window.location.href = 'login.html'; }
+
+    const params = new URLSearchParams(window.location.search);
+    const tradeId = params.get('tradeId');
+    if (!tradeId) window.location.href = 'trades.html';
+
+    const user = getCurrentUser();
+    let lastMsgCount = 0;
+    let pollInterval = null;
+    let tradeData = null;
+
+    function getStatusLabel(s) {
+      return { 'pending':'Pendente','accepted':'Aceita','rejected':'Rejeitada','completed':'Concluída','cancelled':'Cancelada' }[s] || s;
+    }
+    function getStatusClass(s) {
+      return { 'pending':'badge-status--pending','accepted':'badge-status--active','rejected':'badge-status--rejected','completed':'badge-status--done','cancelled':'badge-status--rejected' }[s] || '';
+    }
+
+    function formatTime(ts) {
+      const d = new Date(ts);
+      return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+    function formatDate(ts) {
+      const d = new Date(ts);
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    }
+
+    async function loadTrade() {
+      try {
+        const res = await fetch(`${API_BASE}/trades/${tradeId}`, { headers: authHeaders() });
+        if (!res.ok) throw new Error();
+        tradeData = await res.json();
+        document.title = `Chat #${tradeId} — EcoPermuta`;
+
+        document.getElementById('tradeItems').innerHTML = `
+          <div class="chat-trade-item"><i class="fas fa-box"></i> <span>${tradeData.offered_title || 'Item'}</span></div>
+          <i class="fas fa-exchange-alt"></i>
+          <div class="chat-trade-item"><i class="fas fa-box-open"></i> <span>${tradeData.wanted_title || 'Item'}</span></div>
+        `;
+        document.getElementById('tradeStatus').textContent = getStatusLabel(tradeData.status);
+        document.getElementById('tradeStatus').className = `badge ${getStatusClass(tradeData.status)}`;
+
+        if (tradeData.status === 'accepted' || tradeData.status === 'pending') {
+          document.getElementById('chatInputRow').style.display = 'flex';
+        }
+      } catch(e) {
+        document.getElementById('tradeInfo').innerHTML = '<p class="text-muted">Troca não encontrada.</p>';
+      }
+    }
+
+    async function loadMessages() {
+      try {
+        const res = await fetch(`${API_BASE}/messages/trade/${tradeId}`, { headers: authHeaders() });
+        if (!res.ok) return;
+        const messages = await res.json();
+
+        if (messages.length === lastMsgCount) return;
+        lastMsgCount = messages.length;
+
+        const uid = user ? user.id : null;
+        const list = document.getElementById('messagesList');
+
+        if (messages.length === 0) {
+          list.innerHTML = '<div class="chat-empty"><i class="fas fa-comments fa-2x"></i><p>Nenhuma mensagem ainda. Diga olá!</p></div>';
+          return;
+        }
+
+        let html = '';
+        let lastDate = null;
+        messages.forEach(msg => {
+          const msgDate = formatDate(msg.created_at);
+          if (msgDate !== lastDate) {
+            html += `<div class="message-date-sep"><span>${msgDate}</span></div>`;
+            lastDate = msgDate;
+          }
+          const isOwn = msg.sender_id == uid;
+          html += `
+            <div class="message ${isOwn ? 'own' : 'other'}">
+              ${!isOwn ? `<div class="message-sender">${msg.sender_name || 'Usuário'}</div>` : ''}
+              <div class="message-bubble">
+                <span class="message-text">${escapeHtml(msg.content)}</span>
+                <span class="message-time">${formatTime(msg.created_at)}</span>
+              </div>
+            </div>`;
+        });
+
+        list.innerHTML = html;
+        list.scrollTop = list.scrollHeight;
+      } catch(e) {}
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('msgInput');
+      const content = input.value.trim();
+      if (!content) return;
+
+      const btn = document.getElementById('sendBtn');
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_BASE}/messages/trade/${tradeId}`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ content })
+        });
+
+        if (res.ok) {
+          input.value = '';
+          lastMsgCount = 0; // force reload
+          await loadMessages();
+        } else {
+          alert('Erro ao enviar mensagem.');
+        }
+      } catch(e) { alert('Erro de conexão.'); }
+
+      btn.disabled = false;
+      input.focus();
+    }
+
+    // Enter para enviar
+    document.getElementById('msgInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Init
+    async function init() {
+      await loadTrade();
+      await loadMessages();
+      pollInterval = setInterval(loadMessages, 3000);
+    }
+
+    window.addEventListener('beforeunload', () => { if(pollInterval) clearInterval(pollInterval); });
+    init();
+  </script>
+</body>
+</html>

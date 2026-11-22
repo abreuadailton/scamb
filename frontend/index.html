@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoPermuta — Do virtual ao presencial, trocas que fazem sentido.</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <i class="fas fa-leaf"></i> EcoPermuta
+      </a>
+      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
+        <li id="nav-guest-links">
+          <a href="login.html" class="btn btn-secondary btn-sm">Entrar</a>
+        </li>
+        <li id="nav-guest-register" style="display:none;">
+          <a href="register.html" class="btn btn-primary btn-sm">Cadastrar</a>
+        </li>
+        <li id="nav-user-links" style="display:none;">
+          <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        </li>
+        <li id="nav-logout" style="display:none;">
+          <a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-content">
+      <span class="hero-badge"><i class="fas fa-recycle"></i> Economia Circular</span>
+      <h1 class="hero-title">Troque o que você não usa<br>pelo que você precisa</h1>
+      <p class="hero-subtitle">Do virtual ao presencial, trocas que fazem sentido.<br>Sem dinheiro. Com propósito. Com pessoas.</p>
+      <div class="hero-actions">
+        <a href="register.html" class="btn btn-primary btn-lg">
+          <i class="fas fa-seedling"></i> Começar agora
+        </a>
+        <a href="catalog.html" class="btn btn-secondary btn-lg">
+          <i class="fas fa-search"></i> Ver catálogo
+        </a>
+      </div>
+    </div>
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#F9FBF9" d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="section" id="como-funciona">
+    <div class="container">
+      <div class="section-header">
+        <h2>Como funciona</h2>
+        <p>Três passos simples para realizar sua primeira troca</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-icon"><i class="fas fa-box-open"></i></div>
+          <h3>Cadastre seu item</h3>
+          <p>Adicione fotos e descrição dos itens que você deseja trocar. É rápido e gratuito.</p>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-icon"><i class="fas fa-handshake"></i></div>
+          <h3>Encontre um match</h3>
+          <p>Navegue pelo catálogo, encontre algo que queira e proponha uma troca diretamente.</p>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <h3>Troque presencialmente</h3>
+          <p>Combine um ponto de troca seguro, se encontre e realize a permuta com QR Code.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POR QUE ECOPERMUTA -->
+  <section class="section section-alt" id="por-que">
+    <div class="container">
+      <div class="section-header">
+        <h2>Por que EcoPermuta?</h2>
+        <p>Uma forma mais inteligente e sustentável de consumir</p>
+      </div>
+      <div class="grid-3">
+        <div class="card feature-card">
+          <div class="feature-icon feature-icon--gold">
+            <i class="fas fa-coins"></i>
+          </div>
+          <h3>Sem dinheiro envolvido</h3>
+          <p>Trocas puras, sem transações financeiras. Valor real pelo que as coisas significam, não pelo preço de mercado.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon feature-icon--green">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Troca presencial segura</h3>
+          <p>Pontos de troca verificados, QR Code de confirmação e sistema de reputação para você trocar com segurança.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon feature-icon--blue">
+            <i class="fas fa-leaf"></i>
+          </div>
+          <h3>Impacto sustentável</h3>
+          <p>Cada troca evita descarte desnecessário e prolonga a vida útil dos objetos. Juntos construímos uma cidade mais verde.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="section stats-section">
+    <div class="container">
+      <div class="grid-3">
+        <div class="stat-item">
+          <span class="stat-number" id="stat-items">1.247</span>
+          <span class="stat-label"><i class="fas fa-box"></i> Itens disponíveis</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="stat-trades">842</span>
+          <span class="stat-label"><i class="fas fa-handshake"></i> Trocas realizadas</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="stat-points">5</span>
+          <span class="stat-label"><i class="fas fa-map-marker-alt"></i> Pontos de troca</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="section cta-section">
+    <div class="container text-center">
+      <h2>Pronto para começar?</h2>
+      <p>Junte-se à comunidade EcoPermuta e faça sua primeira troca hoje.</p>
+      <a href="register.html" class="btn btn-primary btn-lg mt-2">
+        <i class="fas fa-user-plus"></i> Criar conta grátis
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="navbar-logo">
+            <i class="fas fa-leaf"></i> EcoPermuta
+          </a>
+          <p>Do virtual ao presencial, trocas que fazem sentido.</p>
+          <div class="footer-social">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="catalog.html">Catálogo</a></li>
+            <li><a href="map.html">Mapa de trocas</a></li>
+            <li><a href="register.html">Cadastrar</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="#">Como funciona</a></li>
+            <li><a href="#">Perguntas frequentes</a></li>
+            <li><a href="#">Contato</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 EcoPermuta. Feito com <i class="fas fa-heart" style="color:#e53935"></i> pela comunidade.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function authHeaders() { return { headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' } }; }
+
+    // Navbar state
+    function updateNavbar() {
+      const token = getToken();
+      if (token) {
+        document.getElementById('nav-guest-links').style.display = 'none';
+        document.getElementById('nav-user-links').style.display = 'list-item';
+        document.getElementById('nav-logout').style.display = 'list-item';
+      } else {
+        document.getElementById('nav-guest-register').style.display = 'list-item';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('ecopermuta_token');
+      localStorage.removeItem('ecopermuta_user');
+      window.location.href = 'index.html';
+    }
+
+    // Hamburger toggle
+    document.getElementById('navToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    // Load stats
+    async function loadStats() {
+      try {
+        const res = await fetch(`${API_BASE}/items`);
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('stat-items').textContent = data.length || 1247;
+        }
+      } catch(e) {}
+    }
+
+    updateNavbar();
+    loadStats();
+  </script>
+</body>
+</html>

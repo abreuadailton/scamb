@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro — EcoPermuta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <i class="fas fa-leaf"></i> EcoPermuta
+      </a>
+      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
+        <li><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="auth-container">
+    <div class="auth-card auth-card--wide">
+      <div class="auth-header">
+        <div class="auth-icon">
+          <i class="fas fa-seedling"></i>
+        </div>
+        <h1>Criar sua conta</h1>
+        <p>Junte-se à comunidade de trocas sustentáveis</p>
+      </div>
+
+      <div id="error-msg" class="form-error" style="display:none;"></div>
+      <div id="success-msg" class="form-success" style="display:none;"></div>
+
+      <form id="registerForm" class="auth-form">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="name"><i class="fas fa-user"></i> Nome completo</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Seu nome" required autofocus>
+          </div>
+          <div class="form-group">
+            <label for="email"><i class="fas fa-envelope"></i> E-mail</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> Senha</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword"><i class="fas fa-lock"></i> Confirmar senha</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Repita a senha" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="bio"><i class="fas fa-comment"></i> Bio <span class="text-muted">(opcional)</span></label>
+          <textarea id="bio" name="bio" class="form-control" rows="3" placeholder="Fale um pouco sobre você e o que costuma trocar..."></textarea>
+        </div>
+
+        <div class="form-strength" id="strengthBar" style="display:none;">
+          <div class="strength-track"><div class="strength-fill" id="strengthFill"></div></div>
+          <span id="strengthLabel"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+          <span id="btnText"><i class="fas fa-user-plus"></i> Criar conta</span>
+          <span id="btnLoading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Criando...</span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Já tem conta? <a href="login.html">Fazer login</a></p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function authHeaders() { return { headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' } }; }
+
+    if (getToken()) window.location.href = 'dashboard.html';
+
+    document.getElementById('navToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    // Força da senha
+    document.getElementById('password').addEventListener('input', function() {
+      const val = this.value;
+      const bar = document.getElementById('strengthBar');
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+      if (!val) { bar.style.display = 'none'; return; }
+      bar.style.display = 'flex';
+      let score = 0;
+      if (val.length >= 6) score++;
+      if (val.length >= 10) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const levels = [
+        { pct: '20%', color: '#e53935', text: 'Muito fraca' },
+        { pct: '40%', color: '#FF9800', text: 'Fraca' },
+        { pct: '60%', color: '#FFC107', text: 'Média' },
+        { pct: '80%', color: '#8BC34A', text: 'Boa' },
+        { pct: '100%', color: '#2D7D32', text: 'Excelente' }
+      ];
+      const lv = levels[Math.min(score - 1, 4)] || levels[0];
+      fill.style.width = lv.pct;
+      fill.style.background = lv.color;
+      label.textContent = lv.text;
+      label.style.color = lv.color;
+    });
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('success-msg').style.display = 'none';
+    }
+
+    function setLoading(state) {
+      document.getElementById('btnText').style.display = state ? 'none' : 'inline';
+      document.getElementById('btnLoading').style.display = state ? 'inline' : 'none';
+      document.getElementById('submitBtn').disabled = state;
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('error-msg').style.display = 'none';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const bio = document.getElementById('bio').value.trim();
+
+      if (password !== confirmPassword) {
+        showError('As senhas não coincidem.');
+        return;
+      }
+      if (password.length < 6) {
+        showError('A senha deve ter no mínimo 6 caracteres.');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, bio })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('ecopermuta_token', data.token);
+          localStorage.setItem('ecopermuta_user', JSON.stringify(data.user));
+          window.location.href = 'dashboard.html';
+        } else {
+          showError(data.error || 'Erro ao criar conta. Tente novamente.');
+          setLoading(false);
+        }
+      } catch (err) {
+        showError('Erro de conexão. Verifique se o servidor está rodando.');
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>

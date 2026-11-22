@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Trocas — EcoPermuta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo"><i class="fas fa-leaf"></i> EcoPermuta</a>
+      <button class="navbar-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
+        <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="my-items.html"><i class="fas fa-box"></i> Meus Itens</a></li>
+        <li><a href="trades.html" class="active"><i class="fas fa-handshake"></i> Trocas</a></li>
+        <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <h1><i class="fas fa-handshake"></i> Minhas Trocas</h1>
+      <p>Gerencie suas propostas e trocas em andamento</p>
+    </div>
+  </div>
+
+  <main class="container trades-main">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('received')">
+        <i class="fas fa-inbox"></i> Propostas recebidas
+        <span class="tab-badge" id="badge-received">0</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('sent')">
+        <i class="fas fa-paper-plane"></i> Enviadas
+        <span class="tab-badge" id="badge-sent">0</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('active')">
+        <i class="fas fa-sync-alt"></i> Ativas
+        <span class="tab-badge" id="badge-active">0</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('completed')">
+        <i class="fas fa-check-circle"></i> Concluídas
+        <span class="tab-badge" id="badge-completed">0</span>
+      </button>
+    </div>
+
+    <div id="tradesContainer">
+      <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
+    </div>
+
+  </main>
+
+  <!-- MODAL QR CODE -->
+  <div class="modal-overlay" id="qrModal" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2><i class="fas fa-qrcode"></i> QR Code da Troca</h2>
+        <button class="modal-close" onclick="closeQRModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-container">
+          <div id="qrCode"></div>
+          <p class="mt-2 text-muted">Apresente este QR Code no ponto de troca para confirmar o encontro.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
+    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
+
+    if (!getToken()) window.location.href = 'login.html';
+
+    document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
+    function logout() { localStorage.removeItem('ecopermuta_token'); localStorage.removeItem('ecopermuta_user'); window.location.href = 'login.html'; }
+
+    let allTrades = [];
+    let currentTab = 'received';
+    const user = getCurrentUser();
+
+    function getStatusLabel(status) {
+      return { 'pending': 'Pendente', 'accepted': 'Aceita', 'rejected': 'Rejeitada', 'completed': 'Concluída', 'cancelled': 'Cancelada' }[status] || status;
+    }
+    function getStatusClass(status) {
+      return { 'pending': 'badge-status--pending', 'accepted': 'badge-status--active', 'rejected': 'badge-status--rejected', 'completed': 'badge-status--done', 'cancelled': 'badge-status--rejected' }[status] || '';
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      renderTrades();
+    }
+
+    function getTabTrades(tab) {
+      const uid = user ? user.id : null;
+      switch(tab) {
+        case 'received': return allTrades.filter(t => t.owner_id == uid && t.status === 'pending');
+        case 'sent': return allTrades.filter(t => t.requester_id == uid && t.status === 'pending');
+        case 'active': return allTrades.filter(t => t.status === 'accepted');
+        case 'completed': return allTrades.filter(t => t.status === 'completed' || t.status === 'rejected' || t.status === 'cancelled');
+        default: return [];
+      }
+    }
+
+    function renderTrades() {
+      const trades = getTabTrades(currentTab);
+      const uid = user ? user.id : null;
+      const container = document.getElementById('tradesContainer');
+
+      if (trades.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-handshake fa-3x"></i>
+            <h3>Nenhuma troca aqui</h3>
+            <p>${currentTab === 'received' ? 'Você não tem propostas recebidas.' : currentTab === 'sent' ? 'Você não enviou propostas.' : currentTab === 'active' ? 'Nenhuma troca ativa.' : 'Nenhuma troca concluída.'}</p>
+            ${currentTab === 'sent' ? '<a href="catalog.html" class="btn btn-primary"><i class="fas fa-search"></i> Ver catálogo</a>' : ''}
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = trades.map(trade => {
+        const isOwner = trade.owner_id == uid;
+        const counterpart = isOwner ? trade.requester_name : trade.owner_name;
+        const meetDate = trade.meeting_date ? new Date(trade.meeting_date).toLocaleString('pt-BR') : '—';
+
+        return `
+          <div class="card card-trade fade-in">
+            <div class="card-trade-header">
+              <div class="trade-items">
+                <div class="trade-item">
+                  <i class="fas fa-box"></i>
+                  <span>${trade.offered_title || 'Item oferecido'}</span>
+                </div>
+                <div class="trade-arrow"><i class="fas fa-exchange-alt"></i></div>
+                <div class="trade-item">
+                  <i class="fas fa-box-open"></i>
+                  <span>${trade.wanted_title || 'Item desejado'}</span>
+                </div>
+              </div>
+              <span class="badge ${getStatusClass(trade.status)}">${getStatusLabel(trade.status)}</span>
+            </div>
+            <div class="card-trade-body">
+              <div class="trade-meta">
+                <span><i class="fas fa-user"></i> ${counterpart || 'Usuário'}</span>
+                <span><i class="fas fa-calendar"></i> ${meetDate}</span>
+                ${trade.meeting_address ? `<span><i class="fas fa-map-marker-alt"></i> ${trade.meeting_address}</span>` : ''}
+              </div>
+            </div>
+            <div class="card-trade-actions">
+              ${trade.status === 'pending' && isOwner ? `
+                <button class="btn btn-primary btn-sm" onclick="acceptTrade(${trade.id})">
+                  <i class="fas fa-check"></i> Aceitar
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="rejectTrade(${trade.id})">
+                  <i class="fas fa-times"></i> Rejeitar
+                </button>
+              ` : ''}
+              ${trade.status === 'accepted' || trade.status === 'pending' ? `
+                <a href="chat.html?tradeId=${trade.id}" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-comments"></i> Chat
+                </a>
+              ` : ''}
+              ${trade.status === 'accepted' ? `
+                <button class="btn btn-secondary btn-sm" onclick="showQR(${trade.id}, '${trade.qr_code||''}')">
+                  <i class="fas fa-qrcode"></i> QR Code
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="checkIn(${trade.id})">
+                  <i class="fas fa-check-circle"></i> Check-in
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateBadges() {
+      const uid = user ? user.id : null;
+      document.getElementById('badge-received').textContent = allTrades.filter(t => t.owner_id == uid && t.status === 'pending').length;
+      document.getElementById('badge-sent').textContent = allTrades.filter(t => t.requester_id == uid && t.status === 'pending').length;
+      document.getElementById('badge-active').textContent = allTrades.filter(t => t.status === 'accepted').length;
+      document.getElementById('badge-completed').textContent = allTrades.filter(t => t.status === 'completed').length;
+    }
+
+    async function loadTrades() {
+      try {
+        const res = await fetch(`${API_BASE}/trades`, { headers: authHeaders() });
+        if (res.ok) { allTrades = await res.json(); }
+        else { allTrades = []; }
+      } catch(e) { allTrades = []; }
+      updateBadges();
+      renderTrades();
+    }
+
+    async function acceptTrade(id) {
+      try {
+        const res = await fetch(`${API_BASE}/trades/${id}/accept`, { method: 'PUT', headers: authHeaders() });
+        if (res.ok) loadTrades(); else alert('Erro ao aceitar troca.');
+      } catch(e) { alert('Erro de conexão.'); }
+    }
+
+    async function rejectTrade(id) {
+      if (!confirm('Rejeitar esta proposta?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/trades/${id}/reject`, { method: 'PUT', headers: authHeaders() });
+        if (res.ok) loadTrades(); else alert('Erro ao rejeitar troca.');
+      } catch(e) { alert('Erro de conexão.'); }
+    }
+
+    async function sendCheckInRequest(id, lat, lng) {
+      try {
+        const res = await fetch(`${API_BASE}/trades/${id}/checkin`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ latitude: lat, longitude: lng })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          const isDone = data.completed || (data.trade && data.trade.status === 'completed') || data.status === 'completed';
+          if (isDone) {
+            alert('🎉 Parabéns! Ambos fizeram check-in presencial no local. Troca concluída com sucesso e reputação aumentada!');
+          } else {
+            alert('📍 Check-in registrado via geolocalização com sucesso! Aguardando o outro participante fazer o check-in no local para finalizar a troca.');
+          }
+          loadTrades();
+        } else {
+          alert(data.error || 'Erro ao realizar check-in presencial.');
+        }
+      } catch (e) {
+        alert('Erro de conexão ao enviar check-in.');
+      }
+    }
+
+    async function checkIn(id) {
+      const trade = allTrades.find(t => t.id == id);
+      if (!navigator.geolocation) {
+        alert('Geolocalização não é suportada por este navegador.');
+        return;
+      }
+
+      // Tenta obter posição real do navegador via navigator.geolocation
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          sendCheckInRequest(id, pos.coords.latitude, pos.coords.longitude);
+        },
+        (err) => {
+          console.warn('Geolocation error:', err);
+          // Em ambientes de teste/desktop sem GPS físico, oferece fallback para o ponto do encontro
+          const useDemo = confirm(
+            '⚠️ Não foi possível obter o sinal de GPS preciso do navegador (ou permissão negada).\n\n' +
+            'Deseja simular o check-in no ponto de encontro marcado (' + (trade && trade.meeting_address ? trade.meeting_address : 'Ponto Selecionado') + ') para demonstração?'
+          );
+          if (useDemo && trade && trade.meeting_lat && trade.meeting_lng) {
+            sendCheckInRequest(id, trade.meeting_lat, trade.meeting_lng);
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    function showQR(tradeId, qrData) {
+      document.getElementById('qrCode').innerHTML = '';
+      document.getElementById('qrModal').style.display = 'flex';
+      const qrContent = qrData || JSON.stringify({ tradeId, timestamp: new Date().toISOString() });
+      try {
+        new QRCode(document.getElementById('qrCode'), {
+          text: qrContent,
+          width: 250, height: 250,
+          colorDark: '#2D7D32', colorLight: '#ffffff'
+        });
+      } catch(e) {
+        document.getElementById('qrCode').innerHTML = `<p class="text-muted">QR Code: ${qrContent}</p>`;
+      }
+    }
+
+    function closeQRModal() { document.getElementById('qrModal').style.display = 'none'; }
+    document.getElementById('qrModal').addEventListener('click', (e) => { if(e.target === document.getElementById('qrModal')) closeQRModal(); });
+
+    loadTrades();
+  </script>
+</body>
+</html>

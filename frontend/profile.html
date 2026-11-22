@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Perfil — EcoPermuta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo"><i class="fas fa-leaf"></i> EcoPermuta</a>
+      <button class="navbar-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
+        <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="my-items.html"><i class="fas fa-box"></i> Meus Itens</a></li>
+        <li><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
+        <li><a href="profile.html" class="active"><i class="fas fa-user"></i> Perfil</a></li>
+        <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container profile-main">
+    <div id="loadingState" class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
+    <div id="profileContent" style="display:none;">
+
+      <!-- PERFIL HEADER -->
+      <div class="profile-hero card">
+        <div class="profile-avatar" id="profileAvatar">
+          <i class="fas fa-user fa-3x"></i>
+        </div>
+        <div class="profile-hero-info">
+          <h1 id="profileName">...</h1>
+          <div class="reputation-stars" id="profileStars"></div>
+          <p class="text-muted" id="profileBio"></p>
+          <p class="text-muted"><i class="fas fa-calendar"></i> Membro desde <span id="profileSince"></span></p>
+        </div>
+      </div>
+
+      <!-- EDITAR PERFIL -->
+      <div class="profile-edit card">
+        <h2><i class="fas fa-edit"></i> Editar Perfil</h2>
+        <div id="profileSuccess" class="form-success" style="display:none;"></div>
+        <div id="profileError" class="form-error" style="display:none;"></div>
+        <form id="profileForm">
+          <div class="grid-2">
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> Nome</label>
+              <input type="text" id="editName" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-image"></i> URL do Avatar</label>
+              <input type="url" id="editAvatar" class="form-control" placeholder="https://...">
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-comment"></i> Bio</label>
+            <textarea id="editBio" class="form-control" rows="3" placeholder="Fale sobre você e o que gosta de trocar..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+            <span id="saveText"><i class="fas fa-save"></i> Salvar alterações</span>
+            <span id="saveLoading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Salvando...</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- HISTÓRICO DE TROCAS -->
+      <div class="profile-history">
+        <h2><i class="fas fa-history"></i> Histórico de Trocas Concluídas</h2>
+        <div id="tradeHistory">
+          <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
+
+    if (!getToken()) window.location.href = 'login.html';
+
+    document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
+    function logout() { localStorage.removeItem('ecopermuta_token'); localStorage.removeItem('ecopermuta_user'); window.location.href = 'login.html'; }
+
+    function renderStars(rep) {
+      const full = Math.min(Math.floor((rep||0) / 20), 5);
+      return Array.from({length:5}, (_,i) => `<i class="fa${i<full?'s':'r'} fa-star"></i>`).join('') + ` <span style="color:#616161;font-size:0.85rem;">(${rep||0} pts)</span>`;
+    }
+
+    function formatDate(ts) {
+      return new Date(ts).toLocaleDateString('pt-BR', { year:'numeric', month:'long', day:'numeric' });
+    }
+
+    async function loadProfile() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() });
+        if (!res.ok) throw new Error();
+        const me = await res.json();
+        localStorage.setItem('ecopermuta_user', JSON.stringify(me));
+
+        document.getElementById('profileName').textContent = me.name;
+        document.getElementById('profileStars').innerHTML = renderStars(me.reputation);
+        document.getElementById('profileBio').textContent = me.bio || 'Sem bio ainda.';
+        document.getElementById('profileSince').textContent = formatDate(me.created_at);
+
+        if (me.avatar_url) {
+          document.getElementById('profileAvatar').innerHTML = `<img src="${me.avatar_url}" alt="Avatar" onerror="this.parentNode.innerHTML='<i class=\\'fas fa-user fa-3x\\'></i>'">`;
+        }
+
+        document.getElementById('editName').value = me.name || '';
+        document.getElementById('editBio').value = me.bio || '';
+        document.getElementById('editAvatar').value = me.avatar_url || '';
+
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('profileContent').style.display = 'block';
+      } catch(e) {
+        document.getElementById('loadingState').innerHTML = '<p class="text-muted">Erro ao carregar perfil. <a href="login.html">Fazer login</a></p>';
+      }
+    }
+
+    async function loadTradeHistory() {
+      try {
+        const res = await fetch(`${API_BASE}/trades`, { headers: authHeaders() });
+        if (!res.ok) return;
+        const trades = await res.json();
+        const completed = trades.filter(t => t.status === 'completed');
+
+        if (completed.length === 0) {
+          document.getElementById('tradeHistory').innerHTML = '<p class="text-muted">Nenhuma troca concluída ainda. <a href="catalog.html">Explore o catálogo!</a></p>';
+          return;
+        }
+
+        document.getElementById('tradeHistory').innerHTML = completed.map(t => `
+          <div class="card card-trade-history fade-in">
+            <div class="trade-history-items">
+              <span><i class="fas fa-box"></i> ${t.offered_title || 'Item'}</span>
+              <i class="fas fa-exchange-alt" style="color:#2D7D32"></i>
+              <span><i class="fas fa-box-open"></i> ${t.wanted_title || 'Item'}</span>
+            </div>
+            <div class="trade-history-meta">
+              <span class="badge badge-status--done">Concluída</span>
+              <span class="text-muted"><i class="fas fa-calendar"></i> ${t.meeting_date ? formatDate(t.meeting_date) : '—'}</span>
+            </div>
+          </div>
+        `).join('');
+      } catch(e) {
+        document.getElementById('tradeHistory').innerHTML = '<p class="text-muted">Erro ao carregar histórico.</p>';
+      }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('editName').value.trim();
+      const bio = document.getElementById('editBio').value.trim();
+      const avatar_url = document.getElementById('editAvatar').value.trim();
+
+      const successEl = document.getElementById('profileSuccess');
+      const errorEl = document.getElementById('profileError');
+      successEl.style.display = 'none';
+      errorEl.style.display = 'none';
+
+      document.getElementById('saveText').style.display = 'none';
+      document.getElementById('saveLoading').style.display = 'inline';
+      document.getElementById('saveProfileBtn').disabled = true;
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/profile`, {
+          method: 'PUT',
+          headers: authHeaders(),
+          body: JSON.stringify({ name, bio, avatar_url })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          successEl.textContent = 'Perfil atualizado com sucesso!';
+          successEl.style.display = 'block';
+          if (data.user) {
+            localStorage.setItem('ecopermuta_user', JSON.stringify(data.user));
+            document.getElementById('profileName').textContent = data.user.name;
+            document.getElementById('profileBio').textContent = data.user.bio || 'Sem bio ainda.';
+            if (data.user.avatar_url) {
+              document.getElementById('profileAvatar').innerHTML = `<img src="${data.user.avatar_url}" alt="Avatar">`;
+            }
+          }
+        } else {
+          errorEl.textContent = data.error || 'Erro ao salvar perfil.';
+          errorEl.style.display = 'block';
+        }
+      } catch(err) {
+        errorEl.textContent = 'Erro de conexão.';
+        errorEl.style.display = 'block';
+      }
+
+      document.getElementById('saveText').style.display = 'inline';
+      document.getElementById('saveLoading').style.display = 'none';
+      document.getElementById('saveProfileBtn').disabled = false;
+    });
+
+    loadProfile();
+    loadTradeHistory();
+  </script>
+</body>
+</html>

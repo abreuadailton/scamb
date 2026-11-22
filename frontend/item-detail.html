@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhe do Item — EcoPermuta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo"><i class="fas fa-leaf"></i> EcoPermuta</a>
+      <button class="navbar-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="catalog.html"><i class="fas fa-th"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
+        <li id="nav-guest"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
+        <li id="nav-user" style="display:none;"><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li id="nav-logout" style="display:none;"><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container item-detail-main">
+    <div id="loadingState" class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
+    <div id="detailContent" style="display:none;">
+
+      <a href="catalog.html" class="btn btn-secondary btn-sm mb-2"><i class="fas fa-arrow-left"></i> Voltar ao catálogo</a>
+
+      <div class="item-detail-grid">
+        <!-- CAROUSEL -->
+        <div class="item-carousel">
+          <div class="carousel-main">
+            <img id="mainImg" src="" alt="Imagem do item">
+          </div>
+          <div class="carousel-thumbs" id="thumbs"></div>
+        </div>
+
+        <!-- INFO -->
+        <div class="item-detail-info">
+          <div class="item-badges">
+            <span class="badge badge-category" id="itemCategory"></span>
+            <span class="badge" id="itemCondition"></span>
+          </div>
+          <h1 id="itemTitle" class="item-detail-title"></h1>
+          <p id="itemDesc" class="item-detail-desc"></p>
+
+          <div class="item-owner-card card">
+            <div class="item-owner-avatar"><i class="fas fa-user"></i></div>
+            <div class="item-owner-info">
+              <span class="item-owner-label">Oferecido por</span>
+              <strong id="ownerName"></strong>
+              <div class="reputation-stars" id="ownerRep"></div>
+            </div>
+          </div>
+
+          <div class="item-location" id="itemLocation" style="display:none;">
+            <i class="fas fa-map-marker-alt"></i> <span id="locationName"></span>
+          </div>
+
+          <!-- Ações (preenchidas dinamicamente) -->
+          <div id="itemActions" class="item-actions"></div>
+        </div>
+      </div>
+
+      <!-- MAPA -->
+      <div class="item-map-section" id="mapSection" style="display:none;">
+        <h2><i class="fas fa-map"></i> Localização do item</h2>
+        <div id="itemMap" style="height:300px; border-radius:12px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL PROPOR TROCA -->
+  <div class="modal-overlay" id="tradeModal" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2><i class="fas fa-handshake"></i> Propor Troca</h2>
+        <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Qual item você quer oferecer?</label>
+          <select id="myItemSelect" class="form-control">
+            <option value="">Carregando seus itens...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-map-marker-alt"></i> Ponto de encontro</label>
+          <select id="meetingPointSelect" class="form-control">
+            <option value="">Carregando pontos...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-calendar"></i> Data do encontro</label>
+          <input type="datetime-local" id="meetingDate" class="form-control">
+        </div>
+        <div id="tradeError" class="form-error" style="display:none;"></div>
+        <button class="btn btn-primary btn-full" id="submitTrade" onclick="submitTrade()">
+          <i class="fas fa-paper-plane"></i> Enviar proposta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
+    function getCurrentUser() {
+      try { return JSON.parse(localStorage.getItem('ecopermuta_user')); } catch(e) { return null; }
+    }
+
+    if (getToken()) {
+      document.getElementById('nav-guest').style.display = 'none';
+      document.getElementById('nav-user').style.display = 'list-item';
+      document.getElementById('nav-logout').style.display = 'list-item';
+    }
+    document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
+    function logout() { localStorage.removeItem('ecopermuta_token'); localStorage.removeItem('ecopermuta_user'); window.location.reload(); }
+
+    const params = new URLSearchParams(window.location.search);
+    const itemId = params.get('id');
+    if (!itemId) window.location.href = 'catalog.html';
+
+    let currentItem = null;
+    let leafletMap = null;
+    const images = [];
+    let currentImgIdx = 0;
+
+    function renderStars(rep) {
+      const full = Math.min(Math.floor((rep||0) / 20), 5);
+      return Array.from({length:5}, (_,i) => `<i class="fa${i<full?'s':'r'} fa-star"></i>`).join('');
+    }
+
+    function getConditionClass(cond) {
+      return { 'Novo':'badge-condition--new','Ótimo':'badge-condition--great','Bom':'badge-condition--good','Regular':'badge-condition--regular' }[cond] || '';
+    }
+
+    function switchImage(idx) {
+      currentImgIdx = idx;
+      document.getElementById('mainImg').src = images[idx];
+      document.querySelectorAll('.thumb').forEach((t,i) => t.classList.toggle('active', i === idx));
+    }
+
+    async function loadItem() {
+      try {
+        const res = await fetch(`${API_BASE}/items/${itemId}`);
+        if (!res.ok) throw new Error();
+        currentItem = await res.json();
+
+        document.title = `${currentItem.title} — EcoPermuta`;
+
+        // Imagens
+        try { const imgs = JSON.parse(currentItem.images || '[]'); images.push(...imgs); } catch(e) {}
+        if (images.length === 0) images.push('https://via.placeholder.com/600x400?text=Sem+imagem');
+
+        document.getElementById('mainImg').src = images[0];
+        const thumbsEl = document.getElementById('thumbs');
+        images.forEach((src, i) => {
+          const img = document.createElement('img');
+          img.src = src;
+          img.className = 'thumb' + (i===0?' active':'');
+          img.onclick = () => switchImage(i);
+          img.onerror = () => { img.src = 'https://via.placeholder.com/80x60?text=x'; };
+          thumbsEl.appendChild(img);
+        });
+
+        // Info
+        document.getElementById('itemCategory').textContent = currentItem.category || 'Geral';
+        document.getElementById('itemCondition').textContent = currentItem.condition || '';
+        document.getElementById('itemCondition').className = `badge ${getConditionClass(currentItem.condition)}`;
+        document.getElementById('itemTitle').textContent = currentItem.title;
+        document.getElementById('itemDesc').textContent = currentItem.description || '';
+        document.getElementById('ownerName').textContent = currentItem.owner_name || 'Usuário';
+        document.getElementById('ownerRep').innerHTML = renderStars(currentItem.owner_reputation);
+
+        if (currentItem.location_name) {
+          document.getElementById('locationName').textContent = currentItem.location_name;
+          document.getElementById('itemLocation').style.display = 'flex';
+        }
+
+        // Mapa
+        if (currentItem.latitude && currentItem.longitude) {
+          document.getElementById('mapSection').style.display = 'block';
+          setTimeout(() => {
+            leafletMap = L.map('itemMap').setView([currentItem.latitude, currentItem.longitude], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(leafletMap);
+            L.marker([currentItem.latitude, currentItem.longitude])
+              .addTo(leafletMap)
+              .bindPopup(`<b>${currentItem.title}</b><br>${currentItem.location_name||''}`)
+              .openPopup();
+          }, 100);
+        }
+
+        // Ações
+        const user = getCurrentUser();
+        const actionsEl = document.getElementById('itemActions');
+        const isOwner = user && user.id == currentItem.user_id;
+
+        if (isOwner) {
+          actionsEl.innerHTML = `
+            <a href="my-items.html" class="btn btn-secondary"><i class="fas fa-edit"></i> Editar item</a>
+            <button class="btn btn-danger" onclick="deleteItem()"><i class="fas fa-trash"></i> Deletar item</button>
+          `;
+        } else if (getToken()) {
+          actionsEl.innerHTML = `
+            <button class="btn btn-primary btn-lg" onclick="openTradeModal()">
+              <i class="fas fa-handshake"></i> Propor Troca
+            </button>
+          `;
+          loadMyItems();
+          loadExchangePoints();
+        } else {
+          actionsEl.innerHTML = `
+            <a href="login.html" class="btn btn-primary btn-lg"><i class="fas fa-sign-in-alt"></i> Entre para propor troca</a>
+          `;
+        }
+
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('detailContent').style.display = 'block';
+
+      } catch(e) {
+        document.getElementById('loadingState').innerHTML = '<p class="text-muted">Item não encontrado. <a href="catalog.html">Voltar ao catálogo</a></p>';
+      }
+    }
+
+    async function loadMyItems() {
+      try {
+        const res = await fetch(`${API_BASE}/items/user/my`, { headers: authHeaders() });
+        if (res.ok) {
+          const items = await res.json();
+          const sel = document.getElementById('myItemSelect');
+          sel.innerHTML = '<option value="">Selecione um item para oferecer</option>';
+          items.filter(i => i.status === 'available').forEach(item => {
+            sel.innerHTML += `<option value="${item.id}">${item.title}</option>`;
+          });
+          if (sel.options.length === 1) sel.innerHTML = '<option value="">Você não tem itens disponíveis</option>';
+        }
+      } catch(e) {}
+    }
+
+    async function loadExchangePoints() {
+      try {
+        const res = await fetch(`${API_BASE}/exchange-points`);
+        if (res.ok) {
+          const pts = await res.json();
+          const sel = document.getElementById('meetingPointSelect');
+          sel.innerHTML = '<option value="">Selecione um ponto de troca</option>';
+          pts.forEach(pt => { sel.innerHTML += `<option value="${pt.id}">${pt.name} — ${pt.address||''}</option>`; });
+        }
+      } catch(e) {}
+    }
+
+    function openTradeModal() { document.getElementById('tradeModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('tradeModal').style.display = 'none'; }
+    document.getElementById('tradeModal').addEventListener('click', (e) => { if(e.target === document.getElementById('tradeModal')) closeModal(); });
+
+    async function submitTrade() {
+      const itemOffered = document.getElementById('myItemSelect').value;
+      const meetingPointId = document.getElementById('meetingPointSelect').value;
+      const meetingDate = document.getElementById('meetingDate').value;
+      const errEl = document.getElementById('tradeError');
+      errEl.style.display = 'none';
+
+      if (!itemOffered) { errEl.textContent = 'Selecione um item para oferecer.'; errEl.style.display='block'; return; }
+      if (!meetingDate) { errEl.textContent = 'Selecione uma data para o encontro.'; errEl.style.display='block'; return; }
+
+      const btn = document.getElementById('submitTrade');
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+      try {
+        const body = {
+          item_offered_id: parseInt(itemOffered),
+          item_wanted_id: parseInt(itemId),
+          meeting_date: meetingDate
+        };
+        if (meetingPointId) body.meeting_point_id = parseInt(meetingPointId);
+
+        const res = await fetch(`${API_BASE}/trades`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          closeModal();
+          alert('Proposta de troca enviada com sucesso!');
+          window.location.href = 'trades.html';
+        } else {
+          errEl.textContent = data.error || 'Erro ao enviar proposta.';
+          errEl.style.display = 'block';
+          btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar proposta';
+        }
+      } catch(e) {
+        errEl.textContent = 'Erro de conexão.';
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar proposta';
+      }
+    }
+
+    async function deleteItem() {
+      if (!confirm('Tem certeza que deseja deletar este item?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/items/${itemId}`, { method: 'DELETE', headers: authHeaders() });
+        if (res.ok) { alert('Item deletado.'); window.location.href = 'my-items.html'; }
+        else { alert('Erro ao deletar item.'); }
+      } catch(e) { alert('Erro de conexão.'); }
+    }
+
+    loadItem();
+  </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo — EcoPermuta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <i class="fas fa-leaf"></i> EcoPermuta
+      </a>
+      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="catalog.html" class="active"><i class="fas fa-th"></i> Catálogo</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa</a></li>
+        <li id="nav-guest"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
+        <li id="nav-user" style="display:none;"><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li id="nav-logout" style="display:none;"><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <h1><i class="fas fa-th"></i> Catálogo de itens</h1>
+      <p>Encontre o que você precisa e proponha uma troca</p>
+    </div>
+  </div>
+
+  <main class="container catalog-main">
+
+    <!-- FILTROS -->
+    <div class="catalog-filters card">
+      <div class="filter-group">
+        <label><i class="fas fa-search"></i> Buscar</label>
+        <input type="text" id="searchInput" class="form-control" placeholder="Título, descrição...">
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-tag"></i> Categoria</label>
+        <select id="categoryFilter" class="form-control">
+          <option value="">Todas</option>
+          <option>Livros</option>
+          <option>Roupas</option>
+          <option>Ferramentas</option>
+          <option>Jogos</option>
+          <option>Plantas</option>
+          <option>Eletrônicos</option>
+          <option>Outros</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-star"></i> Condição</label>
+        <select id="conditionFilter" class="form-control">
+          <option value="">Todas</option>
+          <option>Novo</option>
+          <option>Ótimo</option>
+          <option>Bom</option>
+          <option>Regular</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="clearFilters()">
+        <i class="fas fa-times"></i> Limpar
+      </button>
+    </div>
+
+    <!-- RESULTS INFO -->
+    <div class="catalog-info">
+      <span id="resultsCount">Carregando...</span>
+    </div>
+
+    <!-- GRID ITENS -->
+    <div class="grid-3" id="itemsGrid">
+      <div class="loading-spinner-wrap"><div class="loading-spinner"></div></div>
+    </div>
+
+    <!-- PAGINAÇÃO -->
+    <div class="pagination" id="pagination"></div>
+
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    function getToken() { return localStorage.getItem('ecopermuta_token'); }
+    function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
+
+    // Navbar state
+    if (getToken()) {
+      document.getElementById('nav-guest').style.display = 'none';
+      document.getElementById('nav-user').style.display = 'list-item';
+      document.getElementById('nav-logout').style.display = 'list-item';
+    }
+
+    document.getElementById('navToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    function logout() {
+      localStorage.removeItem('ecopermuta_token');
+      localStorage.removeItem('ecopermuta_user');
+      window.location.reload();
+    }
+
+    let allItems = [];
+    let currentPage = 1;
+    const PAGE_SIZE = 10;
+
+    function getConditionClass(cond) {
+      const map = { 'Novo': 'badge-condition--new', 'Ótimo': 'badge-condition--great', 'Bom': 'badge-condition--good', 'Regular': 'badge-condition--regular' };
+      return map[cond] || '';
+    }
+
+    function renderCard(item) {
+      let imgs = [];
+      try { imgs = JSON.parse(item.images || '[]'); } catch(e) {}
+      const imgSrc = imgs.length ? imgs[0] : 'https://via.placeholder.com/300x200?text=Sem+imagem';
+      return `
+        <div class="card card-item fade-in">
+          <div class="card-item-img">
+            <img src="${imgSrc}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+imagem'">
+            <span class="card-item-category badge badge-category">${item.category || 'Geral'}</span>
+          </div>
+          <div class="card-item-body">
+            <h3 class="card-item-title">${item.title}</h3>
+            <p class="card-item-desc">${(item.description || '').substring(0, 80)}${item.description && item.description.length > 80 ? '...' : ''}</p>
+            <div class="card-item-meta">
+              <span class="badge ${getConditionClass(item.condition)}">${item.condition || ''}</span>
+              <span class="card-item-owner"><i class="fas fa-user"></i> ${item.owner_name || 'Usuário'}</span>
+            </div>
+            <a href="item-detail.html?id=${item.id}" class="btn btn-primary btn-sm btn-full mt-1">
+              <i class="fas fa-eye"></i> Ver detalhes
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    function getFiltered() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const cat = document.getElementById('categoryFilter').value;
+      const cond = document.getElementById('conditionFilter').value;
+      return allItems.filter(item => {
+        const matchQ = !q || item.title.toLowerCase().includes(q) || (item.description || '').toLowerCase().includes(q);
+        const matchCat = !cat || item.category === cat;
+        const matchCond = !cond || item.condition === cond;
+        return matchQ && matchCat && matchCond;
+      });
+    }
+
+    function renderPage() {
+      const filtered = getFiltered();
+      const total = filtered.length;
+      const totalPages = Math.ceil(total / PAGE_SIZE);
+      currentPage = Math.min(currentPage, totalPages || 1);
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const slice = filtered.slice(start, start + PAGE_SIZE);
+
+      document.getElementById('resultsCount').textContent = `${total} item${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`;
+
+      if (slice.length === 0) {
+        document.getElementById('itemsGrid').innerHTML = `
+          <div class="empty-state" style="grid-column: 1/-1;">
+            <i class="fas fa-search fa-3x"></i>
+            <h3>Nenhum item encontrado</h3>
+            <p>Tente outros filtros ou <a href="my-items.html">adicione um item</a>.</p>
+          </div>`;
+      } else {
+        document.getElementById('itemsGrid').innerHTML = slice.map(renderCard).join('');
+      }
+
+      // Paginação
+      let pagHtml = '';
+      if (totalPages > 1) {
+        if (currentPage > 1) pagHtml += `<button class="btn btn-secondary btn-sm" onclick="goPage(${currentPage-1})"><i class="fas fa-chevron-left"></i></button>`;
+        for (let i = 1; i <= totalPages; i++) {
+          pagHtml += `<button class="btn ${i === currentPage ? 'btn-primary' : 'btn-secondary'} btn-sm" onclick="goPage(${i})">${i}</button>`;
+        }
+        if (currentPage < totalPages) pagHtml += `<button class="btn btn-secondary btn-sm" onclick="goPage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`;
+      }
+      document.getElementById('pagination').innerHTML = pagHtml;
+    }
+
+    function goPage(p) { currentPage = p; renderPage(); window.scrollTo(0, 0); }
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('conditionFilter').value = '';
+      currentPage = 1;
+      renderPage();
+    }
+
+    // Debounce search
+    let searchTimer;
+    document.getElementById('searchInput').addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => { currentPage = 1; renderPage(); }, 300);
+    });
+    document.getElementById('categoryFilter').addEventListener('change', () => { currentPage = 1; renderPage(); });
+    document.getElementById('conditionFilter').addEventListener('change', () => { currentPage = 1; renderPage(); });
+
+    async function loadItems() {
+      try {
+        const res = await fetch(`${API_BASE}/items`);
+        if (res.ok) {
+          allItems = await res.json();
+        } else {
+          allItems = [];
+        }
+      } catch(e) {
+        allItems = [];
+        document.getElementById('resultsCount').textContent = 'Erro ao carregar itens.';
+      }
+      renderPage();
+    }
+
+    loadItems();
+  </script>
+</body>
+</html>
