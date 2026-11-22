@@ -138,7 +138,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
         <div style="display: flex; align-items: center; gap: 12px;">
           <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #ff4757;"></i> Swaply
+            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Swaply
           </a>
           <span style="color: #64748b; font-size: 0.88rem;">| Do virtual ao presencial</span>
         </div>
@@ -277,7 +277,7 @@
           <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
             <i class="fas fa-search fa-3x" style="color: #cbd5e1; margin-bottom: 16px;"></i>
             <h3 style="font-size: 1.4rem;">Nenhum item encontrado</h3>
-            <p style="color: #64748b;">Tente outros filtros ou <a href="my-items.html" style="color:#059669; font-weight:600;">cadastre um item seu</a>.</p>
+            <p style="color: #64748b;">Tente outros filtros ou <a href="my-items.html" style="color:#2563eb; font-weight:700;">cadastre um item seu</a>.</p>
           </div>`;
       } else {
         document.getElementById('itemsGrid').innerHTML = slice.map(renderCard).join('');
@@ -329,6 +329,17 @@
         allItems = [];
         document.getElementById('resultsCount').textContent = 'Erro ao carregar itens.';
       }
+
+      // Suporte a filtro vindo de links (ex: ?category=Jogos)
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialCat = urlParams.get('category');
+      const initialSearch = urlParams.get('search');
+      if (initialCat) {
+        selectCatPill(initialCat);
+      } else if (initialSearch) {
+        document.getElementById('searchInput').value = initialSearch;
+      }
+
       renderPage();
     }
 

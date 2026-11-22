@@ -11,32 +11,33 @@
    1. CSS VARIABLES (Swaply Modern High-Impact Sunset & Tech Palette)
    ============================================================ */
 :root {
-  /* Cores Principais - Swaply Sunset & Electric Tech */
-  --color-primary:        #ff4757; /* Electric Sunset Coral */
-  --color-primary-light:  #ff6b81; /* Coral Claro */
-  --color-primary-dark:   #ee2f40; /* Coral Profundo */
-  --color-secondary:      #5352ed; /* Electric Indigo */
-  --color-secondary-dark: #3742fa; 
-  --color-accent:         #ffa502; /* Warm Amber / Gold */
-  --color-accent-hover:   #ff7f50;
+  /* Cores Principais - Swaply Modern Azul Marinho & Electric Azure */
+  --color-primary:        #2563eb; /* Royal Sapphire Blue */
+  --color-primary-light:  #3b82f6; /* Azure Light */
+  --color-primary-dark:   #1d4ed8; /* Deep Royal Blue */
+  --color-secondary:      #0f172a; /* Deep Azul Marinho / Midnight Slate */
+  --color-secondary-dark: #070d1e; /* Azul Marinho Profundo */
+  --color-navy:           #1e3a8a; /* Azul Marinho Clássico Nobre */
+  --color-accent:         #06b6d4; /* Electric Cyan */
+  --color-accent-hover:   #0891b2;
   --color-cyan:           #00d2d3; /* Neon Cyan */
   --color-bg:             #f8fafc; /* Slate Suave 50 */
   --color-card-bg:        #ffffff;
-  --color-text:           #090d16; /* Deep Obsidian */
-  --color-text-secondary: #576574; /* Slate Muted */
+  --color-text:           #0f172a; /* Deep Navy Slate */
+  --color-text-secondary: #475569; /* Slate Muted 600 */
   --color-border:         #e2e8f0; /* Slate 200 */
   --color-border-hover:   #cbd5e1;
-  --color-danger:         #ff3838;
-  --color-danger-dark:    #c51162;
-  --color-info:           #2e86de;
-  --color-warning:        #ffa502;
+  --color-danger:         #ef4444;
+  --color-danger-dark:    #b91c1c;
+  --color-info:           #0284c7;
+  --color-warning:        #f59e0b;
   --color-success:        #10b981;
 
-  /* Gradientes de Alto Impacto */
-  --gradient-primary: linear-gradient(135deg, #ff4757 0%, #ff6b81 50%, #ffa502 100%);
-  --gradient-secondary: linear-gradient(135deg, #3742fa 0%, #5352ed 100%);
-  --gradient-accent:  linear-gradient(135deg, #ff4757 0%, #ff7f50 100%);
-  --gradient-hero:    linear-gradient(135deg, #090d16 0%, #0d1322 45%, #181c32 100%);
+  /* Gradientes Harmônicos de Alto Impacto em Azul Marinho */
+  --gradient-primary: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%);
+  --gradient-secondary: linear-gradient(135deg, #070d1e 0%, #0f172a 100%);
+  --gradient-accent:  linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #06b6d4 100%);
+  --gradient-hero:    linear-gradient(135deg, #050c1e 0%, #0c1836 45%, #0f2b5c 100%);
   --gradient-card:    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 
   /* Border Radius */
@@ -47,12 +48,12 @@
   --radius-pill: 9999px;
 
   /* Sombras Vivas */
-  --shadow-sm:      0 1px 3px rgba(9,13,22,.06), 0 1px 2px rgba(9,13,22,.04);
-  --shadow-md:      0 8px 24px -4px rgba(9,13,22,.09), 0 2px 8px -2px rgba(9,13,22,.04);
-  --shadow-lg:      0 20px 38px -6px rgba(9,13,22,.14), 0 8px 16px -4px rgba(9,13,22,.06);
-  --shadow-primary: 0 10px 28px -4px rgba(255,71,87,.38);
-  --shadow-secondary: 0 10px 28px -4px rgba(83,82,237,.35);
-  --shadow-accent:  0 10px 28px -4px rgba(255,165,2,.38);
+  --shadow-sm:      0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+  --shadow-md:      0 8px 24px -4px rgba(15,23,42,.09), 0 2px 8px -2px rgba(15,23,42,.04);
+  --shadow-lg:      0 20px 38px -6px rgba(15,23,42,.14), 0 8px 16px -4px rgba(15,23,42,.06);
+  --shadow-primary: 0 10px 28px -4px rgba(37,99,235,.35);
+  --shadow-secondary: 0 10px 28px -4px rgba(15,23,42,.30);
+  --shadow-accent:  0 10px 28px -4px rgba(6,182,212,.35);
 
   /* Transições Fluidas */
   --transition-fast:   .15s cubic-bezier(0.16, 1, 0.3, 1);
@@ -931,7 +932,7 @@ select.form-control {
   left: -10%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(255, 71, 87, 0.35) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.45) 0%, rgba(6, 182, 212, 0.2) 50%, transparent 70%);
   border-radius: 50%;
   filter: blur(60px);
   animation: orbFloat1 9s ease-in-out infinite alternate;
@@ -945,7 +946,7 @@ select.form-control {
   right: -10%;
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle, rgba(83, 82, 237, 0.4) 0%, rgba(0, 210, 211, 0.2) 50%, transparent 75%);
+  background: radial-gradient(circle, rgba(30, 58, 138, 0.5) 0%, rgba(56, 189, 248, 0.25) 50%, transparent 75%);
   border-radius: 50%;
   filter: blur(70px);
   animation: orbFloat2 11s ease-in-out infinite alternate;
@@ -999,11 +1000,11 @@ select.form-control {
 }
 
 .hero-title .accent {
-  background: linear-gradient(135deg, #ff4757 0%, #ff6b81 40%, #ffa502 100%);
+  background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 50%, #00d2d3 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
-  filter: drop-shadow(0 4px 18px rgba(255, 71, 87, 0.35));
+  filter: drop-shadow(0 4px 18px rgba(56, 189, 248, 0.45));
 }
 
 .hero-subtitle {
@@ -1022,7 +1023,7 @@ select.form-control {
 }
 
 .hero-actions .btn-primary {
-  background: var(--gradient-primary);
+  background: var(--gradient-accent);
   color: #ffffff;
   font-weight: 800;
   font-size: 1.05rem;
@@ -1033,8 +1034,8 @@ select.form-control {
   transition: all 0.25s ease;
 }
 .hero-actions .btn-primary:hover {
-  background: linear-gradient(135deg, #ee2f40 0%, #ff4757 50%, #ff7f50 100%);
-  box-shadow: 0 16px 36px rgba(255, 71, 87, 0.55);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0891b2 100%);
+  box-shadow: 0 16px 36px rgba(37, 99, 235, 0.55);
   transform: translateY(-3px) scale(1.02);
 }
 
@@ -1061,7 +1062,7 @@ select.form-control {
    MARQUEE TICKER (Letreiro Infinito dos Últimos Itens)
    ============================================================ */
 .marquee-section {
-  background: #090d16;
+  background: #070d1e;
   padding: 24px 0 28px;
   overflow: hidden;
   position: relative;
@@ -1075,7 +1076,7 @@ select.form-control {
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.12em;
-  color: #ff6b81;
+  color: #38bdf8;
   text-transform: uppercase;
   margin-bottom: 18px;
   display: flex;
@@ -1128,9 +1129,9 @@ select.form-control {
 
 .marquee-card:hover {
   background: rgba(255, 255, 255, 0.14);
-  border-color: #ff4757;
+  border-color: #38bdf8;
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 28px rgba(255, 71, 87, 0.35);
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.35);
 }
 
 .marquee-img {
@@ -1167,8 +1168,8 @@ select.form-control {
 }
 
 .marquee-badge {
-  background: rgba(255, 71, 87, 0.25);
-  color: #ff6b81;
+  background: rgba(56, 189, 248, 0.22);
+  color: #38bdf8;
   padding: 2px 8px;
   border-radius: 99px;
   font-weight: 800;
@@ -1180,7 +1181,7 @@ select.form-control {
    ============================================================ */
 .heart-pulse {
   display: inline-block;
-  color: #ff4757;
+  color: #ef4444;
   animation: heartBeat 1.4s ease-in-out infinite;
   transform-origin: center;
   margin: 0 4px;
@@ -1227,15 +1228,113 @@ select.form-control {
   flex-shrink: 0;
 }
 .chat-action-chip:hover {
-  background: #fff1f2;
-  border-color: #ff4757;
-  color: #ff4757;
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
   transform: translateY(-1px);
 }
 .chat-action-chip.whatsapp:hover {
   background: #ecfdf5;
   border-color: #10b981;
   color: #059669;
+}
+
+/* ============================================================
+   PAGE FADE & SCROLL REVEAL (Efeito desvanecendo entre páginas/seções)
+   ============================================================ */
+.fade-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.fade-reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.delay-1 { transition-delay: 0.08s; }
+.delay-2 { transition-delay: 0.16s; }
+.delay-3 { transition-delay: 0.24s; }
+.delay-4 { transition-delay: 0.32s; }
+
+/* ============================================================
+   CATEGORY CARDS ANIMATED (O que você pode trocar)
+   ============================================================ */
+.category-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 26px 22px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+}
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb, #06b6d4);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.category-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: #3b82f6;
+  box-shadow: 0 20px 40px -8px rgba(30, 58, 138, 0.22);
+}
+.category-card:hover::before {
+  opacity: 1;
+}
+.category-card .category-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  margin-bottom: 16px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.category-card:hover .category-icon {
+  transform: scale(1.18) rotate(6deg);
+}
+.category-chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #475569;
+  margin-top: 12px;
+  transition: all 0.2s ease;
+}
+.category-card:hover .category-chip {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* ============================================================
+   GLOBAL TOP SPACING (Evita corte sob a navbar fixa em qualquer tela)
+   ============================================================ */
+.chat-layout-wrapper {
+  margin: calc(var(--navbar-h) + 24px) auto 40px !important;
+}
+.item-detail-main {
+  margin-top: calc(var(--navbar-h) + 24px) !important;
+}
+.auth-container {
+  padding-top: calc(var(--navbar-h) + 20px) !important;
 }
 
 .whatsapp-link-btn {
