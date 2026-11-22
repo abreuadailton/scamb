@@ -197,16 +197,16 @@
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; border-bottom:1px solid #f1f5f9; padding-bottom:14px;">
               <div style="display:flex; align-items:center; gap:12px; font-family:var(--font-heading); font-size:1.15rem; font-weight:800; color:#0f172a;">
                 <span style="color:var(--color-primary);"><i class="fas fa-box"></i> ${trade.offered_title || trade.item_offered_title || 'Item ofertado'}</span>
-                <i class="fas fa-arrows-rotate" style="color:#6366f1;"></i>
-                <span style="color:#06b6d4;"><i class="fas fa-box-open"></i> ${trade.wanted_title || trade.item_wanted_title || 'Item desejado'}</span>
+                <i class="fas fa-arrows-rotate" style="color:var(--color-primary-light);"></i>
+                <span style="color:var(--color-accent);"><i class="fas fa-box-open"></i> ${trade.wanted_title || trade.item_wanted_title || 'Item desejado'}</span>
               </div>
               <div>${getStatusBadge(trade.status)}</div>
             </div>
 
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px; font-size:0.9rem; color:#475569;">
-              <div><i class="fas fa-user" style="color:#6366f1;"></i> Negociando com: <strong>${counterpart || 'Usuário'}</strong></div>
-              <div><i class="fas fa-calendar" style="color:#0ea5e9;"></i> Data do encontro: <strong>${meetDate}</strong></div>
-              ${trade.meeting_address ? `<div><i class="fas fa-map-marker-alt" style="color:#f43f5e;"></i> Ponto Seguro: <strong>${trade.meeting_address}</strong></div>` : ''}
+              <div><i class="fas fa-user" style="color:var(--color-primary);"></i> Negociando com: <strong>${counterpart || 'Usuário'}</strong></div>
+              <div><i class="fas fa-calendar" style="color:var(--color-accent);"></i> Data do encontro: <strong>${meetDate}</strong></div>
+              ${trade.meeting_address ? `<div><i class="fas fa-map-marker-alt" style="color:#dc2626;"></i> Ponto Seguro: <strong>${trade.meeting_address}</strong></div>` : ''}
             </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
