@@ -1,22 +1,28 @@
 /* ============================================================
-   Swaply – style.css
-   PREMIUM DESIGN SYSTEM v3.0 · Deep Cosmos · Violet + Cyan
-   Tipografia: Outfit & Plus Jakarta Sans · 100% responsivo
+   Scamb – style.css
+   A ARTE DO ESCAMBO NA ERA DIGITAL · TROCAS SEM DINHEIRO
+   Identidade Visual: Escambo & Alta Tecnologia · 100% responsivo
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 /* ============================================================
-   1. CSS VARIABLES — Swaply Premium Cosmos Palette
+   1. CSS VARIABLES — Scamb Modern Barter Palette
    ============================================================ */
 :root {
-  /* ── Cores Principais ── */
+  /* ── Cores Principais Scamb ── */
   --color-primary:        #7c3aed; /* Violet 600 */
   --color-primary-hover:  #6d28d9; /* Violet 700 */
   --color-primary-light:  #8b5cf6; /* Violet 500 */
   --color-primary-dark:   #5b21b6; /* Violet 800 */
   --color-primary-soft:   #f5f3ff; /* Violet 50 */
   --color-primary-border: #ddd6fe; /* Violet 200 */
+
+  /* ── Raízes do Escambo (Valor e Troca Nobre) ── */
+  --color-escambo:        #f59e0b; /* Âmbar / Ouro do Escambo */
+  --color-escambo-hover:  #d97706; /* Âmbar Escuro */
+  --color-escambo-soft:   #fffbeb; /* Âmbar Suave */
+  --color-escambo-border: #fde68a; /* Âmbar Borda */
 
   --color-secondary:      #0f0a1e; /* Deep Space */
   --color-secondary-light:#1a1035; /* Space Med */
@@ -1809,14 +1815,25 @@ select.form-control {
   border-radius: var(--radius-xl); overflow: hidden;
   box-shadow: var(--shadow-lg); border: 1px solid var(--color-border);
   text-align: center;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
 }
 .qr-ticket-header {
   background: var(--gradient-accent);
   color: #fff; padding: 26px 20px; position: relative;
+  flex-shrink: 0;
 }
 .qr-ticket-header h3 { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
 .qr-ticket-header p { font-size: .88rem; color: rgba(255,255,255,.9); }
-.qr-ticket-body { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; }
+.qr-ticket-body {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  flex: 1;
+}
 .qr-code-wrapper {
   background: #fff; padding: 18px;
   border-radius: var(--radius-lg);

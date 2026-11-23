@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat de Troca — Swaply</title>
+  <title>Chat de Troca — Scamb</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -157,7 +157,7 @@
   <nav class="navbar">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Swaply
+        <i class="fas fa-arrows-rotate"></i> Scamb
       </a>
       <button class="navbar-toggle" id="navToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
@@ -270,9 +270,9 @@
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
         <div style="display: flex; align-items: center; gap: 12px;">
           <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Swaply
+            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
           </a>
-          <span style="color: #64748b; font-size: 0.88rem;">| Do virtual ao presencial</span>
+          <span style="color: #64748b; font-size: 0.88rem;">| A arte ancestral do escambo na era digital</span>
         </div>
         <div style="display: flex; gap: 20px; font-size: 0.9rem;">
           <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
@@ -286,7 +286,7 @@
           Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
         </p>
         <p style="color: #64748b; font-size: 0.85rem;">
-          Swaply &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
+          Scamb &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
         </p>
       </div>
     </div>
@@ -294,14 +294,16 @@
 
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
+    function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
-    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('swaply_user') || localStorage.getItem('ecotroca_user') || localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
+    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('scamb_user') || localStorage.getItem('swaply_user') || localStorage.getItem('ecotroca_user') || localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
 
     if (!getToken()) window.location.href = 'login.html';
 
     document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
     function logout() { 
+      localStorage.removeItem('scamb_token'); 
+      localStorage.removeItem('scamb_user');
       localStorage.removeItem('swaply_token'); 
       localStorage.removeItem('swaply_user');
       localStorage.removeItem('ecotroca_token'); 
@@ -392,7 +394,7 @@
         const res = await fetch(`${API_BASE}/trades/${tradeId}`, { headers: authHeaders() });
         if (!res.ok) throw new Error();
         tradeData = await res.json();
-        document.title = `Chat: ${tradeData.item_wanted_title || 'Troca'} — Swaply`;
+        document.title = `Chat: ${tradeData.item_wanted_title || 'Troca'} — Scamb`;
 
         const isRequester = currentUser && currentUser.id == tradeData.requester_id;
         const partnerName = isRequester ? tradeData.owner_name : tradeData.requester_name;
@@ -401,7 +403,7 @@
           : (tradeData.requester_avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200');
         const partnerRep = isRequester ? tradeData.owner_reputation : tradeData.requester_reputation;
 
-        document.getElementById('partnerName').textContent = partnerName || 'Usuário Swaply';
+        document.getElementById('partnerName').textContent = partnerName || 'Usuário Scamb';
         document.getElementById('partnerAvatar').src = partnerAvatar;
         document.getElementById('partnerRep').innerHTML = `<i class="fas fa-star" style="color:#f59e0b;"></i> Reputação: ${partnerRep || 100} pts`;
 

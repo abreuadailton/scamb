@@ -6,7 +6,7 @@ const db = require('./database');
 const QRCode = require('qrcode');
 
 async function seed() {
-  console.log('🚀 Iniciando seed completo e enriquecido para Swaply...');
+  console.log('🚀 Iniciando seed completo e enriquecido para Scamb (Escambo Moderno)...');
 
   // Limpa tabelas existentes
   db.exec(`
@@ -28,28 +28,28 @@ async function seed() {
   const demoUsers = [
     {
       name: 'Ana Silva',
-      email: 'ana@swaply.com',
+      email: 'ana@scamb.com',
       bio: 'Apaixonada por leitura, literatura clássica, café e design. Troco livros já lidos, itens de decoração e café por novas descobertas!',
       avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
       reputation: 98
     },
     {
       name: 'Carlos Oliveira',
-      email: 'carlos@swaply.com',
+      email: 'carlos@scamb.com',
       bio: 'Gamer, fã de tecnologia, colecionador de board games e gadgets. Acredito que objeto parado na estante deve circular!',
       avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
       reputation: 92
     },
     {
       name: 'Mariana Costa',
-      email: 'mariana@swaply.com',
+      email: 'mariana@scamb.com',
       bio: 'Arquiteta e entusiasta de botânica urbana. Troco plantas, peças de decoração modernistas e livros técnicos.',
       avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200',
       reputation: 95
     },
     {
       name: 'Lucas Ferreira',
-      email: 'lucas@swaply.com',
+      email: 'lucas@scamb.com',
       bio: 'Músico, marceneiro e criador de conteúdo DIY. Tenho instrumentos, pedais de efeito e ferramentas que procuro trocar por equipamentos de áudio.',
       avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200',
       reputation: 89
@@ -375,7 +375,7 @@ async function seed() {
   insertMessage.run(tradeId1, userIds[1], 'Olá Ana! Vi sua edição de O Senhor dos Anéis, sou apaixonado pela obra do Tolkien!', '2026-11-22 14:00:00');
   insertMessage.run(tradeId1, userIds[0], 'Oi Carlos! Adorei a proposta pelo Catan, jogo sensacional para reunir amigos no fim de semana.', '2026-11-22 14:15:00');
   insertMessage.run(tradeId1, userIds[1], 'Perfeito! Vamos nos encontrar no vão livre do MASP na quinta-feira às 15:30?', '2026-11-22 14:20:00');
-  insertMessage.run(tradeId1, userIds[0], 'Combinadíssimo! Quando chegarmos lá fazemos o check-in por GPS no Swaply e validamos com o QR Code. Até lá!', '2026-11-22 14:30:00');
+  insertMessage.run(tradeId1, userIds[0], 'Combinadíssimo! Quando chegarmos lá fazemos o check-in por GPS no Scamb e validamos com o QR Code. Até lá!', '2026-11-22 14:30:00');
 
   // 5. Avaliações e Notas Reais (Ratings & Reviews com Comentários)
   const insertRating = db.prepare(`
@@ -385,13 +385,13 @@ async function seed() {
 
   // Avaliações para Ana (User 0)
   insertRating.run(tradeId2, userIds[2], userIds[0], 5, 'A troca no Parque Ibirapuera foi impecável! A Ana foi super pontual, atenciosa e o livro estava exatamente como descrito nas fotos. O QR code autenticou na hora!', '2026-11-20 12:30:00');
-  insertRating.run(null, userIds[1], userIds[0], 5, 'Super confiável! Já combinamos várias trocas pelo Swaply. Comunicação rápida no chat e itens de altíssima qualidade.', '2026-11-15 16:45:00');
+  insertRating.run(null, userIds[1], userIds[0], 5, 'Super confiável! Já combinamos várias trocas pelo Scamb. Comunicação rápida no chat e itens de altíssima qualidade.', '2026-11-15 16:45:00');
   insertRating.run(null, userIds[3], userIds[0], 5, 'Experiência fantástica. Marcamos no Conjunto Nacional e validamos a entrega em menos de dois minutos. Recomendo de olhos fechados!', '2026-11-10 18:20:00');
 
   // Avaliações para Carlos (User 1)
   insertRating.run(null, userIds[0], userIds[1], 5, 'O Carlos é super gente boa! O jogo estava completinho, todas as peças e cartas em sleeves plásticos protetores. Valeu demais!', '2026-11-18 17:10:00');
   insertRating.run(null, userIds[3], userIds[1], 5, 'Troca tranquila na Estação Sé. Pontualidade britânica e ótimo papo sobre board games e tecnologia.', '2026-11-12 14:00:00');
-  insertRating.run(null, userIds[2], userIds[1], 4, 'Troca muito rápida e segura. Recomendo o Carlos para qualquer pessoa na comunidade Swaply.', '2026-11-05 10:15:00');
+  insertRating.run(null, userIds[2], userIds[1], 4, 'Troca muito rápida e segura. Recomendo o Carlos para qualquer pessoa na comunidade Scamb.', '2026-11-05 10:15:00');
 
   // Avaliações para Mariana (User 2)
   insertRating.run(null, userIds[0], userIds[2], 5, 'A muda de Costela-de-Adão da Mariana é a coisa mais linda da minha sala! Veio saudável e com orientações detalhadas de rega.', '2026-11-19 13:00:00');
@@ -402,11 +402,11 @@ async function seed() {
   insertRating.run(null, userIds[1], userIds[3], 5, 'Fone de ouvido funcionando com som cristalino. Negociação transparente e ágil.', '2026-11-09 15:20:00');
 
   console.log(`✅ Seed concluído! ${items.length} itens cadastrados com fotos de alta qualidade e reviews reais.`);
-  console.log('--- Credenciais de Acesso Swaply ---');
-  console.log('1. ana@swaply.com    | Senha: senha123');
-  console.log('2. carlos@swaply.com | Senha: senha123');
-  console.log('3. mariana@swaply.com| Senha: senha123');
-  console.log('4. lucas@swaply.com  | Senha: senha123');
+  console.log('--- Credenciais de Acesso Scamb ---');
+  console.log('1. ana@scamb.com    | Senha: senha123');
+  console.log('2. carlos@scamb.com | Senha: senha123');
+  console.log('3. mariana@scamb.com| Senha: senha123');
+  console.log('4. lucas@scamb.com  | Senha: senha123');
 }
 
 seed().catch(console.error);

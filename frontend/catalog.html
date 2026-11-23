@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo de Itens — Swaply</title>
+  <title>Catálogo de Itens — Scamb</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -43,7 +43,7 @@
   <nav class="navbar">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Swaply
+        <i class="fas fa-arrows-rotate"></i> Scamb
       </a>
       <button class="navbar-toggle" id="navToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
@@ -138,9 +138,9 @@
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
         <div style="display: flex; align-items: center; gap: 12px;">
           <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Swaply
+            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
           </a>
-          <span style="color: #64748b; font-size: 0.88rem;">| Do virtual ao presencial</span>
+          <span style="color: #64748b; font-size: 0.88rem;">| A arte ancestral do escambo na era digital</span>
         </div>
         <div style="display: flex; gap: 20px; font-size: 0.9rem;">
           <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
@@ -154,7 +154,7 @@
           Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
         </p>
         <p style="color: #64748b; font-size: 0.85rem;">
-          Swaply &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
+          Scamb &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
         </p>
       </div>
     </div>
@@ -162,7 +162,7 @@
 
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
+    function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
 
     function updateNavbar() {
@@ -183,6 +183,8 @@
     });
 
     function logout() {
+      localStorage.removeItem('scamb_token');
+      localStorage.removeItem('scamb_user');
       localStorage.removeItem('swaply_token');
       localStorage.removeItem('swaply_user');
       localStorage.removeItem('ecotroca_token');
@@ -196,7 +198,7 @@
     let currentPage = 1;
     const PAGE_SIZE = 9;
 
-    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23eef2ff'/%3E%3Ccircle cx='200' cy='140' r='45' fill='%236366f1' opacity='0.7'/%3E%3Ctext x='200' y='230' font-family='sans-serif' font-size='16' fill='%236366f1' font-weight='bold' text-anchor='middle'%3ESwaply%3C/text%3E%3C/svg%3E";
+    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23eef2ff'/%3E%3Ccircle cx='200' cy='140' r='45' fill='%236366f1' opacity='0.7'/%3E%3Ctext x='200' y='230' font-family='sans-serif' font-size='16' fill='%236366f1' font-weight='bold' text-anchor='middle'%3EScamb%3C/text%3E%3C/svg%3E";
 
     function getItemImages(item) {
       if (Array.isArray(item.images)) return item.images;

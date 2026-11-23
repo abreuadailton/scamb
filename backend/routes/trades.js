@@ -393,6 +393,7 @@ router.get('/:id/qrcode', auth, async (req, res) => {
     // If QR code is not generated yet, generate it now
     if (!qrCode) {
       const qrPayload = JSON.stringify({
+        scamb_trade_id: trade.id,
         swaply_trade_id: trade.id,
         requester: trade.requester_name,
         owner: trade.owner_name,
@@ -400,7 +401,7 @@ router.get('/:id/qrcode', auth, async (req, res) => {
         wanted: trade.item_wanted_title,
         location: trade.meeting_address,
         created: trade.created_at,
-        auth_hash: Buffer.from(`swaply-${trade.id}-${trade.requester_id}-${trade.owner_id}`).toString('base64')
+        auth_hash: Buffer.from(`scamb-${trade.id}-${trade.requester_id}-${trade.owner_id}`).toString('base64')
       });
 
       qrCode = await QRCode.toDataURL(qrPayload, {

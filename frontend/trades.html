@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minhas Trocas — Swaply</title>
+  <title>Minhas Trocas — Scamb</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -13,7 +13,7 @@
   <nav class="navbar">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Swaply
+        <i class="fas fa-arrows-rotate"></i> Scamb
       </a>
       <button class="navbar-toggle" id="navToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
@@ -75,7 +75,7 @@
         <span class="badge" style="background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.3); font-size:0.75rem; padding:3px 12px; border-radius:99px; margin-bottom:8px; display:inline-block;">
           <i class="fas fa-shield-halved"></i> Autenticação Presencial
         </span>
-        <h3 id="qrModalTitle">Passaporte de Troca Swaply</h3>
+        <h3 id="qrModalTitle">Passaporte de Troca Scamb</h3>
         <p id="qrModalSubtitle">Apresente este voucher no momento da entrega</p>
       </div>
 
@@ -84,7 +84,7 @@
           <div id="qrCode"></div>
         </div>
 
-        <div class="qr-security-code" id="qrAuthCode">SWAP-0001-AUTH</div>
+        <div class="qr-security-code" id="qrAuthCode">SCAMB-0001-AUTH</div>
 
         <div class="qr-instructions">
           <p style="margin:0 0 6px;"><strong>Validação no Encontro Físico:</strong></p>
@@ -109,14 +109,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
+    function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
-    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('swaply_user') || localStorage.getItem('ecotroca_user') || localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
+    function getCurrentUser() { try { return JSON.parse(localStorage.getItem('scamb_user') || localStorage.getItem('swaply_user') || localStorage.getItem('ecotroca_user') || localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
 
     if (!getToken()) window.location.href = 'login.html';
 
     document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
     function logout() { 
+      localStorage.removeItem('scamb_token'); 
+      localStorage.removeItem('scamb_user');
       localStorage.removeItem('swaply_token'); 
       localStorage.removeItem('swaply_user');
       localStorage.removeItem('ecotroca_token'); 
@@ -290,14 +292,14 @@
         document.getElementById('qrCode').innerHTML = '';
         if (res.ok && data.data && data.data.qr_code) {
           document.getElementById('qrCode').innerHTML = `<img src="${data.data.qr_code}" alt="QR Code" style="width:230px; height:230px; display:block;">`;
-          document.getElementById('qrAuthCode').textContent = data.data.auth_code || `SWAP-000${tradeId}-VERIFIED`;
+          document.getElementById('qrAuthCode').textContent = data.data.auth_code || `SCAMB-000${tradeId}-VERIFIED`;
         } else {
           new QRCode(document.getElementById('qrCode'), {
-            text: JSON.stringify({ swaply_trade_id: tradeId, timestamp: new Date().toISOString() }),
+            text: JSON.stringify({ scamb_trade_id: tradeId, timestamp: new Date().toISOString() }),
             width: 220, height: 220,
             colorDark: '#4338ca', colorLight: '#ffffff'
           });
-          document.getElementById('qrAuthCode').textContent = `SWAP-000${tradeId}-PASSPORT`;
+          document.getElementById('qrAuthCode').textContent = `SCAMB-000${tradeId}-PASSPORT`;
         }
       } catch(e) {
         document.getElementById('qrCode').innerHTML = `<p class="text-muted">Passaporte gerado para a troca #${tradeId}</p>`;
@@ -403,9 +405,9 @@
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
         <div style="display: flex; align-items: center; gap: 12px;">
           <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Swaply
+            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
           </a>
-          <span style="color: #64748b; font-size: 0.88rem;">| Do virtual ao presencial</span>
+          <span style="color: #64748b; font-size: 0.88rem;">| A arte ancestral do escambo na era digital</span>
         </div>
         <div style="display: flex; gap: 20px; font-size: 0.9rem;">
           <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
@@ -419,7 +421,7 @@
           Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
         </p>
         <p style="color: #64748b; font-size: 0.85rem;">
-          Swaply &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
+          Scamb &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
         </p>
       </div>
     </div>

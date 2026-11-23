@@ -3,7 +3,7 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-process.env.JWT_SECRET = process.env.JWT_SECRET || 'swaply_super_secret_key_2026_change_in_production';
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'scamb_super_secret_key_2026_change_in_production';
 process.env.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 const express = require('express');
@@ -76,5 +76,5 @@ app.use((err, req, res, _next) => {
 
 // ─── Start server ─────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`🔄 Swaply backend rodando em http://localhost:${PORT}`);
+  console.log(`🔄 Scamb backend rodando em http://localhost:${PORT}`);
 });

@@ -15,7 +15,7 @@ try {
   };
 }
 
-const DB_PATH = path.join(__dirname, '..', 'swaply.db');
+const DB_PATH = path.join(__dirname, '..', 'scamb.db');
 const rawDb = new DatabaseSync(DB_PATH);
 
 // Create a wrapper object that matches better-sqlite3 API exactly
