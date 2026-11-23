@@ -55,22 +55,25 @@
     <i class="fas fa-plus"></i>
   </button>
 
-  <!-- MODAL ADICIONAR/EDITAR ITEM -->
+  <!-- MODAL ADICIONAR/EDITAR ITEM (100% RESPONSIVO & ROLÁVEL COM BOTÕES FIXOS) -->
   <div class="modal-overlay" id="itemModal" style="display:none;">
     <div class="modal modal--wide">
       <div class="modal-header">
-        <h2 id="modalTitle"><i class="fas fa-box-open"></i> Novo Item</h2>
-        <button class="modal-close" onclick="closeItemModal()"><i class="fas fa-times"></i></button>
+        <h2 id="modalTitle"><i class="fas fa-box-open" style="color:var(--color-primary);"></i> Novo Item</h2>
+        <button type="button" class="modal-close" onclick="closeItemModal()" aria-label="Fechar"><i class="fas fa-times"></i></button>
       </div>
+
       <div class="modal-body">
         <input type="hidden" id="editItemId">
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Título *</label>
-            <input type="text" id="iTitle" class="form-control" placeholder="Nome do item" required>
+        
+        <!-- Linha 1: Título e Categoria -->
+        <div class="grid-2" style="margin-bottom:14px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="iTitle">Título do Anúncio *</label>
+            <input type="text" id="iTitle" class="form-control" placeholder="Ex: Zelda Tears of the Kingdom" required>
           </div>
-          <div class="form-group">
-            <label>Categoria *</label>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="iCategory">Categoria *</label>
             <select id="iCategory" class="form-control">
               <option value="">Selecione...</option>
               <option>Livros</option><option>Roupas</option><option>Ferramentas</option>
@@ -78,51 +81,76 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label>Descrição</label>
-          <textarea id="iDescription" class="form-control" rows="3" placeholder="Descreva o estado, tamanho, etc..."></textarea>
+
+        <!-- Linha 2: Condição e Localização Nome -->
+        <div class="grid-2" style="margin-bottom:14px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="iCondition">Condição *</label>
+            <select id="iCondition" class="form-control">
+              <option value="">Selecione...</option>
+              <option>Novo</option><option>Ótimo</option><option>Bom</option><option>Regular</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="iLocationName"><i class="fas fa-map-marker-alt" style="color:var(--color-primary);"></i> Bairro / Cidade</label>
+            <input type="text" id="iLocationName" class="form-control" placeholder="Ex: Pinheiros, São Paulo">
+          </div>
         </div>
-        <div class="form-group">
-          <label>Condição *</label>
-          <select id="iCondition" class="form-control">
-            <option value="">Selecione...</option>
-            <option>Novo</option><option>Ótimo</option><option>Bom</option><option>Regular</option>
-          </select>
+
+        <!-- Linha 3: Descrição -->
+        <div class="form-group" style="margin-bottom:14px;">
+          <label for="iDescription">Descrição do Item</label>
+          <textarea id="iDescription" class="form-control" rows="2" placeholder="Descreva o estado de conservação, detalhes técnicos, edições..."></textarea>
         </div>
-        <div class="form-group">
-          <label><i class="fas fa-camera"></i> Fotos do item</label>
-          <div class="file-select-area" style="margin-bottom:10px;">
-            <label class="btn btn-secondary btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+
+        <!-- Linha 4: Fotos do Item -->
+        <div class="form-group" style="margin-bottom:14px;">
+          <label style="display:flex; justify-content:space-between; align-items:center;">
+            <span><i class="fas fa-camera" style="color:var(--color-primary);"></i> Fotos do item</span>
+            <span id="fileCountNotice" class="text-muted" style="font-size:0.8rem; font-weight:500;"></span>
+          </label>
+          <div style="display:flex; align-items:center; gap:10px; margin-top:4px; flex-wrap:wrap;">
+            <label class="btn btn-secondary btn-sm" style="cursor:pointer; margin:0; display:inline-flex; align-items:center; gap:6px;">
               <i class="fas fa-folder-open"></i> Selecionar fotos do computador
               <input type="file" id="itemFileInput" multiple accept="image/*" style="display:none;" onchange="handleItemFiles(event)">
             </label>
-            <span id="fileCountNotice" class="text-muted" style="margin-left:10px; font-size:0.85rem;"></span>
+            <span style="font-size:0.8rem; color:#64748b;">(Upload direto de arquivos)</span>
           </div>
-          <div id="itemPhotoPreviews" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;"></div>
-          <label style="font-size:0.85rem; color:#616161;">Ou insira URLs das imagens (opcional):</label>
-          <textarea id="iImages" class="form-control" rows="2" placeholder="https://exemplo.com/foto1.jpg"></textarea>
-        </div>
-        <div class="form-group">
-          <label><i class="fas fa-map-marker-alt"></i> Localização</label>
-          <input type="text" id="iLocationName" class="form-control" placeholder="Nome do local (ex: Pinheiros, SP)" style="margin-bottom:8px;">
-          <div class="grid-2">
-            <input type="number" id="iLat" class="form-control" placeholder="Latitude" step="any">
-            <input type="number" id="iLng" class="form-control" placeholder="Longitude" step="any">
+          <div id="itemPhotoPreviews" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;"></div>
+          <div style="margin-top:8px;">
+            <input type="text" id="iImages" class="form-control" placeholder="Ou cole a URL direta de uma foto (opcional)" style="font-size:0.85rem; padding:8px 12px;">
           </div>
-          <button type="button" class="btn btn-secondary btn-sm mt-1" onclick="useMyLocation()">
-            <i class="fas fa-crosshairs"></i> Usar minha localização
-          </button>
-          <span id="locationStatus" class="text-muted" style="font-size:0.85rem; margin-left:8px;"></span>
         </div>
-        <div id="itemModalError" class="form-error" style="display:none;"></div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" onclick="closeItemModal()">Cancelar</button>
-          <button class="btn btn-primary" onclick="saveItem()">
-            <span id="saveBtnText"><i class="fas fa-save"></i> Salvar</span>
-            <span id="saveBtnLoading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Salvando...</span>
-          </button>
+
+        <!-- Linha 5: Coordenadas GPS (Opcional) -->
+        <div style="background:#f8faff; border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+            <label style="font-size:0.82rem; font-weight:700; color:#475569; margin:0;">
+              <i class="fas fa-satellite" style="color:var(--color-accent);"></i> Coordenadas de Referência GPS (Opcional)
+            </label>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="useMyLocation()" style="padding:4px 10px; font-size:0.78rem;">
+              <i class="fas fa-crosshairs"></i> Obter meu GPS
+            </button>
+          </div>
+          <div class="grid-2" style="gap:10px;">
+            <input type="number" id="iLat" class="form-control" placeholder="Latitude (ex: -23.56)" step="any" style="font-size:0.85rem; padding:6px 10px;">
+            <input type="number" id="iLng" class="form-control" placeholder="Longitude (ex: -46.65)" step="any" style="font-size:0.85rem; padding:6px 10px;">
+          </div>
+          <span id="locationStatus" class="text-muted" style="font-size:0.78rem; display:block; margin-top:4px;"></span>
         </div>
+
+        <div id="itemModalError" class="form-error" style="display:none; margin-bottom:12px;"></div>
       </div>
+
+      <!-- FOOTER FIXO (SEMPRE VISÍVEL E CLICÁVEL) -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeItemModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="saveItem()">
+          <span id="saveBtnText"><i class="fas fa-save"></i> Salvar Item</span>
+          <span id="saveBtnLoading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Salvando...</span>
+        </button>
+      </div>
+
     </div>
   </div>
 

@@ -167,45 +167,47 @@
     </div>
   </main>
 
-  <!-- MODAL DE DEIXAR AVALIAÇÃO / NOTA -->
-  <div class="modal-overlay" id="reviewModal">
-    <div class="modal fade-in-up" style="max-width:520px; border-radius:24px;">
-      <div class="modal__header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
-        <h3 style="font-family:var(--font-heading); font-size:1.35rem; font-weight:800; color:#0f172a; margin:0;">
+  <!-- MODAL DE DEIXAR AVALIAÇÃO / NOTA (RESPONSIVO COM SCROLL) -->
+  <div class="modal-overlay" id="reviewModal" style="display:none;">
+    <div class="modal fade-in-up" style="max-width:540px;">
+      <div class="modal-header">
+        <h2>
           <i class="fas fa-star" style="color:#f59e0b;"></i> Deixar Avaliação
-        </h3>
-        <button class="modal-close" onclick="closeReviewModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:#64748b;">&times;</button>
+        </h2>
+        <button type="button" class="modal-close" onclick="closeReviewModal()" aria-label="Fechar">&times;</button>
       </div>
 
-      <div id="reviewSuccess" class="form-success" style="display:none; padding:12px; background:#ecfdf5; color:#065f46; border-radius:10px; margin-bottom:16px;"></div>
-      <div id="reviewError" class="form-error" style="display:none; padding:12px; background:#fef2f2; color:#991b1b; border-radius:10px; margin-bottom:16px;"></div>
+      <form id="reviewForm" style="display:contents;">
+        <div class="modal-body">
+          <div id="reviewSuccess" class="form-success" style="display:none; padding:12px; background:#ecfdf5; color:#065f46; border-radius:10px; margin-bottom:16px;"></div>
+          <div id="reviewError" class="form-error" style="display:none; padding:12px; background:#fef2f2; color:#991b1b; border-radius:10px; margin-bottom:16px;"></div>
 
-      <form id="reviewForm">
-        <div class="form-group" style="margin-bottom:18px;">
-          <label style="font-weight:700; color:#334155; display:block; margin-bottom:8px;">Quem você deseja avaliar?</label>
-          <select id="reviewTargetUser" class="form-control" required style="padding:10px 14px; border-radius:10px;">
-            <!-- Opções populadas via JS -->
-          </select>
-        </div>
-
-        <div class="form-group" style="margin-bottom:18px;">
-          <label style="font-weight:700; color:#334155; display:block; margin-bottom:8px;">Sua nota (1 a 5 estrelas)</label>
-          <div id="starPicker" style="display:flex; gap:8px; font-size:1.8rem; color:#cbd5e1; cursor:pointer;">
-            <i class="fas fa-star" data-val="1"></i>
-            <i class="fas fa-star" data-val="2"></i>
-            <i class="fas fa-star" data-val="3"></i>
-            <i class="fas fa-star" data-val="4"></i>
-            <i class="fas fa-star" data-val="5"></i>
+          <div class="form-group" style="margin-bottom:16px;">
+            <label style="font-weight:700; color:#334155; display:block; margin-bottom:6px;">Quem você deseja avaliar?</label>
+            <select id="reviewTargetUser" class="form-control" required style="padding:10px 14px; border-radius:10px;">
+              <!-- Opções populadas via JS -->
+            </select>
           </div>
-          <input type="hidden" id="reviewScore" value="5">
+
+          <div class="form-group" style="margin-bottom:16px;">
+            <label style="font-weight:700; color:#334155; display:block; margin-bottom:6px;">Sua nota (1 a 5 estrelas)</label>
+            <div id="starPicker" style="display:flex; gap:8px; font-size:1.8rem; color:#cbd5e1; cursor:pointer;">
+              <i class="fas fa-star" data-val="1"></i>
+              <i class="fas fa-star" data-val="2"></i>
+              <i class="fas fa-star" data-val="3"></i>
+              <i class="fas fa-star" data-val="4"></i>
+              <i class="fas fa-star" data-val="5"></i>
+            </div>
+            <input type="hidden" id="reviewScore" value="5">
+          </div>
+
+          <div class="form-group" style="margin-bottom:10px;">
+            <label style="font-weight:700; color:#334155; display:block; margin-bottom:6px;">Seu comentário / depoimento</label>
+            <textarea id="reviewComment" class="form-control" rows="3" placeholder="Descreva como foi a experiência de troca presencial, pontualidade, simpatia e qualidade do item..." required style="padding:12px; border-radius:10px;"></textarea>
+          </div>
         </div>
 
-        <div class="form-group" style="margin-bottom:20px;">
-          <label style="font-weight:700; color:#334155; display:block; margin-bottom:8px;">Seu comentário / depoimento</label>
-          <textarea id="reviewComment" class="form-control" rows="4" placeholder="Descreva como foi a experiência de troca presencial, pontualidade, simpatia e qualidade do item..." required style="padding:12px; border-radius:10px;"></textarea>
-        </div>
-
-        <div style="display:flex; gap:12px; justify-content:flex-end;">
+        <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancelar</button>
           <button type="submit" class="btn btn-primary" id="submitReviewBtn">
             <i class="fas fa-paper-plane"></i> Publicar Avaliação

@@ -83,16 +83,16 @@
     </div>
   </main>
 
-  <!-- MODAL PROPOR TROCA -->
+  <!-- MODAL PROPOR TROCA (RESPONSIVO COM FOOTER FIXO) -->
   <div class="modal-overlay" id="tradeModal" style="display:none;">
     <div class="modal">
       <div class="modal-header">
-        <h2><i class="fas fa-handshake"></i> Propor Troca</h2>
-        <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        <h2><i class="fas fa-handshake" style="color:var(--color-primary);"></i> Propor Troca</h2>
+        <button type="button" class="modal-close" onclick="closeModal()" aria-label="Fechar"><i class="fas fa-times"></i></button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label><i class="fas fa-box"></i> Qual item seu você deseja oferecer em troca? *</label>
+          <label><i class="fas fa-box" style="color:var(--color-primary);"></i> Qual item seu você deseja oferecer em troca? *</label>
           <select id="myItemSelect" class="form-control">
             <option value="">Carregando seus itens disponíveis...</option>
           </select>
@@ -102,18 +102,21 @@
           </div>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-map-marker-alt"></i> Ponto de encontro seguro *</label>
+          <label><i class="fas fa-map-marker-alt" style="color:var(--color-primary);"></i> Ponto de encontro seguro *</label>
           <select id="meetingPointSelect" class="form-control">
             <option value="">Carregando pontos de troca...</option>
           </select>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-calendar-alt"></i> Data e horário sugeridos para o encontro *</label>
+          <label><i class="fas fa-calendar-alt" style="color:var(--color-primary);"></i> Data e horário sugeridos para o encontro *</label>
           <input type="datetime-local" id="meetingDate" class="form-control">
         </div>
         <div id="tradeError" class="form-error" style="display:none; margin-bottom:12px;"></div>
-        <button class="btn btn-primary btn-full btn-lg" id="submitTrade" onclick="submitTrade()">
-          <i class="fas fa-paper-plane"></i> Enviar proposta de troca
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="submitTrade" onclick="submitTrade()">
+          <i class="fas fa-paper-plane"></i> Enviar proposta
         </button>
       </div>
     </div>
