@@ -4,7 +4,7 @@
   "private": true,
   "description": "Scamb — plataforma web de trocas: do virtual ao presencial",
   "engines": {
-    "node": ">=22.5.0"
+    "node": ">=22.13.0"
   },
   "scripts": {
     "postinstall": "npm --prefix backend install",

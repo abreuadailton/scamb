@@ -8,7 +8,7 @@ MVP desenvolvido como trabalho de faculdade por Felipe Gomes e José Adailton.
 
 ## Como rodar localmente
 
-**Pré-requisito:** [Node.js](https://nodejs.org) **22.5 ou superior** (recomendado: 24 LTS). Confira com `node -v`.
+**Pré-requisito:** [Node.js](https://nodejs.org) **22.13 ou superior** (recomendado: 24 LTS). Confira com `node -v`.
 Não é preciso instalar banco de dados: o SQLite já vem embutido no Node.
 
 ```bash
@@ -41,6 +41,23 @@ Senha de todas: `senha123`
 | Mariana | `mariana@scamb.com` |
 | Lucas | `lucas@scamb.com` |
 
+## Publicar na internet (deploy)
+
+O repositório já traz o arquivo `render.yaml`, que configura um serviço gratuito no [Render](https://render.com).
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/abreuadailton/scamb)
+
+1. Clique no botão acima e entre no Render com a conta do GitHub.
+2. Confirme em **Deploy Blueprint** (não é preciso preencher nada).
+3. Aguarde o build (2 a 3 minutos) e abra o endereço `https://scamb-....onrender.com` exibido no painel.
+
+A cada `git push` no branch `main` o Render publica a nova versão sozinho.
+
+Limites do plano gratuito:
+
+- O serviço "dorme" após 15 minutos sem acesso; o primeiro acesso seguinte demora cerca de 1 minuto. **Abra o site alguns minutos antes de apresentar.**
+- O disco não é persistente: a cada reinício o banco volta aos dados de demonstração e itens/fotos cadastrados são perdidos.
+
 ## Roteiro sugerido para a apresentação
 
 Dica: use duas janelas (uma normal e uma anônima) para ficar logado com dois usuários ao mesmo tempo.
@@ -61,7 +78,7 @@ Antes de apresentar de novo, rode `npm run seed` para voltar ao estado inicial.
 
 | Sintoma | Solução |
 |---|---|
-| Erro citando `node:sqlite` ao iniciar | Node antigo. Instale o Node 22.5+ |
+| Erro citando `node:sqlite` ao iniciar | Node antigo. Instale o Node 22.13+ |
 | `EADDRINUSE` / porta 3001 em uso | Feche o outro processo ou rode em outra porta com `PORT=4000` |
 | Mapa aparece cinza | O mapa usa imagens do OpenStreetMap e precisa de internet; o resto do sistema funciona offline |
 | Dados bagunçados após testes | `npm run seed` |

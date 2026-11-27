@@ -7,7 +7,7 @@ let DatabaseSync;
 try {
   ({ DatabaseSync } = require('node:sqlite'));
 } catch (e) {
-  console.error('O Scamb usa o SQLite embutido no Node.js (node:sqlite). Instale o Node.js 22.5 ou superior (recomendado: 24 LTS).');
+  console.error('O Scamb usa o SQLite embutido no Node.js (node:sqlite). Instale o Node.js 22.13 ou superior (recomendado: 24 LTS).');
   process.exit(1);
 }
 

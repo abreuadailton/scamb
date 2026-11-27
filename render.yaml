@@ -1,0 +1,14 @@
+# Deploy gratuito no Render (https://render.com): um único serviço web Node.
+services:
+  - type: web
+    name: scamb
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/exchange-points
+    envVars:
+      - key: NODE_VERSION
+        value: 24.11.0
+      - key: JWT_SECRET
+        generateValue: true

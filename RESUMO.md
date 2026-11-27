@@ -9,7 +9,7 @@ Sistema web de trocas de objetos entre pessoas. O diferencial é ligar o **virtu
 | Camada | Tecnologia | Para quê |
 |---|---|---|
 | Servidor | **Node.js** + **Express** | API REST e entrega das páginas |
-| Banco de dados | **SQLite** (`node:sqlite`, embutido no Node 22.5+) | Um único arquivo, sem instalação |
+| Banco de dados | **SQLite** (`node:sqlite`, embutido no Node 22.13+) | Um único arquivo, sem instalação |
 | Autenticação | **JWT** (`jsonwebtoken`) + **bcryptjs** | Login por token e senha com hash |
 | Upload | **Multer** | Fotos dos itens e avatar |
 | QR Code | **qrcode** (servidor) e **QRCode.js** (navegador) | Passaporte de troca |
