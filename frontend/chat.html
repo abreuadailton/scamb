@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat de Troca — Scamb</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
     .chat-page {
@@ -46,7 +46,7 @@
       height: 50px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #2563eb;
+      border: 2px solid var(--color-primary);
     }
     .chat-user-name {
       font-family: var(--font-heading);
@@ -58,11 +58,11 @@
       gap: 8px;
     }
     .chat-safety-banner {
-      background: #f0f7ff;
-      border-bottom: 1px solid #bae6fd;
+      background: var(--color-primary-soft);
+      border-bottom: 1px solid var(--color-border);
       padding: 10px 24px;
       font-size: 0.85rem;
-      color: #0369a1;
+      color: var(--color-primary-dark);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -71,7 +71,7 @@
       height: 480px;
       overflow-y: auto;
       padding: 24px;
-      background: #f8fafc;
+      background: var(--color-surface-2);
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -98,10 +98,10 @@
       position: relative;
     }
     .message-item.own .message-bubble-content {
-      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      background: var(--color-primary);
       color: #ffffff;
       border-bottom-right-radius: 4px;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      box-shadow: var(--shadow-primary);
     }
     .message-item.other .message-bubble-content {
       background: #ffffff;
@@ -150,23 +150,24 @@
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     }
   </style>
+  <script src="js/navigation.js" defer></script>
 </head>
 <body class="chat-page">
 
   <!-- NAVBAR -->
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Navegação principal">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Scamb
+        <span class="swap-mark" aria-hidden="true"></span>Scamb
       </a>
-      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
-        <i class="fas fa-bars"></i>
+      <button type="button" class="navbar-toggle" id="navToggle" aria-label="Menu" aria-controls="navLinks" aria-expanded="false">
+        <span class="menu-lines" aria-hidden="true"></span>
       </button>
       <ul class="navbar-links" id="navLinks">
         <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
         <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Pontos Seguros</a></li>
-        <li><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
-        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
+        <li><a href="dashboard.html"><i class="fas fa-columns"></i> Painel</a></li>
+        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus itens</a></li>
         <li><a href="trades.html" class="active"><i class="fas fa-handshake"></i> Trocas</a></li>
         <li><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
@@ -182,7 +183,7 @@
           <i class="fas fa-arrow-left"></i>
         </a>
         <div class="chat-user-profile" id="userProfileSnippet">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200" class="chat-user-avatar" id="partnerAvatar" alt="Avatar">
+          <img src="img/demo/photo-1534528741775-53994a69daeb.jpg" class="chat-user-avatar" id="partnerAvatar" alt="Avatar">
           <div>
             <div class="chat-user-name">
               <span id="partnerName">Carregando conversa...</span>
@@ -199,7 +200,7 @@
 
       <div style="display: flex; gap: 10px; align-items: center;">
         <a href="map.html" target="_blank" class="btn btn-secondary btn-sm" title="Abrir mapa de pontos seguros">
-          <i class="fas fa-map-location-dot"></i> Pontos Seguros
+          <i class="fas scamb-icon fa-map-location-dot"></i> Pontos Seguros
         </a>
         <button class="btn btn-primary btn-sm" id="btnPassport" onclick="goToPassport()" style="display:none;">
           <i class="fas fa-qrcode"></i> Ver QR Code Pass
@@ -265,42 +266,27 @@
   </div>
 
   <!-- FOOTER -->
-  <footer style="background: #090d16; color: #94a3b8; padding: 48px 0 28px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: auto;">
-    <div class="container">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
-          </a>
-          <span style="color: #64748b; font-size: 0.88rem;">| A arte ancestral do escambo na era digital</span>
-        </div>
-        <div style="display: flex; gap: 20px; font-size: 0.9rem;">
-          <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
-          <a href="map.html" style="color: #94a3b8;">Pontos Seguros</a>
-          <a href="trades.html" style="color: #94a3b8;">Trocas</a>
-          <a href="profile.html" style="color: #94a3b8;">Perfil</a>
-        </div>
-      </div>
-      <div style="padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
-        <p style="color: #f1f5f9; font-weight: 600;">
-          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
-        </p>
-        <p style="color: #64748b; font-size: 0.85rem;">
-          Scamb &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
-        </p>
-      </div>
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a href="index.html" class="site-footer-brand"><span class="swap-mark" aria-hidden="true"></span>Scamb</a>
+      <nav aria-label="Rodapé">
+        <a href="catalog.html">Catálogo</a>
+        <a href="map.html">Pontos seguros</a>
+        <a href="trades.html">Trocas</a>
+        <a href="profile.html">Perfil</a>
+      </nav>
+      <small>© 2026 Scamb · Feito por Felipe Gomes e José Adailton</small>
     </div>
   </footer>
 
   <script>
-    const API_BASE = 'http://localhost:3001/api';
+    const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : '/api';
     function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
     function getCurrentUser() { try { return JSON.parse(localStorage.getItem('scamb_user') || localStorage.getItem('swaply_user') || localStorage.getItem('ecotroca_user') || localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
 
     if (!getToken()) window.location.href = 'login.html';
 
-    document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
     function logout() { 
       localStorage.removeItem('scamb_token'); 
       localStorage.removeItem('scamb_user');
@@ -399,8 +385,8 @@
         const isRequester = currentUser && currentUser.id == tradeData.requester_id;
         const partnerName = isRequester ? tradeData.owner_name : tradeData.requester_name;
         const partnerAvatar = isRequester 
-          ? (tradeData.owner_avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200')
-          : (tradeData.requester_avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200');
+          ? (tradeData.owner_avatar || 'img/demo/photo-1507003211169-0a1dd7228f2d.jpg')
+          : (tradeData.requester_avatar || 'img/demo/photo-1494790108377-be9c29b29330.jpg');
         const partnerRep = isRequester ? tradeData.owner_reputation : tradeData.requester_reputation;
 
         document.getElementById('partnerName').textContent = partnerName || 'Usuário Scamb';

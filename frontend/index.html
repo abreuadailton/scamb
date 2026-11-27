@@ -3,590 +3,195 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scamb — O Escambo Moderno. Do virtual ao presencial.</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta name="theme-color" content="#15213f">
+  <meta name="description" content="Encontre itens no catálogo do Scamb e combine trocas presenciais em São Paulo.">
+  <title>Scamb — Trocas locais</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/marketplace.css">
+  <script src="js/navigation.js" defer></script>
+  <script src="js/ticker.js" defer></script>
+  <script src="js/marketplace.js" defer></script>
 </head>
-<body>
-
-  <!-- NAVBAR -->
-  <nav class="navbar">
+<body class="home-page">
+  <a class="skip-link" href="#principal">Pular para o conteúdo</a>
+  <nav class="navbar market-navigation" aria-label="Navegação principal">
+    <div class="navbar-strip">
+      <div class="container navbar-strip-inner">
+        <span><i class="fas scamb-icon fa-location-dot" aria-hidden="true"></i> São Paulo, SP</span>
+        <span><i class="fas scamb-icon fa-right-left" aria-hidden="true"></i> Trocas sem dinheiro</span>
+      </div>
+    </div>
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Scamb
+        <span class="swap-mark" aria-hidden="true"></span>Scamb
       </a>
-      <button class="navbar-toggle" id="navToggle" aria-label="Abrir Menu">
-        <i class="fas fa-bars"></i>
+      <button type="button" class="navbar-toggle" id="navToggle" aria-label="Menu" aria-controls="navLinks" aria-expanded="false">
+        <span class="menu-lines" aria-hidden="true"></span>
       </button>
       <ul class="navbar-links" id="navLinks">
-        <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Pontos Seguros</a></li>
+        <li><a href="index.html" class="active" aria-current="page">Início</a></li>
+        <li><a href="catalog.html">Catálogo</a></li>
+        <li><a href="map.html">Pontos seguros</a></li>
+        <li><a href="#como-funciona">Como funciona</a></li>
         <li id="nav-guest-login"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
-        <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Cadastre-se</a></li>
-        <li id="nav-dashboard" style="display:none;"><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
-        <li id="nav-my-items" style="display:none;"><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
-        <li id="nav-trades" style="display:none;"><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
-        <li id="nav-profile" style="display:none;"><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
-        <li id="nav-logout" style="display:none;"><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
+        <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Criar conta</a></li>
+        <li id="nav-dashboard" hidden><a href="dashboard.html">Painel</a></li>
+        <li id="nav-my-items" hidden><a href="my-items.html">Meus itens</a></li>
+        <li id="nav-trades" hidden><a href="trades.html">Trocas</a></li>
+        <li id="nav-profile" hidden><a href="profile.html">Perfil</a></li>
+        <li id="nav-logout" hidden><button type="button" class="btn btn-secondary btn-sm" id="marketLogout">Sair</button></li>
       </ul>
     </div>
   </nav>
 
-  <!-- HERO SECTION WITH DEEP NAVY AURORA ORBS -->
-  <section class="hero">
-    <div class="hero-orb hero-orb-1"></div>
-    <div class="hero-orb hero-orb-2"></div>
-
-    <div class="container hero-content fade-reveal">
-      <span class="hero-eyebrow">
-        <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Plataforma de Escambo Inteligente & Seguro
-      </span>
-      <h1 class="hero-title">
-        A arte ancestral do escambo.<br>
-        Reimaginada com <span class="accent">tecnologia</span> e segurança <span class="accent">presencial</span>.
-      </h1>
-      <p class="hero-subtitle">
-        Games, livros, eletrônicos, instrumentos, ferramentas, roupas e plantas. 
-        Dê adeus ao dinheiro: viva a essência do escambo, combinando trocas justas online e realizando a entrega com verificação por QR Code e GPS em pontos seguros monitorados!
-      </p>
-      <div class="hero-actions">
-        <a href="catalog.html" class="btn btn-primary btn-lg">
-          <i class="fas fa-search"></i> Explorar Catálogo do Escambo
-        </a>
-        <a href="map.html" class="btn btn-secondary btn-lg">
-          <i class="fas fa-map-marked-alt"></i> Ver Pontos Seguros
-        </a>
-      </div>
-
-      <!-- Live metrics pill (Métricas Oficiais Scamb) -->
-      <div class="hero-metrics-pill" style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 48px; padding: 22px 28px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 20px; box-shadow: 0 12px 36px rgba(0,0,0,0.28);">
-        <div style="text-align: center; color: #fff; min-width: 120px; padding: 4px 8px;">
-          <div style="font-family: var(--font-heading); font-size: 2rem; font-weight: 900; line-height: 1; color: #38bdf8; text-shadow: 0 0 20px rgba(56,189,248,0.45);">16+</div>
-          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.85); margin-top: 6px; font-weight: 600;">Itens no Catálogo</div>
-        </div>
-        <div style="text-align: center; color: #fff; min-width: 120px; padding: 4px 8px;">
-          <div style="font-family: var(--font-heading); font-size: 2rem; font-weight: 900; line-height: 1; color: #a78bfa; text-shadow: 0 0 20px rgba(167,139,250,0.45);">5</div>
-          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.85); margin-top: 6px; font-weight: 600;">Pontos Seguros em SP</div>
-        </div>
-        <div style="text-align: center; color: #fff; min-width: 140px; padding: 4px 8px;">
-          <div style="font-family: var(--font-heading); font-size: 2rem; font-weight: 900; line-height: 1; color: #34d399; text-shadow: 0 0 20px rgba(52,211,153,0.45);">100%</div>
-          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.85); margin-top: 6px; font-weight: 600;">Sem Envolvimento de Dinheiro</div>
-        </div>
-        <div style="text-align: center; color: #fff; min-width: 130px; padding: 4px 8px;">
-          <div style="font-family: var(--font-heading); font-size: 2rem; font-weight: 900; line-height: 1; color: #fbbf24; text-shadow: 0 0 20px rgba(251,191,36,0.45);">4.9 ★</div>
-          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.85); margin-top: 6px; font-weight: 600;">Reputação da Comunidade</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MARQUEE TICKER (LETREIRO COM OS ÚLTIMOS ITENS ANUNCIADOS) -->
-  <section class="marquee-section">
-    <div class="marquee-label">
-      <i class="fas fa-bolt"></i> Últimos itens anunciados para troca &bull; Passe o mouse para pausar &bull; Clique para abrir
-    </div>
-    <div class="marquee-container" id="marqueeContainer">
-      <div class="marquee-track" id="marqueeTrack">
-        <!-- Injetado dinamicamente com os itens do catálogo -->
-        <div class="marquee-card">
-          <div class="marquee-info"><span style="color:#94a3b8; font-size:0.85rem;">Carregando anúncios recentes...</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMO A INTERNET TRANSFORMA O ENCONTRO REAL (EXPLICATIVO, INFORMATIVO & DESIGN MODERNO) -->
-  <section class="section fade-reveal" style="background: #ffffff; padding: 90px 0;">
-    <div class="container">
-      <div style="text-align: center; max-width: 800px; margin: 0 auto 60px;">
-        <h2 style="font-size: clamp(2.1rem, 3.8vw, 2.9rem); font-weight: 900; color: #0f172a; letter-spacing: -0.6px; margin-bottom: 16px;">
-          Como a internet transforma o encontro real
-        </h2>
-        <p style="color: #475569; font-size: 1.15rem; line-height: 1.65; margin: 0 auto;">
-          O ciberespaço não é o oposto do mundo físico — ele é o seu maior <strong>potencializador</strong>.
-          Veja como a tecnologia do Scamb elimina a incerteza e o perigo das feiras tradicionais para criar encontros de escambo seguros e prazerosos:
-        </p>
-      </div>
-
-      <!-- COMPARAÇÃO VISUAL MODERNA: ANTES vs DEPOIS COM SCAMB -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; align-items: stretch; margin-bottom: 56px;">
-        <!-- Card 1: As Frustrações do Modelo Antigo -->
-        <div class="card" style="padding: 40px 32px; border-radius: 24px; border: 1.5px solid #e2e8f0; background: #ffffff; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);">
-          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 22px;">
-            <div style="width: 48px; height: 48px; border-radius: 14px; background: #fef2f2; color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
-              <i class="fas fa-triangle-exclamation"></i>
+  <main id="principal" tabindex="-1">
+    <section class="container home-hero" aria-label="Destaques do Scamb">
+      <div class="home-hero-panel" id="heroPanel" tabindex="0" aria-label="Destaques. Use as setas para percorrer.">
+        <div class="hero-scenes">
+          <article class="hero-scene is-current" data-scene="intro">
+            <figure class="home-hero-visual"><img src="img/scamb-hero.jpg" width="1200" height="800" alt="Uma câmera analógica sendo trocada por livros" fetchpriority="high"></figure>
+            <div class="hero-caption">
+              <span class="hero-kicker"><i class="fas scamb-icon fa-right-left" aria-hidden="true"></i> Trocas locais</span>
+              <h1>Dê uma nova vida<br><em>ao que você tem.</em></h1>
+              <p>Livros, jogos e achados do seu bairro. Encontre algo que você quer e ofereça algo seu em troca.</p>
             </div>
-            <div>
-              <h3 style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin: 0;">Feiras de Troca Tradicionais</h3>
-              <span style="font-size: 0.85rem; color: #64748b;">Sem o suporte do ambiente virtual</span>
+          </article>
+          <article class="hero-scene" data-scene="music" inert aria-hidden="true">
+            <figure class="home-hero-visual"><img src="img/scamb-vinil.jpg" alt="Toca-discos vintage e discos de vinil sobre uma mesa de madeira" decoding="async"></figure>
+            <div class="hero-caption">
+              <span class="hero-kicker"><i class="fas scamb-icon fa-headphones" aria-hidden="true"></i> Música e eletrônicos</span>
+              <h2>Todo disco merece<br><em>mais um giro.</em></h2>
+              <p>Um toca-discos guardado pode virar o achado de alguém. <a href="catalog.html?category=Eletr%C3%B4nicos">Explore os eletrônicos disponíveis</a>.</p>
             </div>
-          </div>
-          <ul style="display: flex; flex-direction: column; gap: 18px; color: #334155; font-size: 0.98rem; line-height: 1.55;">
-            <li style="display: flex; gap: 12px;">
-              <i class="fas fa-xmark" style="color: #ef4444; margin-top: 3px; font-size: 1.1rem; flex-shrink: 0;"></i>
-              <div>
-                <strong>Deslocamento incerto & perda de tempo:</strong> Você carrega caixas pesadas de casa sem ter nenhuma certeza de que alguém na feira vai querer o seu item.
+          </article>
+          <article class="hero-scene" data-scene="latest" inert aria-hidden="true">
+            <figure class="home-hero-visual hero-latest-visual"><img src="img/scamb-hero.jpg" alt=""></figure>
+            <div class="hero-caption">
+              <span class="hero-kicker"><span class="hero-live-dot" aria-hidden="true"></span> Novos anúncios</span>
+              <h2>Olha o que<br><em>acabou de chegar.</em></h2>
+              <p>Veja os últimos itens disponíveis e abra um anúncio para conhecer os detalhes da troca.</p>
+            </div>
+            <div class="hero-listings" id="heroListings" aria-label="Novos anúncios em destaque"></div>
+          </article>
+        </div>
+        <div class="home-hero-copy">
+          <form class="home-search" action="catalog.html" method="get" role="search">
+            <label for="homeSearch" class="home-search-label">Buscar no catálogo</label>
+            <div class="home-search-row">
+              <div class="home-search-field">
+                <i class="fas scamb-icon fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" id="homeSearch" name="search" placeholder="Livros, jogos ou fones de ouvido">
               </div>
-            </li>
-            <li style="display: flex; gap: 12px;">
-              <i class="fas fa-xmark" style="color: #ef4444; margin-top: 3px; font-size: 1.1rem; flex-shrink: 0;"></i>
-              <div>
-                <strong>Insegurança em locais ermos:</strong> Negociações improvisadas na rua, em esquinas desertas ou estações sem monitoramento, com pessoas sem identificação prévia.
-              </div>
-            </li>
-            <li style="display: flex; gap: 12px;">
-              <i class="fas fa-xmark" style="color: #ef4444; margin-top: 3px; font-size: 1.1rem; flex-shrink: 0;"></i>
-              <div>
-                <strong>Ausência total de garantias:</strong> Nenhuma verificação de estado, sem histórico de confiança e risco constante de desencontros ou promessas não cumpridas.
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Card 2: A Solução Inteligente Scamb -->
-        <div class="card" style="padding: 40px 32px; border-radius: 24px; border: 1.5px solid #bfdbfe; background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%); box-shadow: 0 16px 36px rgba(37, 99, 235, 0.1);">
-          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 22px;">
-            <div style="width: 48px; height: 48px; border-radius: 14px; background: var(--gradient-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: var(--shadow-primary);">
-              <i class="fas fa-shield-check"></i>
+              <button class="btn home-primary" type="submit">Buscar</button>
             </div>
-            <div>
-              <h3 style="font-size: 1.35rem; font-weight: 800; color: #1e3a8a; margin: 0;">A Revolução com o Scamb</h3>
-              <span style="font-size: 0.85rem; color: #2563eb; font-weight: 700;">O escambo potencializado pela era digital</span>
-            </div>
+          </form>
+          <div class="home-actions">
+            <a href="#anuncios" class="home-hero-link">Explorar a vitrine <i class="fas scamb-icon fa-arrow-down" aria-hidden="true"></i></a>
+            <a href="register.html" class="home-hero-link" data-publish>Anunciar um item <i class="fas scamb-icon fa-arrow-right" aria-hidden="true"></i></a>
           </div>
-          <ul style="display: flex; flex-direction: column; gap: 18px; color: #1e293b; font-size: 0.98rem; line-height: 1.55;">
-            <li style="display: flex; gap: 12px;">
-              <i class="fas fa-check" style="color: #2563eb; margin-top: 3px; font-size: 1.1rem; flex-shrink: 0;"></i>
-              <div>
-                <strong>Match pré-acordado online:</strong> O item já é negociado, inspecionado por fotos e reservado antes de você dar o primeiro passo fora de casa.
-              </div>
-            </li>
-            <li style="display: flex; gap: 12px;">
-              <i class="fas fa-check" style="color: #2563eb; margin-top: 3px; font-size: 1.1rem; flex-shrink: 0;"></i>
-              <div>
-                <strong>Pontos Seguros Homologados:</strong> Encontros agendados exclusivamente em locais públicos e monitorados em São Paulo (MASP, Metrô Sé, Parques e Centros Culturais).
-              </div>
-            </li>
-            <li style="display: flex; gap: 12px;">
-              <i class="fas fa-check" style="color: #2563eb; margin-top: 3px; font-size: 1.1rem; flex-shrink: 0;"></i>
-              <div>
-                <strong>Passaporte QR Code & GPS:</strong> Validação tecnológica no local físico que formaliza a entrega, previne fraudes e soma reputação comunitária imediata.
-              </div>
-            </li>
-          </ul>
         </div>
+        <div class="hero-indicators" aria-hidden="true"><span class="is-current"></span><span></span><span hidden></span></div>
       </div>
+    </section>
 
-      <!-- OS 4 PASSOS DA JORNADA DO VIRTUAL AO REAL -->
-      <div style="margin-top: 64px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 24px; padding: 48px 36px; box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.04);">
-        <div style="text-align: center; max-width: 650px; margin: 0 auto 40px;">
-          <span style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 5px 16px; border-radius: 99px; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-bottom: 12px;">
-            Fluxo Descomplicado & Seguro
-          </span>
-          <h3 style="font-size: 2rem; font-weight: 900; color: #0f172a; margin: 0 0 10px;">
-            A Jornada Completa em 4 Passos
-          </h3>
-          <p style="color: #475569; font-size: 1.05rem; line-height: 1.6; margin: 0;">
-            Do primeiro clique no catálogo até o aperto de mão e a validação do QR Code no ponto seguro.
-          </p>
+    <section class="home-section home-recent" id="anuncios" aria-labelledby="recentTitle">
+      <div class="container">
+        <div class="market-section-heading recent-heading">
+          <div>
+            <h2 id="recentTitle">Vitrine de trocas</h2>
+            <p>Veja os itens disponíveis e abra um anúncio para saber mais ou enviar uma proposta.</p>
+          </div>
+          <a href="catalog.html" class="home-text-link">Ver catálogo completo <i class="fas scamb-icon fa-arrow-right" aria-hidden="true"></i></a>
         </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 24px;">
-          <!-- Passo 1 -->
-          <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 20px; padding: 30px 22px; text-align: center; transition: all 0.3s ease;">
-            <div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.25rem; margin: 0 auto 16px; box-shadow: 0 6px 18px rgba(79, 70, 229, 0.25);">
-              1
+        <nav class="home-category-grid" aria-label="Categorias de troca">
+          <a href="catalog.html?category=Livros"><i class="fas scamb-icon fa-book-open" aria-hidden="true"></i><span>Livros</span></a>
+          <a href="catalog.html?category=Jogos"><i class="fas scamb-icon fa-gamepad" aria-hidden="true"></i><span>Jogos</span></a>
+          <a href="catalog.html?category=Eletr%C3%B4nicos"><i class="fas scamb-icon fa-headphones" aria-hidden="true"></i><span>Eletrônicos</span></a>
+          <a href="catalog.html?category=Roupas"><i class="fas scamb-icon fa-shirt" aria-hidden="true"></i><span>Roupas</span></a>
+          <a href="catalog.html?category=Plantas"><i class="fas scamb-icon fa-seedling" aria-hidden="true"></i><span>Plantas</span></a>
+          <a href="catalog.html?category=Ferramentas"><i class="fas scamb-icon fa-screwdriver-wrench" aria-hidden="true"></i><span>Ferramentas</span></a>
+          <a href="catalog.html?category=Outros"><i class="fas scamb-icon fa-shapes" aria-hidden="true"></i><span>Outros</span></a>
+        </nav>
+        <p class="market-feedback" id="recentStatus" role="status" data-loading>Carregando anúncios…</p>
+        <div class="ticker" id="recentTicker" hidden>
+          <div class="ticker-bar">
+            <p class="ticker-count" id="recentCount"></p>
+            <div class="ticker-controls" id="tickerControls" role="group" aria-label="Controles da vitrine" hidden>
+              <button class="ticker-button ticker-button--arrow" type="button" id="tickerPrevious" aria-label="Anúncios anteriores" aria-controls="tickerViewport">
+                <i class="fas scamb-icon fa-arrow-right" aria-hidden="true"></i>
+              </button>
+              <button class="ticker-button ticker-button--arrow" type="button" id="tickerNext" aria-label="Próximos anúncios" aria-controls="tickerViewport">
+                <i class="fas scamb-icon fa-arrow-right" aria-hidden="true"></i>
+              </button>
+              <button class="ticker-button ticker-button--toggle" type="button" id="tickerToggle" aria-controls="tickerViewport">
+                <span class="ticker-play-icon" aria-hidden="true"></span><span id="tickerToggleText">Pausar</span>
+              </button>
             </div>
-            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">1. Encontre & Conecte</h4>
-            <p style="font-size: 0.92rem; color: #475569; line-height: 1.55; margin: 0;">Pesquise no catálogo interativo e descubra tesouros parados que combinam com o que você tem a oferecer.</p>
           </div>
-
-          <!-- Passo 2 -->
-          <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 20px; padding: 30px 22px; text-align: center; transition: all 0.3s ease;">
-            <div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #4338ca, #4f46e5); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.25rem; margin: 0 auto 16px; box-shadow: 0 6px 18px rgba(67, 56, 202, 0.25);">
-              2
+          <div class="ticker-viewport" id="tickerViewport" role="region" aria-label="Anúncios para troca com rolagem horizontal" tabindex="0">
+            <div class="ticker-rail" id="tickerRail">
+              <div class="ticker-list" id="recentItems"></div>
+              <div class="ticker-list ticker-repeat" id="tickerRepeat" aria-hidden="true" hidden></div>
             </div>
-            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">2. Alinhe no Chat</h4>
-            <p style="font-size: 0.92rem; color: #475569; line-height: 1.55; margin: 0;">Tire dúvidas sobre o estado da peça, compartilhe contatos de WhatsApp e agende o melhor horário.</p>
-          </div>
-
-          <!-- Passo 3 -->
-          <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 20px; padding: 30px 22px; text-align: center; transition: all 0.3s ease;">
-            <div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #0284c7, #06b6d4); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.25rem; margin: 0 auto 16px; box-shadow: 0 6px 18px rgba(6, 182, 212, 0.25);">
-              3
-            </div>
-            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">3. Vá ao Ponto Seguro</h4>
-            <p style="font-size: 0.92rem; color: #475569; line-height: 1.55; margin: 0;">Dirija-se ao local homologado mais próximo (MASP, Metrô Sé, Parques) com localização exata no mapa GPS.</p>
-          </div>
-
-          <!-- Passo 4 -->
-          <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 20px; padding: 30px 22px; text-align: center; transition: all 0.3s ease;">
-            <div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #059669, #10b981); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.25rem; margin: 0 auto 16px; box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);">
-              4
-            </div>
-            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">4. Validação QR Code</h4>
-            <p style="font-size: 0.92rem; color: #475569; line-height: 1.55; margin: 0;">Escaneie o passaporte digital no momento da entrega e receba seus pontos de reputação e avaliações.</p>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- O QUE VOCÊ PODE TROCAR (TROQUE DE TUDO - CARDS ANIMADOS COM MICROINTERAÇÕES) -->
-  <section class="section fade-reveal" style="background: #f8fafc; padding: 90px 0;">
-    <div class="container">
-      <div style="text-align: center; max-width: 720px; margin: 0 auto 52px;">
-        <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 18px; border-radius: 999px; font-weight: 800; margin-bottom: 14px; display: inline-block;">
-          Economia Circular & Sem Dinheiro
-        </span>
-        <h2 style="font-size: clamp(2.1rem, 3.8vw, 2.8rem); font-weight: 900; color: #0f172a; margin-bottom: 14px;">
-          O que você pode trocar no Scamb?
-        </h2>
-        <p style="color: #64748b; font-size: 1.1rem; line-height: 1.6;">
-          Dê uma nova vida ao que está esquecido na sua estante ou gaveta. Pratique o escambo contemporâneo: clique em qualquer categoria para explorar os itens ativos:
-        </p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
-        <!-- Card 1: Games -->
-        <a href="catalog.html?category=Jogos" class="category-card">
+    <section class="home-section home-process" id="como-funciona" aria-labelledby="processTitle" data-fade>
+      <div class="container">
+        <div class="market-section-heading">
           <div>
-            <div class="category-icon" style="background: #eff6ff; color: #2563eb;">
-              <i class="fas fa-gamepad"></i>
-            </div>
-            <h4 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: #0f172a;">Games & Consoles</h4>
-            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5;">Jogos físicos de PS5, Nintendo Switch, Xbox, controles e jogos de tabuleiro.</p>
-          </div>
-          <div>
-            <span class="category-chip"><i class="fas fa-tag"></i> Zelda, Controles Xbox, Catan</span>
-          </div>
-        </a>
-
-        <!-- Card 2: Livros -->
-        <a href="catalog.html?category=Livros" class="category-card">
-          <div>
-            <div class="category-icon" style="background: #f0fdf4; color: #16a34a;">
-              <i class="fas fa-book-open"></i>
-            </div>
-            <h4 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: #0f172a;">Livros & HQs</h4>
-            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5;">Graphic novels de colecionador, mangás, clássicos e boxes completos.</p>
-          </div>
-          <div>
-            <span class="category-chip"><i class="fas fa-tag"></i> Sandman Vol. 1, Boxes Raros</span>
-          </div>
-        </a>
-
-        <!-- Card 3: Eletrônicos -->
-        <a href="catalog.html?category=Eletr%C3%B4nicos" class="category-card">
-          <div>
-            <div class="category-icon" style="background: #ecfeff; color: #0891b2;">
-              <i class="fas fa-headphones-simple"></i>
-            </div>
-            <h4 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: #0f172a;">Eletrônicos & Áudio</h4>
-            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5;">Kindles, headphones bluetooth, caixas de som, gadgets e periféricos.</p>
-          </div>
-          <div>
-            <span class="category-chip"><i class="fas fa-tag"></i> Kindle 11ª Ger, Fones Sony</span>
-          </div>
-        </a>
-
-        <!-- Card 4: Música -->
-        <a href="catalog.html?category=Outros" class="category-card">
-          <div>
-            <div class="category-icon" style="background: #fefce8; color: #ca8a04;">
-              <i class="fas fa-guitar"></i>
-            </div>
-            <h4 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: #0f172a;">Música & Instrumentos</h4>
-            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5;">Violões, pedais de efeito para guitarra, cabos e equipamentos de estúdio.</p>
-          </div>
-          <div>
-            <span class="category-chip"><i class="fas fa-tag"></i> Violão Giannini, Pedais</span>
-          </div>
-        </a>
-
-        <!-- Card 5: Ferramentas -->
-        <a href="catalog.html?category=Ferramentas" class="category-card">
-          <div>
-            <div class="category-icon" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0;">
-              <i class="fas fa-tools"></i>
-            </div>
-            <h4 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: #0f172a;">Ferramentas & DIY</h4>
-            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5;">Parafusadeiras brushless, maletas de ferramentas e artigos de marcenaria.</p>
-          </div>
-          <div>
-            <span class="category-chip"><i class="fas fa-tag"></i> Furadeira Bosch, Maleta 110 Peças</span>
-          </div>
-        </a>
-
-        <!-- Card 6: Plantas -->
-        <a href="catalog.html?category=Plantas" class="category-card">
-          <div>
-            <div class="category-icon" style="background: #ecfdf5; color: #059669;">
-              <i class="fas fa-seedling"></i>
-            </div>
-            <h4 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: #0f172a;">Plantas & Jardim</h4>
-            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5;">Mudas enraizadas, suculentas raras, vasos cerâmicos e artigos botânicos.</p>
-          </div>
-          <div>
-            <span class="category-chip"><i class="fas fa-tag"></i> Monstera Deliciosa, Suculentas</span>
-          </div>
-        </a>
-
-        <!-- Card 7: Roupas -->
-        <a href="catalog.html?category=Roupas" class="category-card">
-          <div>
-            <div class="category-icon" style="background: #fdf2f8; color: #db2777;">
-              <i class="fas fa-shirt"></i>
-            </div>
-            <h4 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: #0f172a;">Roupas & Estilo</h4>
-            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5;">Jaquetas vintage customizadas, mochilas antifurto urbanas e peças atemporais.</p>
-          </div>
-          <div>
-            <span class="category-chip"><i class="fas fa-tag"></i> Jaqueta Jeans, Mochila Notebook</span>
-          </div>
-        </a>
-
-        <!-- Card 8: Casa -->
-        <a href="catalog.html?category=Outros" class="category-card">
-          <div>
-            <div class="category-icon" style="background: #faf5ff; color: #9333ea;">
-              <i class="fas fa-couch"></i>
-            </div>
-            <h4 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: #0f172a;">Casa & Decoração</h4>
-            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5;">Luminárias retrô, prensas francesas de café, quadros e peças funcionais.</p>
-          </div>
-          <div>
-            <span class="category-chip"><i class="fas fa-tag"></i> Prensa Bialetti, Luminária Pixar</span>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- OS 3 DIFERENCIAIS TECNOLÓGICOS (MAPA, QR CODE, GPS) -->
-  <section class="section fade-reveal" style="background: #ffffff; padding: 90px 0;">
-    <div class="container">
-      <div style="text-align: center; max-width: 720px; margin: 0 auto 56px;">
-        <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 6px 18px; border-radius: 999px; font-weight: 800; margin-bottom: 12px; display: inline-block;">
-          Diferenciais Exclusivos
-        </span>
-        <h2 style="font-size: 2.3rem; font-weight: 900; color: #0f172a;">Tecnologia conectando pessoas</h2>
-        <p style="color: #64748b; font-size: 1.05rem;">Três soluções técnicas integradas para transformar trocas digitais em encontros físicos protegidos.</p>
-      </div>
-
-      <div class="grid-3">
-        <!-- Feature 1: Leaflet Maps com Pontos Seguros e Você Está Aqui -->
-        <div class="card" style="padding: 36px 30px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-          <div style="width: 56px; height: 56px; border-radius: 14px; background: #eff6ff; color: #2563eb; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-            <i class="fas fa-map-location-dot"></i>
-          </div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">Pontos Seguros & Mapa Interativo</h3>
-          <p style="color: #64748b; font-size: 0.95rem; line-height: 1.55; margin-bottom: 20px;">
-            Visualização fluida com <strong>Leaflet.js</strong>. Encontre os <strong>Pontos Seguros</strong> oficiais monitorados e visualize sua posição em tempo real com o indicador <strong>"Você está aqui"</strong> por GPS.
-          </p>
-          <a href="map.html" class="btn btn-secondary btn-sm" style="margin-top: auto; align-self: flex-start;">
-            <i class="fas fa-compass"></i> Abrir Pontos Seguros
-          </a>
-        </div>
-
-        <!-- Feature 2: QR Code de Autenticação -->
-        <div class="card" style="padding: 36px 30px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-          <div style="width: 56px; height: 56px; border-radius: 14px; background: #ecfeff; color: #0891b2; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-            <i class="fas fa-qrcode"></i>
-          </div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">QR Code de Autenticação</h3>
-          <p style="color: #64748b; font-size: 0.95rem; line-height: 1.55; margin-bottom: 20px;">
-            Cada proposta aceita gera dinamicamente um <strong>Passaporte Digital com QR Code</strong> criptografado. No encontro físico, mostre seu código para retirada do item e validação presencial imediata!
-          </p>
-          <a href="trades.html" class="btn btn-secondary btn-sm" style="margin-top: auto; align-self: flex-start;">
-            <i class="fas fa-shield-halved"></i> Ver Sistema de QR Code
-          </a>
-        </div>
-
-        <!-- Feature 3: Check-in por Geolocalização -->
-        <div class="card" style="padding: 36px 30px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
-          <div style="width: 56px; height: 56px; border-radius: 14px; background: #f0fdf4; color: #16a34a; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-            <i class="fas fa-location-crosshairs"></i>
-          </div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: #0f172a;">Check-in por Geolocalização</h3>
-          <p style="color: #64748b; font-size: 0.95rem; line-height: 1.55; margin-bottom: 20px;">
-            Utiliza a API nativa do navegador <code>navigator.geolocation</code> calculando a distância pelo algoritmo de <strong>Haversine</strong>. A troca é concluída com precisão física quando ambos estão no local.
-          </p>
-          <a href="trades.html" class="btn btn-secondary btn-sm" style="margin-top: auto; align-self: flex-start;">
-            <i class="fas fa-satellite"></i> Testar Check-in GPS
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CALL TO ACTION FINAL -->
-  <section class="fade-reveal" style="background: var(--gradient-hero); color: #ffffff; padding: 85px 0; text-align: center; position: relative; overflow: hidden;">
-    <div class="hero-orb hero-orb-1" style="top:-50px; left:20%;"></div>
-    <div class="container" style="position: relative; z-index: 2; max-width: 700px;">
-      <h2 style="font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; color: #fff; margin-bottom: 16px;">
-        Pronto para fazer circular o que você tem parado?
-      </h2>
-      <p style="font-size: 1.15rem; color: rgba(255,255,255,0.9); margin-bottom: 32px; line-height: 1.6;">
-        Cadastre-se gratuitamente em menos de 1 minuto, anuncie seus itens e descubra pessoas incríveis para trocar na sua cidade.
-      </p>
-      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-        <a href="register.html" class="btn btn-primary btn-lg" style="background: var(--gradient-accent); border: none; box-shadow: var(--shadow-primary); font-weight: 800; padding: 14px 36px; border-radius: var(--radius-pill);">
-          <i class="fas fa-user-plus"></i> Criar Conta Grátis
-        </a>
-        <a href="catalog.html" class="btn btn-secondary btn-lg" style="border: 1.5px solid rgba(255,255,255,0.4); color: #fff; background: rgba(255,255,255,0.12); padding: 14px 32px; border-radius: var(--radius-pill);">
-          <i class="fas fa-box-open"></i> Ver Catálogo
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer style="background: #070d1e; color: #94a3b8; padding: 60px 0 35px; border-top: 1px solid rgba(255,255,255,0.08);">
-    <div class="container">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 32px; margin-bottom: 40px;">
-        <div style="max-width: 400px;">
-          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
-          </a>
-          <p style="margin-top: 12px; font-size: 0.95rem; color: #94a3b8; line-height: 1.6;">
-            A arte do escambo na era digital: facilitando trocas diretas de tudo sem dinheiro, com segurança, geolocalização e validação por QR Code.
-          </p>
-        </div>
-        <div style="display: flex; gap: 48px; flex-wrap: wrap;">
-          <div>
-            <h4 style="font-family: var(--font-heading); color: #fff; font-size: 1rem; margin-bottom: 12px;">Navegação</h4>
-            <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
-              <li><a href="catalog.html" style="color: #94a3b8;">Catálogo de Itens</a></li>
-              <li><a href="map.html" style="color: #94a3b8;">Pontos Seguros</a></li>
-              <li><a href="trades.html" style="color: #94a3b8;">Minhas Trocas</a></li>
-              <li><a href="dashboard.html" style="color: #94a3b8;">Dashboard</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 style="font-family: var(--font-heading); color: #fff; font-size: 1rem; margin-bottom: 12px;">Diferenciais</h4>
-            <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
-              <li><span style="color: #cbd5e1;"><i class="fas fa-qrcode"></i> QR Code de Autenticação</span></li>
-              <li><span style="color: #cbd5e1;"><i class="fas fa-map-pin"></i> Leaflet.js Interativo</span></li>
-              <li><span style="color: #cbd5e1;"><i class="fas fa-crosshairs"></i> Check-in por GPS</span></li>
-              <li><span style="color: #cbd5e1;"><i class="fas fa-star"></i> Reputação e Avaliações</span></li>
-            </ul>
+            <h2 id="processTitle">Como funciona uma troca?</h2>
+            <p>Da proposta pelo chat à entrega presencial.</p>
           </div>
         </div>
+        <ol class="home-process-grid">
+          <li>
+            <i class="fas scamb-icon fa-magnifying-glass" aria-hidden="true"></i>
+            <h3>1. Escolha o item</h3>
+            <p>Confira as fotos, a descrição e o estado do item. Abra o anúncio para enviar uma proposta com algo que você oferece em troca.</p>
+          </li>
+          <li>
+            <i class="fas scamb-icon fa-comments" aria-hidden="true"></i>
+            <h3>2. Combine a entrega</h3>
+            <p>Após a proposta ser aceita, converse pelo chat para definir um horário e escolher um <a href="map.html">ponto seguro de encontro</a>.</p>
+          </li>
+          <li>
+            <i class="fas scamb-icon fa-qrcode" aria-hidden="true"></i>
+            <h3>3. Confirme a troca</h3>
+            <p>No encontro, confira o item, faça o check-in e confirme a entrega com o QR Code da troca.</p>
+          </li>
+        </ol>
       </div>
-      <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.9rem;">
-        <p style="color: #f1f5f9; font-weight: 600;">
-          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
-        </p>
-        <p style="color: #64748b;">Scamb &copy; 2026 &bull; JavaScript (Node.js/Express) + HTML5 + CSS3 + SQLite</p>
+    </section>
+
+    <section class="home-section home-end" data-fade>
+      <div class="container">
+        <div class="home-end-panel">
+          <div>
+            <h2>Tem algo parado em casa?</h2>
+            <p>Adicione fotos, descreva o item e receba propostas de troca.</p>
+          </div>
+          <a href="register.html" class="btn home-primary" data-publish>Anunciar meu item <i class="fas scamb-icon fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
       </div>
+    </section>
+  </main>
+
+  <aside class="live-popup" id="livePopup" aria-label="Movimentação em tempo real">
+    <ul class="live-popup-stack" id="liveActivityFeed" aria-live="polite"></ul>
+  </aside>
+
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a href="index.html" class="site-footer-brand"><span class="swap-mark" aria-hidden="true"></span>Scamb</a>
+      <nav aria-label="Rodapé">
+        <a href="catalog.html">Catálogo</a>
+        <a href="map.html">Pontos seguros</a>
+      </nav>
+      <small>© 2026 Scamb · Feito por Felipe Gomes e José Adailton</small>
     </div>
   </footer>
-
-  <script>
-    const API_BASE = 'http://localhost:3001/api';
-    function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
-
-    function updateNavbar() {
-      const token = getToken();
-      if (token) {
-        document.getElementById('nav-guest-login').style.display = 'none';
-        document.getElementById('nav-guest-register').style.display = 'none';
-        document.getElementById('nav-dashboard').style.display = 'inline-block';
-        document.getElementById('nav-my-items').style.display = 'inline-block';
-        document.getElementById('nav-trades').style.display = 'inline-block';
-        document.getElementById('nav-profile').style.display = 'inline-block';
-        document.getElementById('nav-logout').style.display = 'inline-block';
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem('scamb_token');
-      localStorage.removeItem('scamb_user');
-      localStorage.removeItem('swaply_token');
-      localStorage.removeItem('swaply_user');
-      localStorage.removeItem('ecotroca_token');
-      localStorage.removeItem('ecotroca_user');
-      localStorage.removeItem('ecopermuta_token');
-      localStorage.removeItem('ecopermuta_user');
-      window.location.href = 'index.html';
-    }
-
-    document.getElementById('navToggle').addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('open');
-    });
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-    }
-
-    // Scroll reveal observer (efeito moderno de desvanecer entre seções)
-    function initScrollReveal() {
-      const reveals = document.querySelectorAll('.fade-reveal');
-      if (!reveals.length) return;
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-          }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-      reveals.forEach(el => observer.observe(el));
-    }
-
-    // Carregar Marquee Ticker com os últimos itens anunciados
-    async function loadMarqueeItems() {
-      const track = document.getElementById('marqueeTrack');
-      try {
-        const res = await fetch(`${API_BASE}/items`);
-        if (!res.ok) throw new Error();
-        const items = await res.json();
-        if (!items || items.length === 0) {
-          track.innerHTML = '<div class="marquee-card"><span style="color:#94a3b8;">Cadastre os primeiros itens no catálogo!</span></div>';
-          return;
-        }
-
-        // Prepara os cards (pega até 12 itens e duplica para loop infinito sem cortes)
-        const displayItems = items.slice(0, 12);
-        const doubleItems = displayItems.concat(displayItems);
-
-        track.innerHTML = doubleItems.map(item => {
-          let imgUrl = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80';
-          if (Array.isArray(item.images) && item.images.length > 0) {
-            imgUrl = item.images[0];
-          } else if (typeof item.images === 'string') {
-            try {
-              const p = JSON.parse(item.images);
-              if (Array.isArray(p) && p.length > 0) imgUrl = p[0];
-              else if (p) imgUrl = p;
-            } catch(e) {
-              if (item.images.startsWith('http') || item.images.startsWith('/')) imgUrl = item.images;
-            }
-          }
-
-          return `
-            <a href="item-detail.html?id=${item.id}" class="marquee-card" title="Ver detalhes de ${escapeHtml(item.title)}">
-              <img src="${imgUrl}" class="marquee-img" alt="${escapeHtml(item.title)}" onerror="this.src='https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80';">
-              <div class="marquee-info">
-                <div class="marquee-title">${escapeHtml(item.title)}</div>
-                <div class="marquee-meta">
-                  <span class="marquee-badge">${escapeHtml(item.category || 'Geral')}</span>
-                  <span><i class="fas fa-map-marker-alt" style="color:#38bdf8; font-size:0.75rem;"></i> ${escapeHtml(item.location_name || 'São Paulo')}</span>
-                </div>
-              </div>
-            </a>
-          `;
-        }).join('');
-      } catch (e) {
-        console.error('Erro ao carregar marquee:', e);
-      }
-    }
-
-    updateNavbar();
-    loadMarqueeItems();
-    initScrollReveal();
-  </script>
 </body>
 </html>

@@ -4,25 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minhas Trocas — Scamb</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/navigation.js" defer></script>
 </head>
 <body>
 
   <!-- NAVBAR -->
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Navegação principal">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Scamb
+        <span class="swap-mark" aria-hidden="true"></span>Scamb
       </a>
-      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
-        <i class="fas fa-bars"></i>
+      <button type="button" class="navbar-toggle" id="navToggle" aria-label="Menu" aria-controls="navLinks" aria-expanded="false">
+        <span class="menu-lines" aria-hidden="true"></span>
       </button>
       <ul class="navbar-links" id="navLinks">
         <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
-        <li><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
-        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Pontos seguros</a></li>
+        <li><a href="dashboard.html"><i class="fas fa-columns"></i> Painel</a></li>
+        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus itens</a></li>
         <li><a href="trades.html" class="active"><i class="fas fa-handshake"></i> Trocas</a></li>
         <li><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
@@ -106,16 +107,15 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="vendor/qrcodejs/qrcode.min.js"></script>
   <script>
-    const API_BASE = 'http://localhost:3001/api';
+    const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : '/api';
     function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
     function getCurrentUser() { try { return JSON.parse(localStorage.getItem('scamb_user') || localStorage.getItem('swaply_user') || localStorage.getItem('ecotroca_user') || localStorage.getItem('ecopermuta_user')); } catch(e) { return null; } }
 
     if (!getToken()) window.location.href = 'login.html';
 
-    document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
     function logout() { 
       localStorage.removeItem('scamb_token'); 
       localStorage.removeItem('scamb_user');
@@ -225,7 +225,24 @@
                 </button>
               ` : ''}
 
+              ${trade.status === 'pending' && !isOwner ? `
+                <button class="btn btn-danger btn-sm" onclick="cancelTrade(${trade.id})">
+                  <i class="fas fa-ban"></i> Cancelar proposta
+                </button>
+              ` : ''}
+
+              ${trade.status === 'completed' ? (trade.reviewed_by_me ? `
+                <span class="badge" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;"><i class="fas fa-star"></i> Você já avaliou</span>
+              ` : `
+                <a class="btn btn-primary btn-sm" href="profile.html?reviewTrade=${trade.id}">
+                  <i class="fas fa-star"></i> Avaliar ${counterpart || 'participante'}
+                </a>
+              `) : ''}
+
               ${trade.status === 'accepted' ? `
+                <button class="btn btn-danger btn-sm" onclick="cancelTrade(${trade.id})" style="margin-left:auto;">
+                  <i class="fas fa-ban"></i> Cancelar troca
+                </button>
                 <button class="btn btn-primary btn-sm" onclick="showQR(${trade.id})">
                   <i class="fas fa-qrcode"></i> Passaporte QR Code
                 </button>
@@ -278,6 +295,15 @@
       } catch(e) { alert('Erro de conexão.'); }
     }
 
+    async function cancelTrade(id) {
+      if (!confirm('Tem certeza que deseja cancelar esta troca?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/trades/${id}/cancel`, { method: 'PUT', headers: authHeaders() });
+        const data = await res.json();
+        if (res.ok) loadTrades(); else alert(data.error || 'Erro ao cancelar a troca.');
+      } catch(e) { alert('Erro de conexão.'); }
+    }
+
     async function showQR(tradeId) {
       currentActiveQRTradeId = tradeId;
       document.getElementById('qrCode').innerHTML = '<div class="loading-spinner"></div>';
@@ -292,14 +318,14 @@
         document.getElementById('qrCode').innerHTML = '';
         if (res.ok && data.data && data.data.qr_code) {
           document.getElementById('qrCode').innerHTML = `<img src="${data.data.qr_code}" alt="QR Code" style="width:230px; height:230px; display:block;">`;
-          document.getElementById('qrAuthCode').textContent = data.data.auth_code || `SCAMB-000${tradeId}-VERIFIED`;
+          document.getElementById('qrAuthCode').textContent = data.data.auth_code || `SCAMB-${String(tradeId).padStart(4, '0')}`;
         } else {
           new QRCode(document.getElementById('qrCode'), {
             text: JSON.stringify({ scamb_trade_id: tradeId, timestamp: new Date().toISOString() }),
             width: 220, height: 220,
             colorDark: '#4338ca', colorLight: '#ffffff'
           });
-          document.getElementById('qrAuthCode').textContent = `SCAMB-000${tradeId}-PASSPORT`;
+          document.getElementById('qrAuthCode').textContent = `SCAMB-${String(tradeId).padStart(4, '0')}`;
         }
       } catch(e) {
         document.getElementById('qrCode').innerHTML = `<p class="text-muted">Passaporte gerado para a troca #${tradeId}</p>`;
@@ -344,7 +370,7 @@
       }
     }
 
-    async function sendCheckInRequest(id, lat, lng) {
+    async function sendCheckInRequest(id, lat, lng, simulated = false) {
       try {
         const res = await fetch(`${API_BASE}/trades/${id}/checkin`, {
           method: 'POST',
@@ -360,6 +386,14 @@
             alert('📍 Check-in por geolocalização registrado! Aguardando o check-in do outro usuário no local para finalizar a troca.');
           }
           loadTrades();
+        } else if (data.too_far && !simulated) {
+          // Em sala de aula ninguém está no ponto de encontro: permite demonstrar o fluxo.
+          const trade = allTrades.find(t => t.id == id);
+          const useDemo = confirm(
+            '📍 ' + data.error + '\n\n' +
+            'Deseja simular o check-in no ponto de encontro (modo demonstração)?'
+          );
+          if (useDemo && trade) sendCheckInRequest(id, trade.meeting_lat, trade.meeting_lng, true);
         } else {
           alert(data.error || 'Erro ao registrar check-in presencial.');
         }
@@ -385,7 +419,7 @@
             'Deseja simular o check-in no ponto de encontro marcado (' + (trade && trade.meeting_address ? trade.meeting_address : 'Ponto Homologado') + ') para demonstração do algoritmo de Haversine?'
           );
           if (useDemo && trade && trade.meeting_lat && trade.meeting_lng) {
-            sendCheckInRequest(id, trade.meeting_lat, trade.meeting_lng);
+            sendCheckInRequest(id, trade.meeting_lat, trade.meeting_lng, true);
           }
         },
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
@@ -400,30 +434,16 @@
   </script>
 
   <!-- FOOTER -->
-  <footer style="background: #090d16; color: #94a3b8; padding: 48px 0 28px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 60px;">
-    <div class="container">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
-          </a>
-          <span style="color: #64748b; font-size: 0.88rem;">| A arte ancestral do escambo na era digital</span>
-        </div>
-        <div style="display: flex; gap: 20px; font-size: 0.9rem;">
-          <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
-          <a href="map.html" style="color: #94a3b8;">Pontos Seguros</a>
-          <a href="trades.html" style="color: #94a3b8;">Trocas</a>
-          <a href="profile.html" style="color: #94a3b8;">Perfil</a>
-        </div>
-      </div>
-      <div style="padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
-        <p style="color: #f1f5f9; font-weight: 600;">
-          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
-        </p>
-        <p style="color: #64748b; font-size: 0.85rem;">
-          Scamb &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
-        </p>
-      </div>
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a href="index.html" class="site-footer-brand"><span class="swap-mark" aria-hidden="true"></span>Scamb</a>
+      <nav aria-label="Rodapé">
+        <a href="catalog.html">Catálogo</a>
+        <a href="map.html">Pontos seguros</a>
+        <a href="trades.html">Trocas</a>
+        <a href="profile.html">Perfil</a>
+      </nav>
+      <small>© 2026 Scamb · Feito por Felipe Gomes e José Adailton</small>
     </div>
   </footer>
 </body>

@@ -8,6 +8,8 @@ process.env.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 const express = require('express');
 const cors = require('cors');
+const db = require('./db/database');
+const { seed } = require('./db/seed');
 
 // ─── Route modules ────────────────────────────────────────────────────────────
 const authRouter           = require('./routes/auth');
@@ -16,6 +18,7 @@ const tradesRouter         = require('./routes/trades');
 const messagesRouter       = require('./routes/messages');
 const exchangePointsRouter = require('./routes/exchangepoints');
 const reviewsRouter        = require('./routes/reviews');
+const activityRouter       = require('./routes/activity');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -39,8 +42,8 @@ app.use((req, res, next) => {
           }
         } else if (body.data && typeof body.data === 'object') {
           return originalJson({
-            success: true,
             ...body.data,
+            ...body,
             data: body.data
           });
         }
@@ -58,6 +61,7 @@ app.use('/api/trades',         tradesRouter);
 app.use('/api/messages',       messagesRouter);
 app.use('/api/exchange-points', exchangePointsRouter);
 app.use('/api/reviews',        reviewsRouter);
+app.use('/api/activity',       activityRouter);
 
 // ─── Static frontend ──────────────────────────────────────────────────────────
 const frontendPath = path.join(__dirname, '..', 'frontend');
@@ -75,6 +79,21 @@ app.use((err, req, res, _next) => {
 });
 
 // ─── Start server ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`🔄 Scamb backend rodando em http://localhost:${PORT}`);
-});
+async function start() {
+  // Primeira execução: popula o banco com os dados de demonstração.
+  const { count } = db.prepare('SELECT COUNT(*) AS count FROM users').get();
+  if (count === 0) await seed();
+
+  app.listen(PORT, () => {
+    console.log(`🔄 Scamb rodando em http://localhost:${PORT}`);
+  });
+}
+
+if (require.main === module) {
+  start().catch((err) => {
+    console.error('[falha ao iniciar]', err);
+    process.exit(1);
+  });
+}
+
+module.exports = app;

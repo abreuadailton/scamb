@@ -7,15 +7,11 @@ let DatabaseSync;
 try {
   ({ DatabaseSync } = require('node:sqlite'));
 } catch (e) {
-  // Fallback for older node versions
-  const BetterSqlite3 = require('better-sqlite3');
-  DatabaseSync = function(file) {
-    const b = new BetterSqlite3(file);
-    return b;
-  };
+  console.error('O Scamb usa o SQLite embutido no Node.js (node:sqlite). Instale o Node.js 22.5 ou superior (recomendado: 24 LTS).');
+  process.exit(1);
 }
 
-const DB_PATH = path.join(__dirname, '..', 'scamb.db');
+const DB_PATH = process.env.SCAMB_DB_PATH || path.join(__dirname, '..', 'scamb.db');
 const rawDb = new DatabaseSync(DB_PATH);
 
 // Create a wrapper object that matches better-sqlite3 API exactly

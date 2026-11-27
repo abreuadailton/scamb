@@ -6,6 +6,7 @@ const path    = require('path');
 const fs      = require('fs');
 const db      = require('../db/database');
 const auth    = require('../middleware/auth');
+const { publishActivity } = require('../services/activityBus');
 
 const router = express.Router();
 
@@ -36,18 +37,39 @@ router.post('/upload', auth, uploadItem.array('images', 5), (req, res) => {
   }
 });
 
-// ─── GET / — list available items ────────────────────────────────────────────
+const EFFECTIVE_STATUS_SQL = `
+  CASE
+    WHEN i.status = 'traded' THEN 'traded'
+    WHEN i.status = 'in_trade' OR EXISTS (
+      SELECT 1 FROM trades t
+      WHERE (t.item_offered_id = i.id OR t.item_wanted_id = i.id)
+        AND t.status IN ('pending', 'accepted')
+    ) THEN 'in_trade'
+    ELSE 'available'
+  END AS effective_status
+`;
+
+// ─── GET / — list items with real-time status (available, in_trade, traded) ──
 router.get('/', (req, res) => {
   try {
     const items = db.prepare(`
-      SELECT i.*, u.name AS owner_name, u.reputation AS owner_reputation, u.avatar_url AS owner_avatar
+      SELECT i.*, u.name AS owner_name, u.reputation AS owner_reputation, u.avatar_url AS owner_avatar,
+             ${EFFECTIVE_STATUS_SQL}
       FROM items i
       JOIN users u ON u.id = i.user_id
-      WHERE i.status = 'available'
-      ORDER BY i.created_at DESC
+      ORDER BY
+        CASE
+          WHEN i.status = 'traded' THEN 2
+          WHEN i.status = 'in_trade' OR EXISTS (
+            SELECT 1 FROM trades t
+            WHERE (t.item_offered_id = i.id OR t.item_wanted_id = i.id)
+              AND t.status IN ('pending', 'accepted')
+          ) THEN 1
+          ELSE 0
+        END ASC,
+        i.created_at DESC
     `).all();
 
-    // Parse images JSON for each item
     const parsed = items.map(item => ({
       ...item,
       images: parseImages(item.images)
@@ -65,7 +87,8 @@ router.get('/', (req, res) => {
 router.get('/user/my', auth, (req, res) => {
   try {
     const items = db.prepare(`
-      SELECT i.*, u.name AS owner_name, u.reputation AS owner_reputation
+      SELECT i.*, u.name AS owner_name, u.reputation AS owner_reputation,
+             ${EFFECTIVE_STATUS_SQL}
       FROM items i
       JOIN users u ON u.id = i.user_id
       WHERE i.user_id = ?
@@ -86,7 +109,8 @@ router.get('/user/my', auth, (req, res) => {
 router.get('/:id', (req, res) => {
   try {
     const item = db.prepare(`
-      SELECT i.*, u.name AS owner_name, u.reputation AS owner_reputation, u.bio AS owner_bio, u.avatar_url AS owner_avatar
+      SELECT i.*, u.name AS owner_name, u.reputation AS owner_reputation, u.bio AS owner_bio, u.avatar_url AS owner_avatar,
+             ${EFFECTIVE_STATUS_SQL}
       FROM items i
       JOIN users u ON u.id = i.user_id
       WHERE i.id = ?
@@ -120,6 +144,15 @@ router.post('/', auth, (req, res) => {
     `).run(req.user.id, title, description || null, category || null, condition || null, imagesJson, latitude || null, longitude || null, location_name || null);
 
     const item = db.prepare('SELECT * FROM items WHERE id = ?').get(result.lastInsertRowid);
+    publishActivity({
+      type:          'item_created',
+      item_id:       item.id,
+      item_title:    item.title,
+      category:      item.category || 'Outros',
+      location_name: item.location_name || 'São Paulo, SP',
+      actor_name:    req.user.name || 'Membro Scamb',
+      created_at:    item.created_at
+    });
     return res.status(201).json({ success: true, data: { ...item, images: parseImages(item.images) } });
   } catch (err) {
     console.error('[items POST /]', err);

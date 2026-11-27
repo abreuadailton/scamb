@@ -1,146 +1,77 @@
-# ⚡ Swaply — Rede Inteligente de Trocas: Do Virtual ao Presencial
+# Scamb — trocas do virtual ao presencial
 
-> **"Troque de tudo: conecte no virtual, encontre no presencial."**
+Plataforma web de escambo moderno: as pessoas anunciam objetos, propõem trocas (sem dinheiro), combinam pelo chat e concluem a troca **presencialmente** em um ponto seguro, validando o encontro por **QR Code** ou **check-in por GPS**.
 
-O **Swaply** é uma plataforma web completa desenvolvida com **Node.js, Express, SQLite nativo, HTML5, CSS3 moderno e Vanilla JavaScript**. Ela conecta pessoas para a troca direta de quaisquer objetos (games, livros, eletrônicos, instrumentos musicais, ferramentas, roupas, plantas e artigos para casa) sem envolver dinheiro, combinando a agilidade e conveniência do ambiente virtual com encontros seguros no mundo físico.
+MVP desenvolvido como trabalho de faculdade por Felipe Gomes e José Adailton.
 
----
+> Resumo das tecnologias e das principais partes do código: [RESUMO.md](RESUMO.md)
 
-## 🎯 Tema e Proposta: "Do Virtual ao Presencial"
+## Como rodar localmente
 
-- **Tema:** *Do Virtual ao Presencial*
-- **Fundamento conceitual:** O virtual não é o oposto do real — ele é um **potencializador**. Em feiras de troca tradicionais, as pessoas saem de casa sem saber se haverá alguém interessado no que levaram. No Swaply:
-  1. O **match é realizado virtualmente**: o usuário encontra o item desejado, analisa fotos em alta resolução e o estado de conservação.
-  2. O item é **reservado com garantia**, evitando deslocamentos inúteis.
-  3. O chat interno permite alinhar o horário e escolher um ponto físico seguro pré-cadastrado.
-  4. O encontro físico é **validado por tecnologia** (QR Code + GPS), criando um ciclo de reputação real.
-
----
-
-## ✨ Os 3 Diferenciais Tecnológicos Obrigatórios
-
-### 1. 🗺️ Integração com Mapas Interativos (Leaflet.js + OpenStreetMap)
-- Mapeamento geográfico gratuito e leve dos pontos seguros homologados em São Paulo (MASP, Estação Sé, Conjunto Nacional / Livraria Cultura, Parque Ibirapuera, Parque Villa-Lobos).
-- Marcador estilizado de **Pontos Seguros** (`<div class="spot-marker-pin">`) com popups contendo foto, endereço, horários de funcionamento e itens próximos.
-- Marcador animado de **"Você está aqui!"** (`<div class="user-marker-pin">`) com pulso de radar.
-- **Interatividade instantânea:** ao clicar em qualquer local do mapa, o indicador "Você está aqui" se desloca e a distância real até o ponto de troca mais próximo é calculada e informada em tempo real.
-
-### 2. 📱 Passaporte Digital com QR Code de Autenticação
-- Toda troca aceita gera automaticamente um **Voucher / Passaporte Digital com QR Code** criptografado com hash de segurança (`SWAP-0001-...`).
-- No encontro presencial, a parte que entrega o item apresenta o QR Code e o destinatário pode validar a retirada.
-- Botão **"Validar / Simular Leitura do QR Code"** que consome a API `POST /api/trades/:id/validate-qr`, autentica a transação presencial, conclui a troca e credita **+10 pontos de reputação** para ambos os participantes.
-
-### 3. 📍 Check-in por Geolocalização Real (`navigator.geolocation`)
-- Utiliza a API nativa do navegador para capturar as coordenadas de latitude/longitude do usuário.
-- O backend calcula a distância física exata até o ponto de encontro seguro utilizando a **Fórmula de Haversine**.
-- Valida tolerância de proximidade de até **500 metros** do local acordado.
-- Somente quando ambos atestam presença física, a troca é formalizada.
-
----
-
-## ⭐ Sistema de Reputação, Avaliações e Notas (Reviews)
-
-- Pontuação cumulativa de reputação exibida no perfil e nos anúncios.
-- Média geral de notas (ex: `5.0 ★★★★★`) e gráfico de distribuição por estrelas (5★, 4★, 3★...).
-- **Depoimentos e comentários detalhados** de outros membros com selo *"Troca Presencial Verificada"*.
-- Modal interativo para registrar novas avaliações com seleção de estrelas (1 a 5) e comentário em texto (`POST /api/reviews`).
-
----
-
-## 🛠️ Stack Tecnológico
-
-| Camada | Tecnologias Utilizadas |
-|---|---|
-| **Front-end** | HTML5 Semântico, CSS3 Moderno (Design Tokens, Glassmorphism, paleta Electric Indigo, Violet & Coral), Tipografia Google Fonts (Outfit & Plus Jakarta Sans), Vanilla JavaScript (ES6+), Leaflet.js, QRCode.js, Font Awesome 6 |
-| **Back-end** | Node.js, Express.js REST API JSON, Multer (upload local de fotos de itens e avatares), QRCode generator |
-| **Banco de Dados** | SQLite nativo via `node:sqlite` (`DatabaseSync`), sem necessidade de compiladores externos de C++ |
-| **Autenticação & Segurança** | JWT (JSON Web Tokens) stateless, Bcrypt.js (hash de senhas), middleware `authMiddleware` em todas as rotas privadas |
-
----
-
-## 👥 Contas de Demonstração (Prontas com 1 Clique)
-
-Na tela de login (`login.html`), botões de atalho preenchem as credenciais de teste automaticamente:
-
-| Nome | E-mail | Senha | Reputação | Especialidade de Troca |
-|---|---|---|---|---|
-| **Ana Silva** | `ana@swaply.com` | `senha123` | ⭐ 98 pts | Livros, Boxes de Colecionador, Decoração |
-| **Carlos Oliveira** | `carlos@swaply.com` | `senha123` | ⭐ 92 pts | Board Games, Consoles, Games, Mochilas |
-| **Mariana Costa** | `mariana@swaply.com` | `senha123` | ⭐ 95 pts | Botânica Urbana, Plantas Raras, Luminárias |
-| **Lucas Ferreira** | `lucas@swaply.com` | `senha123` | ⭐ 89 pts | Ferramentas Bosch, Áudio, Violão Giannini |
-
----
-
-## 🚀 Como Executar o Projeto
-
-### Pré-requisitos
-- Node.js (versão 18, 20 ou 24)
-- NPM
-
-### Passo a Passo
+**Pré-requisito:** [Node.js](https://nodejs.org) **22.5 ou superior** (recomendado: 24 LTS). Confira com `node -v`.
+Não é preciso instalar banco de dados: o SQLite já vem embutido no Node.
 
 ```bash
-# 1. Acesse a pasta do backend
-cd "Troca troca/backend"
-
-# 2. Instale as dependências (caso seja a primeira execução)
+git clone https://github.com/abreuadailton/scamb.git
+cd scamb
 npm install
-
-# 3. Popule o banco com dados ricos e completos
-npm run seed
-
-# 4. Inicie o servidor
 npm start
 ```
 
-Acesse no navegador: **`http://localhost:3001`**.
+Abra **http://localhost:3001** no navegador.
 
----
+Na primeira execução o banco (`backend/scamb.db`) é criado e preenchido sozinho com os dados de demonstração.
 
-## 📁 Estrutura de Arquivos
+| Comando | O que faz |
+|---|---|
+| `npm start` | Sobe o site e a API em `http://localhost:3001` |
+| `npm run seed` | Apaga tudo e restaura os dados de demonstração (use antes da apresentação) |
+| `npm test` | Roda os testes automatizados do fluxo de troca |
+
+Para usar outra porta: `PORT=4000 npm start` (no PowerShell: `$env:PORT=4000; npm start`).
+
+### Contas de demonstração
+
+Senha de todas: `senha123`
+
+| Usuário | E-mail |
+|---|---|
+| Ana | `ana@scamb.com` |
+| Carlos | `carlos@scamb.com` |
+| Mariana | `mariana@scamb.com` |
+| Lucas | `lucas@scamb.com` |
+
+## Roteiro sugerido para a apresentação
+
+Dica: use duas janelas (uma normal e uma anônima) para ficar logado com dois usuários ao mesmo tempo.
+
+1. **Página inicial e catálogo** — mostre a busca e os filtros por categoria, sem login.
+2. **Pontos seguros** — mapa com os locais públicos sugeridos para o encontro.
+3. **Login como Lucas** — abra um item da Mariana e clique em **Propor Troca**: escolha um item seu, o ponto de encontro e a data.
+4. **Login como Mariana** (janela anônima) — em **Trocas → Propostas recebidas**, aceite a proposta.
+5. **Chat** — troque mensagens entre os dois pelo **Abrir Chat Interno**.
+6. **QR Code** — na aba **Ativas**, abra o passaporte de troca com o QR Code.
+7. **Check-in por GPS** — clique em check-in com cada usuário. Como vocês não estarão no ponto de encontro, o sistema avisa a distância e oferece **simular o check-in** (modo demonstração). Após os dois check-ins a troca é concluída.
+8. **Avaliação** — na aba **Concluídas**, clique em **Avaliar** e veja a reputação subir no perfil.
+9. **Meus itens** — cadastre um item novo com foto.
+
+Antes de apresentar de novo, rode `npm run seed` para voltar ao estado inicial.
+
+## Problemas comuns
+
+| Sintoma | Solução |
+|---|---|
+| Erro citando `node:sqlite` ao iniciar | Node antigo. Instale o Node 22.5+ |
+| `EADDRINUSE` / porta 3001 em uso | Feche o outro processo ou rode em outra porta com `PORT=4000` |
+| Mapa aparece cinza | O mapa usa imagens do OpenStreetMap e precisa de internet; o resto do sistema funciona offline |
+| Dados bagunçados após testes | `npm run seed` |
+
+## Estrutura
 
 ```
-Troca troca/
-├── backend/
-│   ├── server.js               # Servidor Express & middleware de compatibilidade
-│   ├── package.json
-│   ├── db/
-│   │   ├── database.js         # Configuração SQLite com node:sqlite nativo
-│   │   └── seed.js             # Povoamento rico (16 itens, 4 usuários, reviews, trocas)
-│   ├── middleware/
-│   │   └── auth.js             # Verificação de tokens JWT
-│   └── routes/
-│       ├── auth.js             # Registro, login, me, upload de avatar
-│       ├── items.js            # CRUD de itens e upload de fotos
-│       ├── trades.js           # Propostas, aceitação, QR Code e check-in GPS
-│       ├── reviews.js          # Listagem e cadastro de avaliações/notas
-│       ├── messages.js         # Chat interno de negociação
-│       └── exchangepoints.js   # Pontos seguros de São Paulo
-└── frontend/
-    ├── css/
-    │   └── style.css           # Design tokens, Outfit/Plus Jakarta Sans, responsividade
-    ├── img/
-    │   ├── avatars/            # Uploads de fotos de perfil
-    │   └── items/              # Uploads de fotos de itens
-    ├── index.html              # Landing Page moderna com explicação completa do conceito
-    ├── catalog.html            # Catálogo com filtros por categoria, busca e paginação
-    ├── item-detail.html        # Detalhe do item, carrossel de fotos, mapa e modal de proposta
-    ├── map.html                # Mapa Leaflet com Pontos Seguros e indicador "Você está aqui"
-    ├── trades.html             # Painel de trocas, Passaporte QR Code e Check-in GPS
-    ├── chat.html               # Chat com chips de ação rápida, proposta de ponto seguro e WhatsApp
-    ├── profile.html            # Perfil com avaliações, notas comunitárias e upload de avatar
-    ├── dashboard.html          # Métricas e atalhos rápidos
-    ├── login.html              # Login com botões de preenchimento rápido
-    └── register.html           # Cadastro de novos usuários
+scamb/
+├── backend/     API REST (Express) + banco SQLite + testes
+├── frontend/    Páginas HTML, CSS e JavaScript (servidas pelo próprio backend)
+├── RESUMO.md    Tecnologias e principais partes do código
+└── package.json Atalhos: npm install / start / seed / test
 ```
-
----
-
-## 👨‍💻 Autores
-Feito com ❤️ por **Felipe e Adailton**.
-
----
-
-## 📄 Licença
-Projeto acadêmico desenvolvido para a disciplina de Desenvolvimento Web: *Do Virtual ao Presencial*.  
-Licença MIT.

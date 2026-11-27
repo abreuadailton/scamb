@@ -4,28 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhe do Item — Scamb</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/navigation.js" defer></script>
 </head>
 <body>
 
   <!-- NAVBAR -->
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Navegação principal">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Scamb
+        <span class="swap-mark" aria-hidden="true"></span>Scamb
       </a>
-      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
-        <i class="fas fa-bars"></i>
+      <button type="button" class="navbar-toggle" id="navToggle" aria-label="Menu" aria-controls="navLinks" aria-expanded="false">
+        <span class="menu-lines" aria-hidden="true"></span>
       </button>
       <ul class="navbar-links" id="navLinks">
         <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Pontos seguros</a></li>
         <li id="nav-guest-login"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
-        <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Cadastre-se</a></li>
-        <li id="nav-dashboard" style="display:none;"><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
-        <li id="nav-my-items" style="display:none;"><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
+        <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Criar conta</a></li>
+        <li id="nav-dashboard" style="display:none;"><a href="dashboard.html"><i class="fas fa-columns"></i> Painel</a></li>
+        <li id="nav-my-items" style="display:none;"><a href="my-items.html"><i class="fas fa-box-open"></i> Meus itens</a></li>
         <li id="nav-trades" style="display:none;"><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
         <li id="nav-profile" style="display:none;"><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li id="nav-logout" style="display:none;"><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
@@ -42,9 +43,13 @@
       <div class="item-detail-grid">
         <!-- CAROUSEL -->
         <div class="item-carousel">
-          <div class="carousel-main">
+          <div class="carousel-main" id="carouselMain">
             <img id="mainImg" src="" alt="Imagem do item">
+            <button type="button" class="carousel-zoom-btn" id="zoomOpenBtn" aria-label="Ampliar imagem">
+              <i class="fas fa-search-plus" aria-hidden="true"></i> Ampliar
+            </button>
           </div>
+          <p class="carousel-zoom-hint"><i class="fas fa-magnifying-glass" aria-hidden="true"></i> Passe o mouse na foto para dar zoom ou clique para ampliar</p>
           <div class="carousel-thumbs" id="thumbs"></div>
         </div>
 
@@ -53,7 +58,9 @@
           <div class="item-badges">
             <span class="badge badge-category" id="itemCategory"></span>
             <span class="badge" id="itemCondition"></span>
+            <span class="badge" id="itemStatusBadge"></span>
           </div>
+          <div id="itemStatusBanner" style="display:none;"></div>
           <h1 id="itemTitle" class="item-detail-title"></h1>
           <p id="itemDesc" class="item-detail-desc"></p>
 
@@ -122,9 +129,9 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="vendor/leaflet/leaflet.js"></script>
   <script>
-    const API_BASE = 'http://localhost:3001/api';
+    const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : '/api';
     function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
     function getCurrentUser() {
@@ -144,7 +151,6 @@
       }
     }
     updateNavbar();
-    document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
     function logout() { 
       localStorage.removeItem('scamb_token'); 
       localStorage.removeItem('scamb_user');
@@ -177,11 +183,110 @@
 
     function switchImage(idx) {
       currentImgIdx = idx;
-      document.getElementById('mainImg').src = images[idx];
+      const src = images[idx];
+      document.getElementById('mainImg').src = src;
+      const modalImg = document.getElementById('zoomModalImg');
+      if (modalImg) modalImg.src = src;
       document.querySelectorAll('.thumb').forEach((t,i) => t.classList.toggle('active', i === idx));
     }
 
-    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23eef2ff'/%3E%3Ccircle cx='300' cy='180' r='60' fill='%236366f1' opacity='0.7'/%3E%3Ctext x='300' y='300' font-family='sans-serif' font-size='20' fill='%236366f1' font-weight='bold' text-anchor='middle'%3EScamb%3C/text%3E%3C/svg%3E";
+    let zoomScale = 1.8;
+
+    function initImageZoom() {
+      const box = document.getElementById('carouselMain');
+      const img = document.getElementById('mainImg');
+      const openBtn = document.getElementById('zoomOpenBtn');
+      const modal = document.getElementById('imageZoomModal');
+      const modalImg = document.getElementById('zoomModalImg');
+      const stage = document.getElementById('zoomModalStage');
+      if (!box || !img) return;
+
+      const HOVER_SCALE = 2.15;
+
+      function updateHoverZoom(clientX, clientY) {
+        if (!img.naturalWidth || !img.naturalHeight) return;
+        const rect = box.getBoundingClientRect();
+        const px = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+        const py = Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100));
+        img.style.transformOrigin = `${px.toFixed(1)}% ${py.toFixed(1)}%`;
+        img.style.transform = `scale(${HOVER_SCALE})`;
+        box.classList.add('is-zooming');
+      }
+
+      function resetHoverZoom() {
+        box.classList.remove('is-zooming');
+        img.style.transform = 'scale(1)';
+        img.style.transformOrigin = 'center center';
+      }
+
+      box.addEventListener('pointerenter', e => {
+        if (e.pointerType !== 'mouse' || e.target.closest('button')) return;
+        updateHoverZoom(e.clientX, e.clientY);
+      });
+      box.addEventListener('pointermove', e => {
+        if (e.pointerType !== 'mouse' || e.target.closest('button')) {
+          resetHoverZoom();
+          return;
+        }
+        updateHoverZoom(e.clientX, e.clientY);
+      });
+      box.addEventListener('pointerleave', resetHoverZoom);
+
+      const openZoomModal = () => {
+        if (!modal || !modalImg) return;
+        resetHoverZoom();
+        modalImg.src = img.currentSrc || img.src;
+        const traded = document.querySelector('.item-detail-grid')?.classList.contains('item-detail-traded');
+        modalImg.classList.toggle('is-traded', Boolean(traded));
+        setModalZoom(1.8);
+        modal.style.display = 'flex';
+        modal.classList.add('open');
+      };
+
+      img.addEventListener('click', openZoomModal);
+      if (openBtn) openBtn.addEventListener('click', openZoomModal);
+
+      if (stage && modalImg) {
+        stage.addEventListener('mousemove', e => {
+          if (zoomScale <= 1) return;
+          const r = stage.getBoundingClientRect();
+          const px = ((e.clientX - r.left) / r.width) * 100;
+          const py = ((e.clientY - r.top) / r.height) * 100;
+          modalImg.style.transformOrigin = `${px.toFixed(1)}% ${py.toFixed(1)}%`;
+        });
+      }
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal && modal.style.display === 'flex') closeZoomModal();
+      });
+    }
+
+    function setModalZoom(scale) {
+      zoomScale = scale;
+      const modalImg = document.getElementById('zoomModalImg');
+      if (modalImg) {
+        modalImg.style.transform = `scale(${scale})`;
+        if (scale <= 1) modalImg.style.transformOrigin = 'center center';
+      }
+      document.querySelectorAll('.zoom-level-btn').forEach(btn => {
+        btn.classList.toggle('active', Number(btn.dataset.scale) === scale);
+      });
+    }
+
+    function closeZoomModal() {
+      const modal = document.getElementById('imageZoomModal');
+      if (!modal) return;
+      modal.style.display = 'none';
+      modal.classList.remove('open');
+    }
+
+    function stepZoomImage(delta) {
+      if (images.length < 2) return;
+      const next = (currentImgIdx + delta + images.length) % images.length;
+      switchImage(next);
+    }
+
+    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27600%27 height=%27400%27 viewBox=%270 0 600 400%27%3E%3Crect width=%27600%27 height=%27400%27 fill=%27%23edf3e6%27/%3E%3Ccircle cx=%27300%27 cy=%27180%27 r=%2760%27 fill=%27%23365941%27 opacity=%270.7%27/%3E%3Ctext x=%27300%27 y=%27300%27 font-family=%27sans-serif%27 font-size=%2720%27 fill=%27%23365941%27 font-weight=%27bold%27 text-anchor=%27middle%27%3EScamb%3C/text%3E%3C/svg%3E";
 
     async function loadItem() {
       try {
@@ -221,9 +326,34 @@
         });
 
         // Info
+        const effectiveStatus = currentItem.effective_status || currentItem.status || 'available';
         document.getElementById('itemCategory').textContent = currentItem.category || 'Geral';
         document.getElementById('itemCondition').textContent = currentItem.condition || '';
         document.getElementById('itemCondition').className = `badge ${getConditionClass(currentItem.condition)}`;
+
+        const statusBadgeEl = document.getElementById('itemStatusBadge');
+        const statusBannerEl = document.getElementById('itemStatusBanner');
+        const detailGridEl = document.querySelector('.item-detail-grid');
+
+        if (effectiveStatus === 'traded') {
+          statusBadgeEl.className = 'badge badge-status--traded';
+          statusBadgeEl.innerHTML = '<i class="fas fa-ban"></i> Item trocado · Indisponível';
+          statusBannerEl.className = 'item-status-banner item-status-banner--traded';
+          statusBannerEl.innerHTML = '<i class="fas fa-exchange-alt"></i> Este item já foi trocado e não está mais disponível para novas propostas.';
+          statusBannerEl.style.display = 'flex';
+          detailGridEl.classList.add('item-detail-traded');
+        } else if (effectiveStatus === 'in_trade') {
+          statusBadgeEl.className = 'badge badge-status--trade';
+          statusBadgeEl.innerHTML = '<i class="fas fa-handshake"></i> Em negociação para troca';
+          statusBannerEl.className = 'item-status-banner item-status-banner--trade';
+          statusBannerEl.innerHTML = '<i class="fas fa-clock"></i> Este item está em negociação para troca no momento.';
+          statusBannerEl.style.display = 'flex';
+        } else {
+          statusBadgeEl.className = 'badge badge-status--available';
+          statusBadgeEl.innerHTML = '<i class="fas fa-check-circle"></i> Disponível';
+          statusBannerEl.style.display = 'none';
+        }
+
         document.getElementById('itemTitle').textContent = currentItem.title;
         document.getElementById('itemDesc').textContent = currentItem.description || '';
         document.getElementById('ownerName').textContent = currentItem.owner_name || 'Usuário';
@@ -237,7 +367,11 @@
         // Mapa
         if (currentItem.latitude && currentItem.longitude) {
           document.getElementById('mapSection').style.display = 'block';
-          setTimeout(() => {
+          if (typeof L === 'undefined') {
+            const mapElement = document.getElementById('itemMap');
+            mapElement.classList.add('map-unavailable');
+            mapElement.textContent = currentItem.location_name || 'Mapa interativo indisponível.';
+          } else setTimeout(() => {
             if (!leafletMap) {
               leafletMap = L.map('itemMap').setView([currentItem.latitude, currentItem.longitude], 15);
               L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(leafletMap);
@@ -254,7 +388,20 @@
         const actionsEl = document.getElementById('itemActions');
         const isOwner = user && user.id == currentItem.user_id;
 
-        if (isOwner) {
+        if (effectiveStatus === 'traded') {
+          actionsEl.innerHTML = isOwner
+            ? `
+              <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+                <a href="my-items.html" class="btn btn-secondary"><i class="fas fa-box-open"></i> Ver em Meus Itens</a>
+                <a href="trades.html" class="btn btn-primary"><i class="fas fa-handshake"></i> Ver Histórico de Trocas</a>
+              </div>
+            `
+            : `
+              <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+                <a href="catalog.html" class="btn btn-primary btn-lg"><i class="fas fa-search"></i> Explorar outros itens disponíveis</a>
+              </div>
+            `;
+        } else if (isOwner) {
           actionsEl.innerHTML = `
             <a href="my-items.html" class="btn btn-secondary"><i class="fas fa-edit"></i> Editar este item</a>
             <button class="btn btn-danger" onclick="deleteItem()"><i class="fas fa-trash"></i> Deletar item</button>
@@ -443,34 +590,43 @@
       }
     }
 
+    initImageZoom();
     loadItem();
   </script>
 
+  <!-- MODAL ZOOM LUPA -->
+  <div class="modal-overlay" id="imageZoomModal" style="display:none;" onclick="if(event.target===this) closeZoomModal()">
+    <div class="modal modal--wide zoom-modal-box">
+      <div class="modal-header">
+        <h2><i class="fas fa-search-plus" style="color:var(--color-primary);"></i> Visualização ampliada</h2>
+        <button type="button" class="modal-close" onclick="closeZoomModal()" aria-label="Fechar zoom"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body zoom-modal-body">
+        <div class="zoom-modal-controls">
+          <button type="button" class="btn btn-secondary btn-sm zoom-level-btn" data-scale="1" onclick="setModalZoom(1)">1x</button>
+          <button type="button" class="btn btn-secondary btn-sm zoom-level-btn active" data-scale="1.8" onclick="setModalZoom(1.8)">1.8x</button>
+          <button type="button" class="btn btn-secondary btn-sm zoom-level-btn" data-scale="2.6" onclick="setModalZoom(2.6)">2.6x</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="stepZoomImage(-1)" aria-label="Foto anterior"><i class="fas fa-chevron-left"></i></button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="stepZoomImage(1)" aria-label="Próxima foto"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="zoom-modal-stage" id="zoomModalStage">
+          <img id="zoomModalImg" src="" alt="Visualização ampliada do item">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
-  <footer style="background: #090d16; color: #94a3b8; padding: 48px 0 28px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 60px;">
-    <div class="container">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
-          </a>
-          <span style="color: #64748b; font-size: 0.88rem;">| A arte ancestral do escambo na era digital</span>
-        </div>
-        <div style="display: flex; gap: 20px; font-size: 0.9rem;">
-          <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
-          <a href="map.html" style="color: #94a3b8;">Pontos Seguros</a>
-          <a href="trades.html" style="color: #94a3b8;">Trocas</a>
-          <a href="profile.html" style="color: #94a3b8;">Perfil</a>
-        </div>
-      </div>
-      <div style="padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
-        <p style="color: #f1f5f9; font-weight: 600;">
-          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
-        </p>
-        <p style="color: #64748b; font-size: 0.85rem;">
-          Scamb &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
-        </p>
-      </div>
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a href="index.html" class="site-footer-brand"><span class="swap-mark" aria-hidden="true"></span>Scamb</a>
+      <nav aria-label="Rodapé">
+        <a href="catalog.html">Catálogo</a>
+        <a href="map.html">Pontos seguros</a>
+        <a href="trades.html">Trocas</a>
+        <a href="profile.html">Perfil</a>
+      </nav>
+      <small>© 2026 Scamb · Feito por Felipe Gomes e José Adailton</small>
     </div>
   </footer>
 </body>

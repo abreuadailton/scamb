@@ -4,8 +4,24 @@ const express = require('express');
 const QRCode  = require('qrcode');
 const db      = require('../db/database');
 const auth    = require('../middleware/auth');
+const { publishActivity } = require('../services/activityBus');
 
 const router = express.Router();
+
+function emitTradeActivity(type, trade, timestamp) {
+  if (!trade) return;
+  publishActivity({
+    type,
+    trade_id:           trade.id,
+    item_id:            trade.item_wanted_id,
+    actor_name:         trade.requester_name || 'Participante',
+    partner_name:       trade.owner_name || 'Participante',
+    offered_title:      trade.item_offered_title || 'Item ofertado',
+    wanted_title:       trade.item_wanted_title || 'Item desejado',
+    meeting_point_name: trade.meeting_point_name || trade.meeting_address || 'Ponto seguro',
+    created_at:         timestamp || trade.updated_at || trade.created_at
+  });
+}
 
 // ─── Haversine distance (metres) ─────────────────────────────────────────────
 function haversine(lat1, lon1, lat2, lon2) {
@@ -50,6 +66,30 @@ function getTrade(id) {
   `).get(id);
 }
 
+// ─── Helper: conclude a trade (both check-ins or QR validation) ──────────────
+function completeTrade(trade, reputationBonus) {
+  db.transaction(() => {
+    db.prepare(`
+      UPDATE trades
+      SET status = 'completed', checkin_requester = 1, checkin_owner = 1, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(trade.id);
+
+    db.prepare('UPDATE users SET reputation = reputation + ? WHERE id IN (?, ?)')
+      .run(reputationBonus, trade.requester_id, trade.owner_id);
+
+    db.prepare("UPDATE items SET status = 'traded' WHERE id IN (?, ?)")
+      .run(trade.item_offered_id, trade.item_wanted_id);
+
+    // Os itens saíram de circulação: encerra as outras negociações que os envolviam.
+    db.prepare(`
+      UPDATE trades SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+      WHERE id != ? AND status IN ('pending', 'accepted')
+        AND (item_offered_id IN (?, ?) OR item_wanted_id IN (?, ?))
+    `).run(trade.id, trade.item_offered_id, trade.item_wanted_id, trade.item_offered_id, trade.item_wanted_id);
+  })();
+}
+
 // ─── GET / — list user trades ─────────────────────────────────────────────────
 router.get('/', auth, (req, res) => {
   try {
@@ -62,7 +102,10 @@ router.get('/', auth, (req, res) => {
         io.title    AS offered_title,
         iw.title    AS item_wanted_title,
         iw.title    AS wanted_title,
-        ep.name     AS meeting_point_name
+        ep.name     AS meeting_point_name,
+        EXISTS (
+          SELECT 1 FROM ratings r WHERE r.trade_id = t.id AND r.rater_id = ?
+        ) AS reviewed_by_me
       FROM trades t
       LEFT JOIN users u_req ON u_req.id = t.requester_id
       LEFT JOIN users u_own ON u_own.id = t.owner_id
@@ -71,7 +114,7 @@ router.get('/', auth, (req, res) => {
       LEFT JOIN exchange_points ep ON ep.id = t.meeting_point_id
       WHERE t.requester_id = ? OR t.owner_id = ?
       ORDER BY t.updated_at DESC
-    `).all(req.user.id, req.user.id);
+    `).all(req.user.id, req.user.id, req.user.id);
 
     return res.json({ success: true, data: trades });
   } catch (err) {
@@ -134,6 +177,18 @@ router.post('/', auth, (req, res) => {
     if (wantedItem.user_id === req.user.id) {
       return res.status(400).json({ success: false, error: 'Você não pode propor uma troca com seus próprios itens.' });
     }
+    if (offeredItem.status === 'traded' || wantedItem.status === 'traded') {
+      return res.status(400).json({ success: false, error: 'Um dos itens já foi trocado e não está mais disponível.' });
+    }
+
+    const duplicate = db.prepare(`
+      SELECT id FROM trades
+      WHERE requester_id = ? AND item_offered_id = ? AND item_wanted_id = ?
+        AND status IN ('pending', 'accepted')
+    `).get(req.user.id, item_offered_id, item_wanted_id);
+    if (duplicate) {
+      return res.status(400).json({ success: false, error: 'Você já tem uma proposta em andamento com estes mesmos itens.' });
+    }
 
     // Resolve meeting point lat/lng from exchange_point if provided
     let meetLat = meeting_lat || null;
@@ -172,6 +227,7 @@ router.post('/', auth, (req, res) => {
     );
 
     const trade = getTrade(result.lastInsertRowid);
+    emitTradeActivity('trade_proposed', trade, trade.created_at);
     return res.status(201).json({ success: true, data: trade });
   } catch (err) {
     console.error('[trades POST /]', err);
@@ -214,6 +270,7 @@ router.put('/:id/accept', auth, async (req, res) => {
     `).run(qrDataUrl, trade.id);
 
     const updated = getTrade(trade.id);
+    emitTradeActivity('trade_accepted', updated);
     return res.json({
       success: true,
       data: updated,
@@ -252,7 +309,7 @@ router.put('/:id/reject', auth, (req, res) => {
       success: true,
       data: updated,
       status: updated.status,
-      message: 'Troca aceita com sucesso! O QR Code de validação presencial foi gerado.'
+      message: 'Proposta de troca recusada.'
     });
   } catch (err) {
     console.error('[trades PUT /:id/reject]', err);
@@ -286,7 +343,7 @@ router.put('/:id/cancel', auth, (req, res) => {
       success: true,
       data: updated,
       status: updated.status,
-      message: 'Troca aceita com sucesso! O QR Code de validação presencial foi gerado.'
+      message: 'Troca cancelada.'
     });
   } catch (err) {
     console.error('[trades PUT /:id/cancel]', err);
@@ -326,6 +383,8 @@ router.post('/:id/checkin', auth, (req, res) => {
       if (dist > 500) {
         return res.status(400).json({
           success: false,
+          too_far: true,
+          distance_m: Math.round(dist),
           error: `Você está a ${Math.round(dist)}m do ponto de encontro. Aproxime-se a menos de 500m para fazer check-in.`
         });
       }
@@ -349,25 +408,20 @@ router.post('/:id/checkin', auth, (req, res) => {
     // Re-fetch to check if both checked in
     const refreshed = db.prepare('SELECT * FROM trades WHERE id = ?').get(trade.id);
     if (refreshed.checkin_requester && refreshed.checkin_owner) {
-      db.prepare(`
-        UPDATE trades SET status = 'completed', updated_at = CURRENT_TIMESTAMP WHERE id = ?
-      `).run(trade.id);
-
-      // Increment reputation for both participants
-      db.prepare('UPDATE users SET reputation = reputation + 1 WHERE id = ?').run(trade.requester_id);
-      db.prepare('UPDATE users SET reputation = reputation + 1 WHERE id = ?').run(trade.owner_id);
-
-      // Mark items as traded
-      db.prepare("UPDATE items SET status = 'traded' WHERE id = ?").run(trade.item_offered_id);
-      db.prepare("UPDATE items SET status = 'traded' WHERE id = ?").run(trade.item_wanted_id);
+      completeTrade(trade, 10);
     }
 
     const updated = getTrade(trade.id);
+    if (updated && updated.status === 'completed') {
+      emitTradeActivity('trade_completed', updated);
+    }
     return res.json({
       success: true,
       data: updated,
       status: updated.status,
-      message: 'Troca aceita com sucesso! O QR Code de validação presencial foi gerado.'
+      message: updated.status === 'completed'
+        ? 'Check-in presencial completo! Troca concluída com sucesso.'
+        : 'Check-in registrado! Aguardando a outra parte no ponto seguro.'
     });
   } catch (err) {
     console.error('[trades POST /:id/checkin]', err);
@@ -394,7 +448,6 @@ router.get('/:id/qrcode', auth, async (req, res) => {
     if (!qrCode) {
       const qrPayload = JSON.stringify({
         scamb_trade_id: trade.id,
-        swaply_trade_id: trade.id,
         requester: trade.requester_name,
         owner: trade.owner_name,
         offered: trade.item_offered_title,
@@ -419,7 +472,7 @@ router.get('/:id/qrcode', auth, async (req, res) => {
       data: { 
         qr_code: qrCode,
         trade_id: trade.id,
-        auth_code: `SWAP-${String(trade.id).padStart(4, '0')}-${trade.requester_id}${trade.owner_id}`
+        auth_code: `SCAMB-${String(trade.id).padStart(4, '0')}-${trade.requester_id}${trade.owner_id}`
       } 
     });
   } catch (err) {
@@ -456,22 +509,10 @@ router.post('/:id/validate-qr', auth, (req, res) => {
       });
     }
 
-    // Mark trade as completed via QR validation
-    db.prepare(`
-      UPDATE trades 
-      SET status = 'completed', checkin_requester = 1, checkin_owner = 1, updated_at = CURRENT_TIMESTAMP 
-      WHERE id = ?
-    `).run(trade.id);
-
-    // Increase reputation for both participants
-    db.prepare('UPDATE users SET reputation = reputation + 10 WHERE id = ?').run(trade.requester_id);
-    db.prepare('UPDATE users SET reputation = reputation + 10 WHERE id = ?').run(trade.owner_id);
-
-    // Mark items as traded
-    db.prepare("UPDATE items SET status = 'traded' WHERE id = ?").run(trade.item_offered_id);
-    db.prepare("UPDATE items SET status = 'traded' WHERE id = ?").run(trade.item_wanted_id);
+    completeTrade(trade, 10);
 
     const updated = getTrade(trade.id);
+    emitTradeActivity('trade_completed', updated);
 
     return res.json({
       success: true,

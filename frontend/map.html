@@ -4,28 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mapa de Pontos Seguros — Scamb</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/navigation.js" defer></script>
 </head>
 <body>
 
   <!-- NAVBAR -->
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Navegação principal">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Scamb
+        <span class="swap-mark" aria-hidden="true"></span>Scamb
       </a>
-      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
-        <i class="fas fa-bars"></i>
+      <button type="button" class="navbar-toggle" id="navToggle" aria-label="Menu" aria-controls="navLinks" aria-expanded="false">
+        <span class="menu-lines" aria-hidden="true"></span>
       </button>
       <ul class="navbar-links" id="navLinks">
         <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
-        <li><a href="map.html" class="active"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
+        <li><a href="map.html" class="active"><i class="fas fa-map-marker-alt"></i> Pontos seguros</a></li>
         <li id="nav-guest-login"><a href="login.html" class="btn btn-secondary btn-sm">Entrar</a></li>
-        <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Cadastre-se</a></li>
-        <li id="nav-dashboard" style="display:none;"><a href="dashboard.html"><i class="fas fa-columns"></i> Dashboard</a></li>
-        <li id="nav-my-items" style="display:none;"><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
+        <li id="nav-guest-register"><a href="register.html" class="btn btn-primary btn-sm">Criar conta</a></li>
+        <li id="nav-dashboard" style="display:none;"><a href="dashboard.html"><i class="fas fa-columns"></i> Painel</a></li>
+        <li id="nav-my-items" style="display:none;"><a href="my-items.html"><i class="fas fa-box-open"></i> Meus itens</a></li>
         <li id="nav-trades" style="display:none;"><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
         <li id="nav-profile" style="display:none;"><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li id="nav-logout" style="display:none;"><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
@@ -35,8 +36,8 @@
 
   <div class="page-header">
     <div class="container">
-      <h1><i class="fas fa-map-location-dot"></i> Mapa de Pontos de Troca Seguros</h1>
-      <p>Clique em qualquer lugar no mapa ou use o GPS para posicionar seu bonequinho e encontrar o ponto seguro mais próximo em São Paulo!</p>
+      <h1><i class="fas scamb-icon fa-map-location-dot"></i> Pontos seguros de troca</h1>
+      <p>Encontre locais de troca em São Paulo. Use sua localização para descobrir o ponto mais próximo.</p>
     </div>
   </div>
 
@@ -44,11 +45,22 @@
 
     <!-- CONTROLES DO MAPA -->
     <div class="map-controls">
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <button class="btn btn-primary btn-sm" onclick="centerOnMe()">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="centerOnMe()">
           <i class="fas fa-crosshairs"></i> Minha localização GPS
         </button>
-        <button class="btn btn-secondary btn-sm" onclick="fitAllPoints()">
+        <button type="button" class="btn btn-sm map-route-btn" id="btnRouteNearest" onclick="traceRouteToNearest()">
+          <i class="fas fa-route"></i> Traçar rota até o mais próximo
+        </button>
+        <select id="routeMode" class="form-control map-mode-select" aria-label="Meio de transporte da rota" onchange="onRouteModeChange()">
+          <option value="foot">A pé</option>
+          <option value="bike">Bicicleta</option>
+          <option value="driving">Carro</option>
+        </select>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnClearRoute" onclick="clearRoute()" style="display:none;">
+          <i class="fas fa-times"></i> Limpar rota
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="fitAllPoints()">
           <i class="fas fa-expand"></i> Ver Todos os Pontos
         </button>
       </div>
@@ -62,6 +74,10 @@
           <span style="font-size: 1.1rem; color: #2563eb;"><i class="fas fa-street-view"></i></span>
           <span>Você está aqui</span>
         </div>
+        <div class="legend-item" id="legend-route" style="display:none;">
+          <span style="display:inline-block; width:16px; height:4px; border-radius:4px; background:#10b981;"></span>
+          <span>Rota traçada</span>
+        </div>
         <div class="legend-item" id="legend-items" style="display:none;">
           <span style="font-size: 1.1rem; color: #06b6d4;"><i class="fas fa-box"></i></span>
           <span>Itens Disponíveis</span>
@@ -74,27 +90,50 @@
       <div id="map"></div>
     </div>
 
-    <!-- DISTANCE FEEDBACK BANNER (Atualizado dinamicamente) -->
-    <div id="distanceBanner" class="card fade-in" style="margin-top: 20px; padding: 20px 24px; border-radius: 16px; border: 1.5px solid #c7d2fe; background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+    <!-- AVISO DE PONTO MAIS PRÓXIMO & CONTROLE DE ROTA -->
+    <div id="distanceBanner" class="card fade-in nearest-banner" role="status" aria-live="polite">
       <div style="display: flex; align-items: center; gap: 16px;">
-        <div style="width: 48px; height: 48px; border-radius: 14px; background: var(--gradient-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; box-shadow: var(--shadow-primary);">
+        <div class="nearest-banner-icon">
           <i class="fas fa-location-arrow"></i>
         </div>
         <div>
-          <h4 id="distanceTitle" style="font-size: 1.1rem; font-weight: 800; color: #1e1b4b; margin: 0 0 4px;">
-            Clique no mapa para marcar sua localização "Você está aqui"!
+          <span class="nearest-pill" id="nearestStatusTag"><i class="fas fa-bell"></i> Detectando ponto mais próximo…</span>
+          <h4 id="distanceTitle" style="font-size: 1.1rem; font-weight: 800; color: #131e3b; margin: 6px 0 4px;">
+            Clique no mapa ou ative o GPS para localizar o ponto seguro mais perto!
           </h4>
           <p id="distanceSubtitle" style="font-size: 0.9rem; color: #475569; margin: 0;">
-            O sistema calculará automaticamente a distância real até o ponto de encontro seguro mais próximo.
+            O sistema avisa automaticamente qual ponto está mais próximo e traça a rota até lá.
           </p>
         </div>
       </div>
-      <div id="distanceAction">
-        <a href="catalog.html" class="btn btn-primary btn-sm">
-          <i class="fas fa-search"></i> Ver Itens Próximos
-        </a>
+      <div id="distanceAction" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="traceRouteToNearest()">
+          <i class="fas fa-route"></i> Traçar rota
+        </button>
       </div>
     </div>
+
+    <!-- RESUMO E INSTRUÇÕES DA ROTA TRAÇADA -->
+    <div id="routePanel" class="card route-panel fade-in" style="display:none;">
+      <div class="route-panel-header">
+        <div>
+          <span class="route-badge"><i class="fas fa-route"></i> Rota ativa</span>
+          <h3 id="routeTitle" style="margin:6px 0 2px; font-size:1.12rem;">Rota até o ponto seguro</h3>
+          <p id="routeSummary" style="margin:0; color:#475569; font-size:0.9rem;"></p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <a id="routeGoogleLink" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+            <i class="fas fa-external-link-alt"></i> Abrir no Google Maps
+          </a>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="clearRoute()">
+            <i class="fas fa-times"></i> Fechar rota
+          </button>
+        </div>
+      </div>
+      <ol id="routeSteps" class="route-steps"></ol>
+    </div>
+
+    <div id="nearestToast" class="nearest-toast" role="status" aria-live="polite"></div>
 
     <!-- LISTA DE PONTOS SEGUROS CADASTRADOS -->
     <div style="margin-top: 48px;">
@@ -108,9 +147,9 @@
 
   </main>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="vendor/leaflet/leaflet.js"></script>
   <script>
-    const API_BASE = 'http://localhost:3001/api';
+    const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : '/api';
     function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
 
@@ -127,7 +166,6 @@
       }
     }
     updateNavbar();
-    document.getElementById('navToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('open'); });
 
     function logout() { 
       localStorage.removeItem('scamb_token'); 
@@ -142,18 +180,18 @@
     }
 
     // Inicializa mapa centrado em São Paulo
-    const map = L.map('map', {
+    const map = typeof L === 'undefined' ? null : L.map('map', {
       zoomControl: true,
       scrollWheelZoom: true
     }).setView([-23.5614, -46.6560], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    if (map) L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       maxZoom: 19
     }).addTo(map);
 
     // Ícone do Ponto Seguro Homologado
-    const houseIcon = L.divIcon({
+    const houseIcon = map && L.divIcon({
       className: '',
       html: `
         <div class="spot-marker-pin">
@@ -171,7 +209,7 @@
     });
 
     // Ícone do Bonequinho "Você está aqui"
-    const userBonequinhoIcon = L.divIcon({
+    const userBonequinhoIcon = map && L.divIcon({
       className: '',
       html: `
         <div class="user-marker-pin">
@@ -188,7 +226,7 @@
     });
 
     // Ícone para itens disponíveis
-    const itemBoxIcon = L.divIcon({
+    const itemBoxIcon = map && L.divIcon({
       className: '',
       html: `
         <div style="width:36px;height:36px;border-radius:10px;background:#06b6d4;border:2.5px solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(6,182,212,0.4);font-size:14px;">
@@ -201,7 +239,13 @@
     });
 
     let exchangePointsList = [];
+    let pointMarkersById = new Map();
+    let pointCardsById = new Map();
     let myUserMarker = null;
+    let currentUserCoords = null;
+    let nearestPointRef = null;
+    let activeRouteTarget = null;
+    let routeLayerGroup = map ? L.layerGroup().addTo(map) : null;
 
     // Haversine formula
     function haversineDist(lat1, lon1, lat2, lon2) {
@@ -215,7 +259,41 @@
       return Math.round(R * c);
     }
 
-    function updateNearestPoint(userLat, userLng) {
+    function formatDist(meters) {
+      if (meters < 1000) return `${meters} m`;
+      return `${(meters / 1000).toFixed(2).replace('.', ',')} km`;
+    }
+
+    function showNearestToast(pt, distMeters) {
+      const toast = document.getElementById('nearestToast');
+      if (!toast || !pt) return;
+      toast.innerHTML = `
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+          <div>
+            <span class="nearest-toast-kicker"><i class="fas fa-bell"></i> Ponto mais próximo avisado</span>
+            <strong>${pt.name}</strong>
+            <p>${formatDist(distMeters)} da sua localização${distMeters <= 500 ? ' · Dentro do raio de check-in!' : ''}</p>
+          </div>
+          <button type="button" class="btn btn-sm map-route-btn" onclick="traceRouteById(${pt.id})">
+            <i class="fas fa-route"></i> Rota
+          </button>
+        </div>
+      `;
+      toast.classList.add('is-visible');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.remove('is-visible'), 6500);
+    }
+
+    function highlightNearestCard(nearestId) {
+      pointCardsById.forEach((card, id) => {
+        const isNearest = id === nearestId;
+        card.classList.toggle('is-nearest-point', isNearest);
+        const tag = card.querySelector('.point-nearest-badge');
+        if (tag) tag.style.display = isNearest ? 'inline-flex' : 'none';
+      });
+    }
+
+    function updateNearestPoint(userLat, userLng, shouldToast = true) {
       if (!exchangePointsList.length) return;
       let nearest = null;
       let minDist = Infinity;
@@ -229,31 +307,190 @@
       }
 
       if (nearest) {
+        nearestPointRef = { point: nearest, distance: minDist };
+        highlightNearestCard(nearest.id);
+
+        const tagEl = document.getElementById('nearestStatusTag');
         const titleEl = document.getElementById('distanceTitle');
         const subEl = document.getElementById('distanceSubtitle');
         const actionEl = document.getElementById('distanceAction');
 
         if (minDist <= 500) {
-          titleEl.innerHTML = `🎉 Você está no raio de troca segura! (${minDist}m de <strong>${nearest.name}</strong>)`;
-          subEl.textContent = `Local validado com sucesso! Você pode realizar o check-in por GPS da sua troca aqui.`;
-          actionEl.innerHTML = `<a href="trades.html" class="btn btn-primary btn-sm"><i class="fas fa-check-double"></i> Fazer Check-in GPS</a>`;
+          if (tagEl) tagEl.innerHTML = '<i class="fas fa-check-circle"></i> Aviso: você já está próximo!';
+          titleEl.innerHTML = `Ponto mais próximo: <strong>${nearest.name}</strong> (${formatDist(minDist)})`;
+          subEl.textContent = `Você está dentro do raio de 500m! Já é possível fazer o check-in por GPS ao encontrar a outra parte.`;
+          actionEl.innerHTML = `
+            <button type="button" class="btn btn-sm map-route-btn" onclick="traceRouteById(${nearest.id})">
+              <i class="fas fa-route"></i> Traçar rota
+            </button>
+            <a href="trades.html" class="btn btn-primary btn-sm"><i class="fas fa-check-double"></i> Check-in GPS</a>
+          `;
         } else {
-          const distKm = (minDist / 1000).toFixed(1);
-          titleEl.innerHTML = `Ponto seguro mais próximo: <strong>${nearest.name}</strong> (${minDist < 1000 ? minDist + ' metros' : distKm + ' km'})`;
+          if (tagEl) tagEl.innerHTML = '<i class="fas fa-bell"></i> Ponto de troca mais próximo encontrado';
+          titleEl.innerHTML = `Mais próximo de você: <strong>${nearest.name}</strong> (${formatDist(minDist)})`;
           subEl.innerHTML = `<i class="fas fa-map-pin"></i> ${nearest.address || 'São Paulo'} · Horário: ${nearest.schedule || 'Aberto ao público'}`;
-          actionEl.innerHTML = `<button class="btn btn-secondary btn-sm" onclick="map.flyTo([${nearest.latitude}, ${nearest.longitude}], 16)"><i class="fas fa-eye"></i> Centralizar no Ponto</button>`;
+          actionEl.innerHTML = `
+            <button type="button" class="btn btn-sm map-route-btn" onclick="traceRouteById(${nearest.id})">
+              <i class="fas fa-route"></i> Traçar rota até lá
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="focusPointById(${nearest.id})">
+              <i class="fas scamb-icon fa-eye"></i> Ver ponto
+            </button>
+          `;
         }
+
+        if (shouldToast) showNearestToast(nearest, minDist);
       }
     }
 
+    function focusPointById(id) {
+      const marker = pointMarkersById.get(Number(id));
+      if (marker && map) {
+        map.flyTo(marker.getLatLng(), 16);
+        marker.openPopup();
+      }
+    }
+
+    function getModeMeta(mode) {
+      if (mode === 'bike') return { osrm: 'bike', label: 'de bicicleta', speedMPerMin: 250 };
+      if (mode === 'driving') return { osrm: 'driving', label: 'de carro', speedMPerMin: 500 };
+      return { osrm: 'foot', label: 'a pé', speedMPerMin: 80 };
+    }
+
+    function clearRoute() {
+      activeRouteTarget = null;
+      if (routeLayerGroup) routeLayerGroup.clearLayers();
+      document.getElementById('routePanel').style.display = 'none';
+      document.getElementById('btnClearRoute').style.display = 'none';
+      const legendRoute = document.getElementById('legend-route');
+      if (legendRoute) legendRoute.style.display = 'none';
+    }
+
+    function formatOsrmStep(step) {
+      const name = step.name ? ` na <strong>${step.name}</strong>` : '';
+      const dist = step.distance ? ` (${formatDist(Math.round(step.distance))})` : '';
+      const typeMap = {
+        depart: 'Saia da sua localização',
+        turn: 'Vire',
+        continue: 'Siga em frente',
+        merge: 'Entre na via',
+        roundabout: 'Na rotatória, siga',
+        arrive: 'Chegue ao ponto seguro de troca'
+      };
+      const verb = typeMap[step.maneuver?.type] || 'Continue';
+      return `${verb}${name}${dist}`;
+    }
+
+    async function traceRouteToPoint(pt) {
+      if (!pt || !map) return;
+      if (!currentUserCoords) {
+        setUserMarker(-23.5614, -46.6560, 'Localização de referência (MASP)');
+      }
+
+      activeRouteTarget = pt;
+      const mode = document.getElementById('routeMode')?.value || 'foot';
+      const meta = getModeMeta(mode);
+      const { lat: uLat, lng: uLng } = currentUserCoords;
+
+      const panel = document.getElementById('routePanel');
+      const titleEl = document.getElementById('routeTitle');
+      const summaryEl = document.getElementById('routeSummary');
+      const stepsEl = document.getElementById('routeSteps');
+      const googleLink = document.getElementById('routeGoogleLink');
+
+      panel.style.display = 'block';
+      document.getElementById('btnClearRoute').style.display = 'inline-flex';
+      const legendRoute = document.getElementById('legend-route');
+      if (legendRoute) legendRoute.style.display = 'flex';
+
+      titleEl.textContent = `Rota até ${pt.name}`;
+      summaryEl.textContent = 'Calculando o melhor trajeto…';
+      stepsEl.innerHTML = '';
+
+      const gMode = mode === 'driving' ? 'driving' : (mode === 'bike' ? 'bicycling' : 'walking');
+      googleLink.href = `https://www.google.com/maps/dir/?api=1&origin=${uLat},${uLng}&destination=${pt.latitude},${pt.longitude}&travelmode=${gMode}`;
+
+      routeLayerGroup.clearLayers();
+
+      let drawnFromOsrm = false;
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 7000);
+        const url = `https://router.project-osrm.org/route/v1/${meta.osrm}/${uLng},${uLat};${pt.longitude},${pt.latitude}?overview=full&geometries=geojson&steps=true`;
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timer);
+
+        if (res.ok) {
+          const data = await res.json();
+          const route = data.routes && data.routes[0];
+          if (route && route.geometry && Array.isArray(route.geometry.coordinates)) {
+            const latLngs = route.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+            L.polyline(latLngs, { color: '#16213f', weight: 8, opacity: 0.35 }).addTo(routeLayerGroup);
+            const mainLine = L.polyline(latLngs, { color: '#10b981', weight: 4.5, opacity: 0.95 }).addTo(routeLayerGroup);
+            map.fitBounds(mainLine.getBounds(), { padding: [55, 55] });
+
+            const distMeters = Math.round(route.distance);
+            const mins = mode === 'driving' && route.duration
+              ? Math.max(1, Math.round(route.duration / 60))
+              : Math.max(1, Math.round(distMeters / meta.speedMPerMin));
+            summaryEl.innerHTML = `<strong>${formatDist(distMeters)}</strong> · Tempo estimado: <strong>~${mins} min ${meta.label}</strong> · ${pt.address || ''}`;
+
+            const rawSteps = route.legs?.[0]?.steps || [];
+            const conciseSteps = rawSteps.slice(0, 8);
+            stepsEl.innerHTML = conciseSteps.map(s => `<li>${formatOsrmStep(s)}</li>`).join('');
+            drawnFromOsrm = true;
+          }
+        }
+      } catch (e) {
+        // Fallback para linha direta geodésica abaixo
+      }
+
+      if (!drawnFromOsrm) {
+        const directLine = L.polyline(
+          [[uLat, uLng], [pt.latitude, pt.longitude]],
+          { color: '#10b981', weight: 4.5, dashArray: '8, 8', opacity: 0.95 }
+        ).addTo(routeLayerGroup);
+        map.fitBounds(directLine.getBounds(), { padding: [55, 55] });
+
+        const distMeters = haversineDist(uLat, uLng, pt.latitude, pt.longitude);
+        const mins = Math.max(1, Math.round(distMeters / meta.speedMPerMin));
+        summaryEl.innerHTML = `<strong>${formatDist(distMeters)}</strong> em linha reta · Estimativa: <strong>~${mins} min ${meta.label}</strong> · Use o botão Google Maps para navegação curva a curva.`;
+        stepsEl.innerHTML = `<li>Siga da sua posição atual até <strong>${pt.name}</strong> (${pt.address || 'São Paulo'}).</li>`;
+      }
+
+      const targetMarker = pointMarkersById.get(pt.id);
+      if (targetMarker) targetMarker.openPopup();
+    }
+
+    function traceRouteById(id) {
+      const pt = exchangePointsList.find(p => Number(p.id) === Number(id));
+      if (pt) traceRouteToPoint(pt);
+    }
+
+    function traceRouteToNearest() {
+      if (nearestPointRef && nearestPointRef.point) {
+        traceRouteToPoint(nearestPointRef.point);
+      } else if (exchangePointsList.length) {
+        traceRouteToPoint(exchangePointsList[0]);
+      }
+    }
+
+    function onRouteModeChange() {
+      if (activeRouteTarget) traceRouteToPoint(activeRouteTarget);
+    }
+
+    window.traceRouteById = traceRouteById;
+    window.focusPointById = focusPointById;
+
     // Clique em qualquer local do mapa para mover o bonequinho
-    map.on('click', function(e) {
+    map?.on('click', function(e) {
       const lat = e.latlng.lat;
       const lng = e.latlng.lng;
       setUserMarker(lat, lng, 'Localização selecionada no mapa');
     });
 
-    function setUserMarker(lat, lng, labelText = 'Você está aqui!') {
+    function setUserMarker(lat, lng, labelText = 'Você está aqui!', shouldToast = true) {
+      currentUserCoords = { lat, lng };
       if (myUserMarker) {
         myUserMarker.setLatLng([lat, lng]);
       } else {
@@ -265,12 +502,13 @@
           <p style="font-size:0.85rem;color:#475569;margin:0;">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</p>
         </div>
       `).openPopup();
-      updateNearestPoint(lat, lng);
+      updateNearestPoint(lat, lng, shouldToast);
+      if (activeRouteTarget) traceRouteToPoint(activeRouteTarget);
     }
 
-    function centerOnMe() {
+    function centerOnMe(silent = false) {
       if (!navigator.geolocation) {
-        alert('Seu navegador não suporta geolocalização nativa.');
+        if (!silent) alert('Seu navegador não suporta geolocalização nativa.');
         return;
       }
       navigator.geolocation.getCurrentPosition(
@@ -278,15 +516,17 @@
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
           map.flyTo([lat, lng], 15);
-          setUserMarker(lat, lng, 'Sua Localização GPS');
+          setUserMarker(lat, lng, 'Sua Localização GPS', true);
         },
         () => {
+          if (silent) return;
           // Fallback gracioso para a Avenida Paulista se GPS recusado
           const lat = -23.5614;
           const lng = -46.6560;
           map.flyTo([lat, lng], 15);
-          setUserMarker(lat, lng, 'Localização de Demonstração (Paulista)');
-        }
+          setUserMarker(lat, lng, 'Localização de Demonstração (Paulista)', true);
+        },
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 60000 }
       );
     }
 
@@ -310,15 +550,19 @@
           if (!pt.latitude || !pt.longitude) return;
 
           // Marcador no Mapa (Ponto Seguro)
-          const marker = L.marker([pt.latitude, pt.longitude], { icon: houseIcon }).addTo(map);
-          marker.bindPopup(`
+          const marker = map && L.marker([pt.latitude, pt.longitude], { icon: houseIcon }).addTo(map);
+          if (marker) pointMarkersById.set(pt.id, marker);
+          marker?.bindPopup(`
             <div class="map-popup-card">
               <h4><i class="fas fa-store" style="color:#1e3a8a;"></i> ${pt.name}</h4>
               <span class="map-popup-badge"><i class="fas fa-shield-alt"></i> Ponto Homologado</span>
               <p><i class="fas fa-map-marker-alt" style="color:#f43f5e;"></i> ${pt.address || 'São Paulo'}</p>
               ${pt.schedule ? `<p><i class="fas fa-clock" style="color:#0ea5e9;"></i> ${pt.schedule}</p>` : ''}
               ${pt.description ? `<p style="font-size:0.85rem;color:#64748b;">${pt.description}</p>` : ''}
-              <div style="margin-top:10px;">
+              <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+                <button type="button" class="btn btn-sm map-route-btn" style="width:100%;" onclick="traceRouteById(${pt.id})">
+                  <i class="fas fa-route"></i> Traçar rota até aqui
+                </button>
                 <a href="catalog.html" class="btn btn-primary btn-sm" style="width:100%;text-align:center;">
                   <i class="fas fa-box-open"></i> Ver Itens Próximos
                 </a>
@@ -328,30 +572,62 @@
 
           // Card na grade inferior
           const card = document.createElement('div');
-          card.className = 'card fade-in';
+          card.className = 'card fade-in point-card';
           card.style.padding = '24px';
           card.style.borderRadius = '16px';
           card.innerHTML = `
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-              <div style="width:40px;height:40px;border-radius:10px;background:#eff6ff;color:#1e3a8a;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">
-                <i class="fas fa-store"></i>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#eff6ff;color:#1e3a8a;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">
+                  <i class="fas fa-store"></i>
+                </div>
+                <div>
+                  <h4 style="font-size:1.05rem;font-weight:800;color:#0f172a;margin:0;">${pt.name}</h4>
+                  <span style="font-size:0.75rem;color:#10b981;font-weight:700;"><i class="fas fa-check-circle"></i> Ponto Monitorado</span>
+                </div>
               </div>
-              <div>
-                <h4 style="font-size:1.05rem;font-weight:800;color:#0f172a;margin:0;">${pt.name}</h4>
-                <span style="font-size:0.75rem;color:#10b981;font-weight:700;"><i class="fas fa-check-circle"></i> Ponto Monitorado</span>
-              </div>
+              <span class="point-nearest-badge" style="display:none;"><i class="fas fa-location-dot"></i> Mais perto</span>
             </div>
             <p style="font-size:0.88rem;color:#64748b;margin-bottom:8px;"><i class="fas fa-map-pin" style="color:#f43f5e;"></i> ${pt.address || 'São Paulo'}</p>
             <p style="font-size:0.82rem;color:#64748b;margin-bottom:16px;"><i class="fas fa-clock"></i> ${pt.schedule || 'Aberto ao público'}</p>
-            <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="map.flyTo([${pt.latitude}, ${pt.longitude}], 16); marker.openPopup();">
-              <i class="fas fa-crosshairs"></i> Ver no Mapa
-            </button>
+
           `;
+          const actionsWrap = document.createElement('div');
+          actionsWrap.style.cssText = 'display:flex; gap:8px; flex-wrap:wrap;';
+          const action = document.createElement(marker ? 'button' : 'a');
+          action.className = 'btn btn-secondary btn-sm';
+          action.textContent = marker ? 'Ver no mapa' : 'Abrir no OpenStreetMap';
+          if (marker) {
+            action.type = 'button';
+            action.addEventListener('click', () => {
+              map.setView(marker.getLatLng(), 16);
+              marker.openPopup();
+            });
+          } else {
+            action.href = `https://www.openstreetmap.org/?mlat=${pt.latitude}&mlon=${pt.longitude}#map=16/${pt.latitude}/${pt.longitude}`;
+          }
+          actionsWrap.appendChild(action);
+          if (marker) {
+            const routeBtn = document.createElement('button');
+            routeBtn.type = 'button';
+            routeBtn.className = 'btn btn-sm map-route-btn';
+            routeBtn.innerHTML = '<i class="fas fa-route"></i> Traçar rota';
+            routeBtn.addEventListener('click', () => {
+              traceRouteToPoint(pt);
+              window.scrollTo({ top: 80, behavior: 'smooth' });
+            });
+            actionsWrap.appendChild(routeBtn);
+          }
+          card.appendChild(actionsWrap);
+          pointCardsById.set(pt.id, card);
           grid.appendChild(card);
         });
 
-        // Posiciona o bonequinho inicialmente no vão livre do MASP
-        setUserMarker(-23.5614, -46.6560, 'Você está aqui (MASP)');
+        // Posiciona inicialmente e tenta localizar o usuário automaticamente via GPS sem interromper
+        if (map) {
+          setUserMarker(-23.5614, -46.6560, 'Referência inicial (MASP)', false);
+          centerOnMe(true);
+        }
 
       } catch(e) {
         console.error('Erro ao carregar pontos:', e);
@@ -362,7 +638,7 @@
       try {
         const res = await fetch(`${API_BASE}/items`);
         if (!res.ok) return;
-        const items = await res.json();
+        const items = (await res.json()).filter(i => (i.effective_status || i.status) !== 'traded');
         const hasItems = items.some(i => i.latitude && i.longitude);
         if (hasItems) document.getElementById('legend-items').style.display = 'flex';
 
@@ -375,7 +651,7 @@
               <span class="badge" style="background:#e0f2fe;color:#0369a1;margin-bottom:6px;display:inline-block;">${item.category||'Geral'}</span>
               <p><i class="fas fa-user"></i> Anunciado por: <strong>${item.owner_name||'Usuário'}</strong></p>
               <a href="item-detail.html?id=${item.id}" class="btn btn-primary btn-sm" style="width:100%;text-align:center;margin-top:8px;">
-                <i class="fas fa-eye"></i> Detalhes & Propor Troca
+                <i class="fas scamb-icon fa-eye"></i> Detalhes & Propor Troca
               </a>
             </div>
           `);
@@ -384,34 +660,29 @@
     }
 
     loadExchangePoints();
-    loadItemMarkers();
+    if (map) {
+      loadItemMarkers();
+    } else {
+      const mapElement = document.getElementById('map');
+      mapElement.classList.add('map-unavailable');
+      mapElement.setAttribute('role', 'status');
+      mapElement.textContent = 'Mapa interativo indisponível. Consulte os endereços na lista abaixo.';
+      document.querySelector('.map-controls').style.display = 'none';
+      document.getElementById('distanceBanner').style.display = 'none';
+    }
   </script>
 
   <!-- FOOTER -->
-  <footer style="background: #090d16; color: #94a3b8; padding: 48px 0 28px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 60px;">
-    <div class="container">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
-          </a>
-          <span style="color: #64748b; font-size: 0.88rem;">| A arte ancestral do escambo na era digital</span>
-        </div>
-        <div style="display: flex; gap: 20px; font-size: 0.9rem;">
-          <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
-          <a href="map.html" style="color: #94a3b8;">Pontos Seguros</a>
-          <a href="trades.html" style="color: #94a3b8;">Trocas</a>
-          <a href="profile.html" style="color: #94a3b8;">Perfil</a>
-        </div>
-      </div>
-      <div style="padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
-        <p style="color: #f1f5f9; font-weight: 600;">
-          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
-        </p>
-        <p style="color: #64748b; font-size: 0.85rem;">
-          Scamb &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
-        </p>
-      </div>
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a href="index.html" class="site-footer-brand"><span class="swap-mark" aria-hidden="true"></span>Scamb</a>
+      <nav aria-label="Rodapé">
+        <a href="catalog.html">Catálogo</a>
+        <a href="map.html">Pontos seguros</a>
+        <a href="trades.html">Trocas</a>
+        <a href="profile.html">Perfil</a>
+      </nav>
+      <small>© 2026 Scamb · Feito por Felipe Gomes e José Adailton</small>
     </div>
   </footer>
 </body>

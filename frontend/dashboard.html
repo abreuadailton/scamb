@@ -4,25 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — Scamb</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/navigation.js" defer></script>
 </head>
 <body>
 
   <!-- NAVBAR -->
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Navegação principal">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <i class="fas fa-arrows-rotate"></i> Scamb
+        <span class="swap-mark" aria-hidden="true"></span>Scamb
       </a>
-      <button class="navbar-toggle" id="navToggle" aria-label="Menu">
-        <i class="fas fa-bars"></i>
+      <button type="button" class="navbar-toggle" id="navToggle" aria-label="Menu" aria-controls="navLinks" aria-expanded="false">
+        <span class="menu-lines" aria-hidden="true"></span>
       </button>
       <ul class="navbar-links" id="navLinks">
         <li><a href="catalog.html"><i class="fas fa-th-large"></i> Catálogo</a></li>
-        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Mapa Seguro</a></li>
-        <li><a href="dashboard.html" class="active"><i class="fas fa-columns"></i> Dashboard</a></li>
-        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus Itens</a></li>
+        <li><a href="map.html"><i class="fas fa-map-marker-alt"></i> Pontos seguros</a></li>
+        <li><a href="dashboard.html" class="active"><i class="fas fa-columns"></i> Painel</a></li>
+        <li><a href="my-items.html"><i class="fas fa-box-open"></i> Meus itens</a></li>
         <li><a href="trades.html"><i class="fas fa-handshake"></i> Trocas</a></li>
         <li><a href="profile.html"><i class="fas fa-user-circle"></i> Perfil</a></li>
         <li><a href="#" onclick="logout()" class="btn btn-secondary btn-sm">Sair</a></li>
@@ -30,7 +31,7 @@
     </div>
   </nav>
 
-  <main class="container dashboard-main" style="padding-top: calc(var(--navbar-h) + 28px); padding-bottom: 60px;">
+  <main class="container dashboard-main">
 
     <!-- HEADER USUÁRIO -->
     <div class="dashboard-header card fade-in" id="dashboardHeader">
@@ -40,7 +41,7 @@
         </div>
         <div class="user-info">
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <h1 style="margin: 0;">Olá, <span id="userName">...</span>! 👋</h1>
+            <h1 style="margin: 0;">Olá, <span id="userName">...</span>!</h1>
             <span class="badge" style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-weight: 700;">
               <i class="fas fa-shield-check"></i> Membro Ativo
             </span>
@@ -81,19 +82,15 @@
     </div>
 
     <!-- BANNER PONTOS SEGUROS & QR CODE -->
-    <div class="dashboard-banner card fade-in" style="background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 100%); border: 1px solid #c7d2fe; padding: 18px 24px; border-radius: 16px; margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-      <div style="display: flex; align-items: center; gap: 14px;">
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: #4f46e5; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);">
-          <i class="fas fa-shield-halved"></i>
-        </div>
+    <div class="dashboard-banner card">
+      <div class="dashboard-banner-content">
+        <div class="dashboard-banner-icon"><i class="fas scamb-icon fa-map-location-dot" aria-hidden="true"></i></div>
         <div>
-          <h4 style="margin: 0 0 2px 0; font-size: 1rem; font-weight: 700; color: #1e1b4b;">Encontros Presenciais 100% Seguros</h4>
-          <p style="margin: 0; font-size: 0.88rem; color: #4338ca;">Combine no chat e faça sua troca em um dos nossos Pontos Seguros com validação por QR Code e GPS.</p>
+          <h2>Pontos seguros de encontro</h2>
+          <p>Combine pelo chat e confirme a troca no local com check-in e QR Code.</p>
         </div>
       </div>
-      <a href="map.html" class="btn btn-primary btn-sm" style="white-space: nowrap;">
-        <i class="fas fa-map-marked-alt"></i> Ver Mapa Seguro
-      </a>
+      <a href="map.html" class="btn btn-secondary btn-sm">Ver mapa <i class="fas scamb-icon fa-arrow-right" aria-hidden="true"></i></a>
     </div>
 
     <!-- FEED RECENTE -->
@@ -109,22 +106,14 @@
 
   </main>
 
-  <!-- FAB -->
-  <a href="my-items.html" class="fab" title="Adicionar item">
-    <i class="fas fa-plus"></i>
-  </a>
-
   <script>
-    const API_BASE = 'http://localhost:3001/api';
+    const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : '/api';
     function getToken() { return localStorage.getItem('scamb_token') || localStorage.getItem('swaply_token') || localStorage.getItem('ecotroca_token') || localStorage.getItem('ecopermuta_token'); }
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
 
     // Auth guard
     if (!getToken()) window.location.href = 'login.html';
 
-    document.getElementById('navToggle').addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('open');
-    });
 
     function logout() {
       localStorage.removeItem('scamb_token');
@@ -147,7 +136,7 @@
       return html;
     }
 
-    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23eef2ff'/%3E%3Ccircle cx='200' cy='140' r='45' fill='%236366f1' opacity='0.7'/%3E%3Ctext x='200' y='230' font-family='sans-serif' font-size='16' fill='%236366f1' font-weight='bold' text-anchor='middle'%3EScamb%3C/text%3E%3C/svg%3E";
+    const DEFAULT_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27 viewBox=%270 0 400 300%27%3E%3Crect width=%27400%27 height=%27300%27 fill=%27%23edf3e6%27/%3E%3Ccircle cx=%27200%27 cy=%27140%27 r=%2745%27 fill=%27%23365941%27 opacity=%270.7%27/%3E%3Ctext x=%27200%27 y=%27230%27 font-family=%27sans-serif%27 font-size=%2716%27 fill=%27%23365941%27 font-weight=%27bold%27 text-anchor=%27middle%27%3EScamb%3C/text%3E%3C/svg%3E";
 
     function getItemImages(item) {
       if (Array.isArray(item.images)) return item.images;
@@ -258,30 +247,16 @@
   </script>
 
   <!-- FOOTER -->
-  <footer style="background: #090d16; color: #94a3b8; padding: 48px 0 28px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 60px;">
-    <div class="container">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <a href="index.html" style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-arrows-rotate" style="color: #38bdf8;"></i> Scamb
-          </a>
-          <span style="color: #64748b; font-size: 0.88rem;">| A arte ancestral do escambo na era digital</span>
-        </div>
-        <div style="display: flex; gap: 20px; font-size: 0.9rem;">
-          <a href="catalog.html" style="color: #94a3b8;">Catálogo</a>
-          <a href="map.html" style="color: #94a3b8;">Pontos Seguros</a>
-          <a href="trades.html" style="color: #94a3b8;">Trocas</a>
-          <a href="profile.html" style="color: #94a3b8;">Perfil</a>
-        </div>
-      </div>
-      <div style="padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.9rem;">
-        <p style="color: #f1f5f9; font-weight: 600;">
-          Feito com <span class="heart-pulse">❤️</span> por Felipe e Adailton
-        </p>
-        <p style="color: #64748b; font-size: 0.85rem;">
-          Scamb &copy; 2026 &bull; JavaScript + HTML5 + CSS3 + SQLite
-        </p>
-      </div>
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <a href="index.html" class="site-footer-brand"><span class="swap-mark" aria-hidden="true"></span>Scamb</a>
+      <nav aria-label="Rodapé">
+        <a href="catalog.html">Catálogo</a>
+        <a href="map.html">Pontos seguros</a>
+        <a href="trades.html">Trocas</a>
+        <a href="profile.html">Perfil</a>
+      </nav>
+      <small>© 2026 Scamb · Feito por Felipe Gomes e José Adailton</small>
     </div>
   </footer>
 </body>

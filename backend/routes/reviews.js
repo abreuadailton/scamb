@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const auth = require('../middleware/auth');
+const { publishActivity } = require('../services/activityBus');
 
 // ─── GET /api/reviews/user/:userId — List reviews for a specific user ─────────
 router.get('/user/:userId', (req, res) => {
@@ -84,12 +85,27 @@ router.post('/', auth, (req, res) => {
       return res.status(404).json({ success: false, error: 'Usuário não encontrado.' });
     }
 
+    const trade = db.prepare('SELECT * FROM trades WHERE id = ?').get(Number(trade_id) || 0);
+    const participants = trade ? [trade.requester_id, trade.owner_id] : [];
+    if (!trade || trade.status !== 'completed' ||
+        !participants.includes(req.user.id) || !participants.includes(ratedId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Só é possível avaliar quem concluiu uma troca presencial com você.'
+      });
+    }
+
+    const already = db.prepare('SELECT id FROM ratings WHERE trade_id = ? AND rater_id = ?').get(trade.id, req.user.id);
+    if (already) {
+      return res.status(400).json({ success: false, error: 'Você já avaliou esta troca.' });
+    }
+
     const stmt = db.prepare(`
       INSERT INTO ratings (trade_id, rater_id, rated_id, score, comment, created_at)
       VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `);
 
-    const result = stmt.run(trade_id || null, req.user.id, ratedId, numScore, comment.trim());
+    const result = stmt.run(trade.id, req.user.id, ratedId, numScore, comment.trim());
 
     // Update reputation score of user (+5 to +10 pts)
     const bonus = numScore >= 4 ? 10 : 5;
@@ -103,6 +119,14 @@ router.post('/', auth, (req, res) => {
       JOIN users u ON r.rater_id = u.id
       WHERE r.id = ?
     `).get(result.lastInsertRowid);
+
+    publishActivity({
+      type:         'review_created',
+      score:        saved.score,
+      actor_name:   saved.rater_name || req.user.name,
+      partner_name: targetUser.name,
+      created_at:   saved.created_at
+    });
 
     return res.status(201).json({
       success: true,

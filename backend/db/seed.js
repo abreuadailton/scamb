@@ -4,6 +4,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const db = require('./database');
 const QRCode = require('qrcode');
+const { buildExtraItems } = require('./extraItems');
 
 async function seed() {
   console.log('🚀 Iniciando seed completo e enriquecido para Scamb (Escambo Moderno)...');
@@ -15,6 +16,7 @@ async function seed() {
     DELETE FROM trades;
     DELETE FROM items;
     DELETE FROM users;
+    DELETE FROM sqlite_sequence WHERE name IN ('ratings', 'messages', 'trades', 'items', 'users');
   `);
 
   const passwordHash = await bcrypt.hash('senha123', 10);
@@ -30,28 +32,28 @@ async function seed() {
       name: 'Ana Silva',
       email: 'ana@scamb.com',
       bio: 'Apaixonada por leitura, literatura clássica, café e design. Troco livros já lidos, itens de decoração e café por novas descobertas!',
-      avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
+      avatar_url: 'img/demo/photo-1494790108377-be9c29b29330.jpg',
       reputation: 98
     },
     {
       name: 'Carlos Oliveira',
       email: 'carlos@scamb.com',
       bio: 'Gamer, fã de tecnologia, colecionador de board games e gadgets. Acredito que objeto parado na estante deve circular!',
-      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
+      avatar_url: 'img/demo/photo-1507003211169-0a1dd7228f2d.jpg',
       reputation: 92
     },
     {
       name: 'Mariana Costa',
       email: 'mariana@scamb.com',
       bio: 'Arquiteta e entusiasta de botânica urbana. Troco plantas, peças de decoração modernistas e livros técnicos.',
-      avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200',
+      avatar_url: 'img/demo/photo-1438761681033-6461ffad8d80.jpg',
       reputation: 95
     },
     {
       name: 'Lucas Ferreira',
       email: 'lucas@scamb.com',
       bio: 'Músico, marceneiro e criador de conteúdo DIY. Tenho instrumentos, pedais de efeito e ferramentas que procuro trocar por equipamentos de áudio.',
-      avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200',
+      avatar_url: 'img/demo/photo-1500648767791-00dcc994a43e.jpg',
       reputation: 89
     }
   ];
@@ -77,8 +79,8 @@ async function seed() {
       category: 'Livros',
       condition: 'Ótimo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1544947950-fa07a98d237f.jpg',
+        'img/demo/photo-1512820790803-83ca734da794.jpg'
       ]),
       status: 'available',
       latitude: -23.5614,
@@ -92,7 +94,7 @@ async function seed() {
       category: 'Livros',
       condition: 'Novo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1516979187457-637abb4f9353.jpg'
       ]),
       status: 'available',
       latitude: -23.5587,
@@ -106,8 +108,8 @@ async function seed() {
       category: 'Eletrônicos',
       condition: 'Ótimo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=600&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1592496431122-2349e0fbc666.jpg',
+        'img/demo/photo-1544716278-ca5e3f4abd8c.jpg'
       ]),
       status: 'available',
       latitude: -23.5505,
@@ -123,8 +125,8 @@ async function seed() {
       category: 'Jogos',
       condition: 'Ótimo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?w=600&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1632516643720-e7f5d7d6ecc9?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1610890716171-6b1bb98ffd09.jpg',
+        'img/demo/photo-1632516643720-e7f5d7d6ecc9.jpg'
       ]),
       status: 'available',
       latitude: -23.5614,
@@ -138,7 +140,7 @@ async function seed() {
       category: 'Jogos',
       condition: 'Ótimo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1600080972464-8e5f35f63d08.jpg'
       ]),
       status: 'available',
       latitude: -23.5505,
@@ -152,7 +154,7 @@ async function seed() {
       category: 'Jogos',
       condition: 'Ótimo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1550745165-9bc0b252726f.jpg'
       ]),
       status: 'available',
       latitude: -23.5489,
@@ -168,8 +170,8 @@ async function seed() {
       category: 'Eletrônicos',
       condition: 'Novo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1505740420928-5e560c06d30e.jpg',
+        'img/demo/photo-1484704849700-f032a568e944.jpg'
       ]),
       status: 'available',
       latitude: -23.5874,
@@ -183,7 +185,7 @@ async function seed() {
       category: 'Outros',
       condition: 'Bom',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1510915361894-db8b60106cb1.jpg'
       ]),
       status: 'available',
       latitude: -23.5874,
@@ -199,8 +201,8 @@ async function seed() {
       category: 'Ferramentas',
       condition: 'Ótimo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1504148455328-c376907d081c.jpg',
+        'img/demo/photo-1572981779307-38b8cabb2407.jpg'
       ]),
       status: 'available',
       latitude: -23.5614,
@@ -214,7 +216,7 @@ async function seed() {
       category: 'Ferramentas',
       condition: 'Novo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1530124566582-a618bc2615dc.jpg'
       ]),
       status: 'available',
       latitude: -23.5489,
@@ -230,7 +232,7 @@ async function seed() {
       category: 'Outros',
       condition: 'Ótimo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1517256064527-09c73fc73e38.jpg'
       ]),
       status: 'available',
       latitude: -23.5587,
@@ -244,7 +246,7 @@ async function seed() {
       category: 'Outros',
       condition: 'Novo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1507473885765-e6ed057f782c.jpg'
       ]),
       status: 'available',
       latitude: -23.5874,
@@ -260,8 +262,8 @@ async function seed() {
       category: 'Plantas',
       condition: 'Novo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=600&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1614594975525-e45190c55d0b.jpg',
+        'img/demo/photo-1485955900006-10f4d324d411.jpg'
       ]),
       status: 'available',
       latitude: -23.5874,
@@ -275,7 +277,7 @@ async function seed() {
       category: 'Plantas',
       condition: 'Novo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1459411552884-841db9b3cc2a.jpg'
       ]),
       status: 'available',
       latitude: -23.5489,
@@ -291,7 +293,7 @@ async function seed() {
       category: 'Roupas',
       condition: 'Ótimo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1576995853123-5a10305d93c0.jpg'
       ]),
       status: 'available',
       latitude: -23.5614,
@@ -305,7 +307,7 @@ async function seed() {
       category: 'Roupas',
       condition: 'Novo',
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80'
+        'img/demo/photo-1553062407-98eeb64c6a62.jpg'
       ]),
       status: 'available',
       latitude: -23.5505,
@@ -314,8 +316,10 @@ async function seed() {
     }
   ];
 
+  const allItems = [...items, ...buildExtraItems(userIds)];
+
   const itemIds = [];
-  for (const it of items) {
+  for (const it of allItems) {
     const res = insertItem.run(
       it.user_id, it.title, it.description, it.category, it.condition,
       it.images, it.status, it.latitude, it.longitude, it.location_name
@@ -334,13 +338,13 @@ async function seed() {
 
   // Troca 1: Aceita com QR Code gerado para MASP
   const tradePayload1 = {
-    swaply_trade_id: 1,
+    scamb_trade_id: 1,
     requester: 'Carlos Oliveira',
     owner: 'Ana Silva',
     itemOffered: 'Jogo de Tabuleiro Moderno: Catan (Edição Clássica)',
     itemWanted: 'Box Colecionador: O Senhor dos Anéis (3 Volumes + Mapa)',
     location: 'MASP - Av. Paulista, 1578',
-    auth_code: 'SWAP-0001-21',
+    auth_code: 'SCAMB-0001-21',
     timestamp: new Date().toISOString()
   };
 
@@ -401,7 +405,7 @@ async function seed() {
   insertRating.run(null, userIds[0], userIds[3], 5, 'A parafusadeira salvou a montagem dos móveis do meu apartamento novo! Lucas testou tudo comigo no local antes de validarmos o QR Code.', '2026-11-16 19:00:00');
   insertRating.run(null, userIds[1], userIds[3], 5, 'Fone de ouvido funcionando com som cristalino. Negociação transparente e ágil.', '2026-11-09 15:20:00');
 
-  console.log(`✅ Seed concluído! ${items.length} itens cadastrados com fotos de alta qualidade e reviews reais.`);
+  console.log(`✅ Seed concluído! ${allItems.length} itens cadastrados com fotos de alta qualidade e reviews reais.`);
   console.log('--- Credenciais de Acesso Scamb ---');
   console.log('1. ana@scamb.com    | Senha: senha123');
   console.log('2. carlos@scamb.com | Senha: senha123');
@@ -409,4 +413,11 @@ async function seed() {
   console.log('4. lucas@scamb.com  | Senha: senha123');
 }
 
-seed().catch(console.error);
+if (require.main === module) {
+  seed().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+module.exports = { seed };
